@@ -19,8 +19,10 @@ public final class OllamaService: ChatService {
     
     public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
+        let messageID = String.id
         for try await result in client.chatStream(payload) {
-            let message = decode(result: result)
+            var message = decode(result: result)
+            message.id = messageID
             await delta(message)
         }
     }
