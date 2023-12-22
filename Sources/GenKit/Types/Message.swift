@@ -53,7 +53,7 @@ extension Message: Hashable, Equatable {
 
 extension Message {
     
-    func apply(_ message: Message) -> Message {
+    public func apply(_ message: Message) -> Message {
         var existing = self
         existing.content = existing.content?.apply(with: message.content)
         existing.finishReason = message.finishReason
