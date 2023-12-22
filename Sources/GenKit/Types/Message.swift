@@ -53,9 +53,9 @@ extension Message: Hashable, Equatable {
 
 extension Message {
     
-    func patch(_ message: Message) -> Message {
+    func apply(_ message: Message) -> Message {
         var existing = self
-        existing.content = existing.content?.patch(with: message.content)
+        existing.content = existing.content?.apply(with: message.content)
         existing.finishReason = message.finishReason
         existing.modified = .now
         
@@ -63,8 +63,8 @@ extension Message {
             for toolCall in toolCalls {
                 if toolCall.index < (existing.toolCalls?.count ?? 0) {
                     var existingToolCall = existing.toolCalls![toolCall.index]
-                    existingToolCall.function.name = existingToolCall.function.name.patch(with: toolCall.function.name)
-                    existingToolCall.function.arguments = existingToolCall.function.arguments.patch(with: toolCall.function.arguments)
+                    existingToolCall.function.name = existingToolCall.function.name.apply(with: toolCall.function.name)
+                    existingToolCall.function.arguments = existingToolCall.function.arguments.apply(with: toolCall.function.arguments)
                     existing.toolCalls![toolCall.index] = existingToolCall
                 } else {
                     existing.toolCalls = [toolCall]
