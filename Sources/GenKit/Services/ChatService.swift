@@ -12,4 +12,11 @@ public struct ChatServiceRequest {
     public var messages: [Message]
     public var tools: [Tool]
     public var toolChoice: Tool?
+    
+    public init(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) {
+        self.model = model
+        self.messages = messages
+        self.tools = tools
+        self.toolChoice = toolChoice
+    }
 }
