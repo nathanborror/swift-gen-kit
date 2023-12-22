@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "ollamakit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/OllamaKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "cfc77e0da82afe5ed4ef38abd0f378af65f61464"
+      }
+    },
+    {
+      "identity" : "openai",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/OpenAI",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5c6d5556b79e670c027c27b3b071ae0baa780906"
+      }
+    },
+    {
+      "identity" : "sharedkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/SharedKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7e6f89cd88313388c50c1a4d43c2bf94d5866885"
+      }
+    }
+  ],
+  "version" : 2
+}
