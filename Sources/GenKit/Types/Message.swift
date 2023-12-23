@@ -25,7 +25,9 @@ public struct Message: Codable, Identifiable {
         case none
     }
     
-    public init(id: String = UUID().uuidString, role: Role, content: String? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil) {
+    public init(id: String = UUID().uuidString, role: Role, content: String? = nil, attachments: [Attachment] = [],
+                toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, name: String? = nil,
+                finishReason: FinishReason? = .stop) {
         self.id = id
         self.role = role
         self.content = content
