@@ -1,14 +1,21 @@
 import Foundation
+import OSLog
 import OllamaKit
+
+private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 
 public final class OllamaService: ChatService {
     
-    public static var shared = OllamaService()
+    public static var shared: OllamaService = {
+        let host = Bundle.main.infoDictionary?["OllamaHost"] as? String
+        return OllamaService(host: host)
+    }()
     
     private var client: OllamaClient
     
-    init() {
-        self.client = OllamaClient()
+    init(host: String? = nil) {
+        self.client = OllamaClient(host: host ?? "")
+        logger.debug("Ollama Host: \(host ?? "default")")
     }
     
     public func completion(request: ChatServiceRequest) async throws -> Message {

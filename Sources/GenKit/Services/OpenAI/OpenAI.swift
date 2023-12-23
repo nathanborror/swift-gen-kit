@@ -1,11 +1,14 @@
 import Foundation
+import OSLog
 import OpenAI
+
+private let logger = Logger(subsystem: "OpenAIService", category: "GenKit")
 
 public final class OpenAIService: ChatService {
     
     public static var shared: OpenAIService = {
         guard let token = Bundle.main.infoDictionary?["OpenAIToken"] as? String else {
-            fatalError(ServiceError.missingToken.localizedDescription)
+            fatalError("OpenAI token missing")
         }
         return OpenAIService(token: token)
     }()
