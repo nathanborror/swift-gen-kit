@@ -3,6 +3,7 @@ import SharedKit
 
 public struct Message: Codable, Identifiable {
     public var id: String
+    public var kind: Kind
     public var role: Role
     public var content: String?
     public var attachments: [Attachment]
@@ -12,6 +13,10 @@ public struct Message: Codable, Identifiable {
     public var finishReason: FinishReason?
     public var created: Date
     public var modified: Date
+    
+    public enum Kind: String, Codable {
+        case instruction, introduction, none
+    }
     
     public enum Role: String, Codable {
         case system, assistant, user, tool
@@ -26,10 +31,11 @@ public struct Message: Codable, Identifiable {
         case none
     }
     
-    public init(id: String = UUID().uuidString, role: Role, content: String? = nil, attachments: [Attachment] = [],
-                toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, name: String? = nil,
-                finishReason: FinishReason? = .stop) {
+    public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
+                attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
+                name: String? = nil, finishReason: FinishReason? = .stop) {
         self.id = id
+        self.kind = kind
         self.role = role
         self.content = content
         self.attachments = attachments
