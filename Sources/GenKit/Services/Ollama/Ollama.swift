@@ -7,15 +7,20 @@ private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 public final class OllamaService: ChatService {
     
     public static var shared: OllamaService = {
-        let host = Bundle.main.infoDictionary?["OllamaHost"] as? String
-        return OllamaService(host: host)
+        guard let host = Bundle.main.infoDictionary?["OllamaHost"] as? String else {
+            fatalError("missing OllamaHost setting in Info.plist")
+        }
+        guard let url = URL(string: host) else {
+            fatalError("bad OllamaHost string")
+        }
+        return OllamaService(url: url)
     }()
     
     private var client: OllamaClient
     
-    init(host: String? = nil) {
-        self.client = OllamaClient(host: host ?? "")
-        logger.debug("Ollama Host: \(host ?? "default")")
+    init(url: URL) {
+        self.client = OllamaClient(url: url)
+        logger.debug("Ollama Host: \(url.absoluteString)")
     }
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
