@@ -6,16 +6,9 @@ private let logger = Logger(subsystem: "OpenAIService", category: "GenKit")
 
 public final class OpenAIService: ChatService {
     
-    public static var shared: OpenAIService = {
-        guard let token = Bundle.main.infoDictionary?["OpenAIToken"] as? String else {
-            fatalError("OpenAI token missing")
-        }
-        return OpenAIService(token: token)
-    }()
-    
     private var client: OpenAIProtocol
     
-    init(token: String) {
+    public init(token: String) {
         self.client = OpenAI(apiToken: token)
     }
     
