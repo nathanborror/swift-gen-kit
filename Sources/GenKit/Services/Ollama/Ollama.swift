@@ -28,10 +28,21 @@ public final class OllamaService: ChatService {
             await delta(message)
         }
     }
+}
+
+extension OllamaService: EmbeddingService {
     
     public func embeddings(model: String, input: String) async throws -> [Double] {
         let payload = EmbeddingRequest(model: model, prompt: input, options: [:])
         let result = try await client.embeddings(payload)
         return result.embedding
+    }
+}
+
+extension OllamaService: ModelService {
+    
+    public func models() async throws -> [Model] {
+        let result = try await client.models()
+        return result.models.map { Model(id: $0.name, owner: "ollama") }
     }
 }

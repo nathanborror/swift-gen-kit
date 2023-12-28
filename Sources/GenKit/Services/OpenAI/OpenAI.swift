@@ -43,10 +43,21 @@ public final class OpenAIService: ChatService {
             await delta(message)
         }
     }
+}
+
+extension OpenAIService: EmbeddingService {
     
     public func embeddings(model: String, input: String) async throws -> [Double] {
         let query = EmbeddingsQuery(model: model, input: input)
         let result = try await client.embeddings(query: query)
         return result.data.first?.embedding ?? []
+    }
+}
+
+extension OpenAIService: ModelService {
+    
+    public func models() async throws -> [Model] {
+        let result = try await client.models()
+        return result.data.map { Model(id: $0.id, owner: $0.ownedBy) }
     }
 }
