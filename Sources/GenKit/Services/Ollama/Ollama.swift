@@ -6,19 +6,9 @@ private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 
 public final class OllamaService: ChatService {
     
-    public static var shared: OllamaService = {
-        guard let host = Bundle.main.infoDictionary?["OllamaHost"] as? String else {
-            fatalError("missing OllamaHost setting in Info.plist")
-        }
-        guard let url = URL(string: host) else {
-            fatalError("bad OllamaHost string")
-        }
-        return OllamaService(url: url)
-    }()
-    
     private var client: OllamaClient
     
-    init(url: URL) {
+    public init(url: URL) {
         self.client = OllamaClient(url: url)
         logger.debug("Ollama Host: \(url.absoluteString)")
     }
