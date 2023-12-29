@@ -44,7 +44,8 @@ extension OpenAIService {
     }
     
     func encode(tools: [Tool]?) -> [ChatQuery.Tool]? {
-        tools?.map { encode(tool: $0) }
+        guard let tools = tools, !tools.isEmpty else { return nil }
+        return tools.map { encode(tool: $0) }
     }
     
     func encode(tool: Tool) -> ChatQuery.Tool {
