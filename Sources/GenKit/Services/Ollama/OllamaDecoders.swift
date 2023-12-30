@@ -20,7 +20,7 @@ extension OllamaService {
     }
 
     func decode(done: Bool?) -> Message.FinishReason? {
-        guard let done = done else { return nil }
+        guard let done else { return nil }
         return done ? .stop : nil
     }
 }

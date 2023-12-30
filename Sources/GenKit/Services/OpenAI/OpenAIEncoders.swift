@@ -44,7 +44,7 @@ extension OpenAIService {
     }
     
     func encode(tools: [Tool]?) -> [ChatQuery.Tool]? {
-        guard let tools = tools, !tools.isEmpty else { return nil }
+        guard let tools, !tools.isEmpty else { return nil }
         return tools.map { encode(tool: $0) }
     }
     
@@ -64,7 +64,7 @@ extension OpenAIService {
     }
     
     func encode(toolChoice: Tool?) -> ChatQuery.ToolChoice? {
-        guard let toolChoice = toolChoice else { return nil }
+        guard let toolChoice else { return nil }
         return .tool(
             .init(
                 type: toolChoice.type.rawValue,
