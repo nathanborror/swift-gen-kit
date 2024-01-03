@@ -17,6 +17,18 @@ extension MistralService {
             finishReason: decode(finishReason: choice.finishReason)
         )
     }
+    
+    func decode(result: ChatStreamResponse) -> Message {
+        guard let choice = result.choices.first else {
+            logger.warning("failed to decode choice")
+            return .init(role: .assistant)
+        }
+        return .init(
+            role: decode(role: choice.delta.role ?? .assistant),
+            content: choice.delta.content,
+            finishReason: decode(finishReason: choice.finishReason)
+        )
+    }
 
     func decode(role: MistralKit.Message.Role?) -> Message.Role {
         switch role {
@@ -26,10 +38,23 @@ extension MistralService {
         }
     }
 
-    func decode(finishReason: ChatResponse.Choice.FinishReason) -> Message.FinishReason? {
+    func decode(finishReason: ChatResponse.Choice.FinishReason?) -> Message.FinishReason? {
+        guard let finishReason else { return .none }
         switch finishReason {
-        case .stop: .stop
-        case .length, .model_length: .length
+        case .stop: 
+            return .stop
+        case .length, .model_length:
+            return .length
+        }
+    }
+    
+    func decode(finishReason: ChatStreamResponse.Choice.FinishReason?) -> Message.FinishReason? {
+        guard let finishReason else { return .none }
+        switch finishReason {
+        case .stop:
+            return .stop
+        case .length, .model_length:
+            return .length
         }
     }
 }
