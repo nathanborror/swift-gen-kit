@@ -38,20 +38,10 @@ extension MistralService {
         }
     }
 
-    func decode(finishReason: ChatResponse.Choice.FinishReason?) -> Message.FinishReason? {
+    func decode(finishReason: FinishReason?) -> Message.FinishReason? {
         guard let finishReason else { return .none }
         switch finishReason {
         case .stop: 
-            return .stop
-        case .length, .model_length:
-            return .length
-        }
-    }
-    
-    func decode(finishReason: ChatStreamResponse.Choice.FinishReason?) -> Message.FinishReason? {
-        guard let finishReason else { return .none }
-        switch finishReason {
-        case .stop:
             return .stop
         case .length, .model_length:
             return .length
