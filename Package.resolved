@@ -1,12 +1,21 @@
 {
   "pins" : [
     {
+      "identity" : "mistralkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/MistralKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "4660dd1967a49633f3b3a655074c867f411e7d2c"
+      }
+    },
+    {
       "identity" : "ollamakit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/OllamaKit",
       "state" : {
         "branch" : "main",
-        "revision" : "e0a20742f88f803d7b8b77437293893aedc696f1"
+        "revision" : "1130b9603d908bec86140091052219604790a20d"
       }
     },
     {
@@ -24,7 +33,7 @@
       "location" : "https://github.com/nathanborror/SharedKit",
       "state" : {
         "branch" : "main",
-        "revision" : "8b99dc006d9ddbe868266d3cc4d263291b80a659"
+        "revision" : "38dcb9d455722352dc47bce7ddc4efecc11fca83"
       }
     }
   ],
