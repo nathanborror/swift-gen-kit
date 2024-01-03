@@ -27,3 +27,20 @@ public final class MistralService: ChatService {
         }
     }
 }
+
+extension MistralService: EmbeddingService {
+    
+    public func embeddings(model: String, input: String) async throws -> [Double] {
+        let payload = EmbeddingRequest(model: model, input: [input])
+        let result = try await client.embeddings(payload)
+        return result.data.first?.embedding ?? []
+    }
+}
+
+extension MistralService: ModelService {
+    
+    public func models() async throws -> [Model] {
+        let result = try await client.models()
+        return result.data.map { Model(id: $0.id, owner: $0.ownedBy) }
+    }
+}
