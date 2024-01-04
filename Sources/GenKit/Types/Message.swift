@@ -64,7 +64,7 @@ extension Message {
     
     public func apply(_ message: Message) -> Message {
         var existing = self
-        existing.content = existing.content?.apply(with: message.content)
+        existing.content = existing.content.apply(with: message.content)
         existing.finishReason = message.finishReason
         existing.modified = .now
         
@@ -82,4 +82,6 @@ extension Message {
         }
         return existing
     }
+    
+    
 }
