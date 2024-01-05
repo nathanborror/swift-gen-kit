@@ -15,7 +15,7 @@
       "location" : "https://github.com/nathanborror/OllamaKit",
       "state" : {
         "branch" : "main",
-        "revision" : "1130b9603d908bec86140091052219604790a20d"
+        "revision" : "1f8ddde0d8f257357f36c66b56b7e4d42c2cb31a"
       }
     },
     {
@@ -33,7 +33,7 @@
       "location" : "https://github.com/nathanborror/SharedKit",
       "state" : {
         "branch" : "main",
-        "revision" : "38dcb9d455722352dc47bce7ddc4efecc11fca83"
+        "revision" : "c822a4649acb3af5c236eb1746827ae348b1ee19"
       }
     }
   ],

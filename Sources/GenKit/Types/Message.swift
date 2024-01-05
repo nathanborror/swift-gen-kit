@@ -11,11 +11,12 @@ public struct Message: Codable, Identifiable {
     public var toolCallID: String?
     public var name: String?
     public var finishReason: FinishReason?
+    public var metadata: [String: AnyValue]?
     public var created: Date
     public var modified: Date
     
     public enum Kind: String, Codable {
-        case instruction, introduction, none
+        case instruction, introduction, transcription, none
     }
     
     public enum Role: String, Codable {
@@ -33,7 +34,7 @@ public struct Message: Codable, Identifiable {
     
     public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
                 attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
-                name: String? = nil, finishReason: FinishReason? = .stop) {
+                name: String? = nil, finishReason: FinishReason? = .stop, metadata: [String: AnyValue]? = nil) {
         self.id = id
         self.kind = kind
         self.role = role
@@ -43,6 +44,7 @@ public struct Message: Codable, Identifiable {
         self.toolCallID = toolCallID
         self.name = name
         self.finishReason = finishReason
+        self.metadata = metadata
         self.created = .now
         self.modified = .now
     }
