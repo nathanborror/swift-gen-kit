@@ -29,6 +29,7 @@ public struct Message: Codable, Identifiable {
     
     public enum Attachment: Codable {
         case media(Media)
+        case agent(String)
         case none
     }
     

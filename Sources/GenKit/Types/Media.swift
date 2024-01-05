@@ -13,7 +13,6 @@ public enum MediaType: Codable, Equatable, Hashable {
     case image(String)
     case video(String)
     case audio(String)
-    case agent(String)
 }
 
 public typealias ColorHexValue = String
