@@ -5,6 +5,7 @@ public struct Asset: Codable, Equatable, Hashable {
     public let data: Data?
     public let kind: Kind
     public let location: Location
+    public let background: String?
     
     public enum Location: Codable {
         case filesystem
@@ -18,12 +19,14 @@ public struct Asset: Codable, Equatable, Hashable {
         case image
         case video
         case audio
+        case symbol
     }
     
-    public init(name: String, data: Data? = nil, kind: Kind, location: Location) {
+    public init(name: String, data: Data? = nil, kind: Kind, location: Location, background: String? = nil) {
         self.name = name
         self.data = data
         self.kind = kind
         self.location = location
+        self.background = background
     }
 }
