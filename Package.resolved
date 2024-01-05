@@ -6,7 +6,7 @@
       "location" : "https://github.com/nathanborror/MistralKit",
       "state" : {
         "branch" : "main",
-        "revision" : "f852e7f2a1969edb6a3bd11be6aa4860b4844058"
+        "revision" : "0bae158c4e19efb347f6355d0e92967a67fbfd4a"
       }
     },
     {
@@ -15,7 +15,7 @@
       "location" : "https://github.com/nathanborror/OllamaKit",
       "state" : {
         "branch" : "main",
-        "revision" : "1f8ddde0d8f257357f36c66b56b7e4d42c2cb31a"
+        "revision" : "0be5e50d5f1f39095004199b1188e3b92bd70200"
       }
     },
     {
@@ -33,7 +33,7 @@
       "location" : "https://github.com/nathanborror/SharedKit",
       "state" : {
         "branch" : "main",
-        "revision" : "c822a4649acb3af5c236eb1746827ae348b1ee19"
+        "revision" : "65a295118f6e60f82f7a15832133f9acba8eccc1"
       }
     }
   ],
