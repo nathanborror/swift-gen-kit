@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Asset: Codable {
+public struct Asset: Codable, Equatable, Hashable {
     let name: String
     let data: Data?
     let kind: Kind
