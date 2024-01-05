@@ -54,3 +54,24 @@ extension OpenAIService: ModelService {
         return result.data.map { Model(id: $0.id, owner: $0.ownedBy) }
     }
 }
+
+extension OpenAIService: ImageService {
+    
+    public func imagine(request: ImagineServiceRequest) async throws -> [Data] {
+        let query = ImagesQuery(
+            prompt: request.prompt,
+            model: request.model,
+            n: request.n,
+            size: request.size
+        )
+        let result = try await client.images(query: query)
+        if let data = result.data {
+            return try data.map {
+                guard let url = $0.url else { return nil }
+                let remoteURL = URL(string: url)!
+                return try Data(contentsOf: remoteURL)
+            }.compactMap { $0 }
+        } 
+        throw ServiceError.missingImageData
+    }
+}
