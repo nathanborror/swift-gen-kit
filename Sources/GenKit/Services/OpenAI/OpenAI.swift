@@ -75,3 +75,19 @@ extension OpenAIService: ImageService {
         throw ServiceError.missingImageData
     }
 }
+
+extension OpenAIService: TranscriptionService {
+    
+    public func transcribe(request: TranscriptionServiceRequest) async throws -> String {
+        let query = AudioTranscriptionQuery(
+            file: request.data,
+            model: request.model,
+            prompt: request.prompt,
+            temperature: request.temperature,
+            language: request.language,
+            responseFormat: encode(responseFormat: request.responseFormat)
+        )
+        let result = try await client.audioTranscriptions(query: query)
+        return result.text
+    }
+}

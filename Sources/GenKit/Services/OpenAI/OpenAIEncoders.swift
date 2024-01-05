@@ -72,4 +72,9 @@ extension OpenAIService {
             )
         )
     }
+    
+    func encode(responseFormat: String?) -> AudioTranscriptionQuery.ResponseFormat? {
+        guard let responseFormat else { return nil }
+        return .init(rawValue: responseFormat)
+    }
 }
