@@ -7,8 +7,9 @@ public struct Asset: Codable, Equatable, Hashable {
     public let location: Location
     
     public enum Location: Codable {
-        case document
+        case filesystem
         case bundle
+        case cache
         case url
         case none
     }
