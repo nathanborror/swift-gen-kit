@@ -30,7 +30,6 @@ public struct Message: Codable, Identifiable {
     public enum Attachment: Codable {
         case asset(Asset)
         case agent(String)
-        case none
     }
     
     public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
