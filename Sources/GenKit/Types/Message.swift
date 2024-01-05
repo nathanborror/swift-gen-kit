@@ -28,7 +28,9 @@ public struct Message: Codable, Identifiable {
     }
     
     public enum Attachment: Codable {
-        case media(Media)
+        case image(Resource)
+        case video(Resource)
+        case audio(Resource)
         case agent(String)
         case none
     }
