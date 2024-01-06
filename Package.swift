@@ -19,6 +19,7 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/OpenAI", branch: "main"),
         .package(url: "https://github.com/nathanborror/OllamaKit", branch: "main"),
         .package(url: "https://github.com/nathanborror/MistralKit", branch: "main"),
+        .package(url: "https://github.com/nathanborror/PerplexityKit", branch: "main"),
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
@@ -26,6 +27,7 @@ let package = Package(
             .product(name: "OpenAI", package: "OpenAI"),
             .product(name: "OllamaKit", package: "OllamaKit"),
             .product(name: "MistralKit", package: "MistralKit"),
+            .product(name: "PerplexityKit", package: "PerplexityKit"),
         ]),
         .testTarget(name: "GenKitTests", dependencies: ["GenKit"]),
     ]

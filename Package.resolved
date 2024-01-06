@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "perplexitykit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/PerplexityKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "90206292584097b202313639a2c5ecfe3f3c5ce2"
+      }
+    },
+    {
       "identity" : "sharedkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/SharedKit",
