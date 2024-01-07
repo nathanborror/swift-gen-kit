@@ -1,21 +1,12 @@
 {
   "pins" : [
     {
-      "identity" : "sharedkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nathanborror/SharedKit",
-      "state" : {
-        "branch" : "main",
-        "revision" : "65a295118f6e60f82f7a15832133f9acba8eccc1"
-      }
-    },
-    {
       "identity" : "swift-anthropic",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-anthropic",
       "state" : {
         "branch" : "main",
-        "revision" : "13d7436bd51e49346fb5bedb94d8fd5bb13ebf6e"
+        "revision" : "72a4675c57892c76040696e787e9f2ac82a2e407"
       }
     },
     {
@@ -33,7 +24,7 @@
       "location" : "https://github.com/nathanborror/swift-mistral",
       "state" : {
         "branch" : "main",
-        "revision" : "0cde85848c29bb597e166a13c17a624bd8dc6243"
+        "revision" : "2414c07af7ed398e3cbe672b11a1cb1f6ba03ea3"
       }
     },
     {
@@ -42,7 +33,7 @@
       "location" : "https://github.com/nathanborror/swift-ollama",
       "state" : {
         "branch" : "main",
-        "revision" : "2afb0f95214d2b9002776a43e11c69c4ba3d7f07"
+        "revision" : "6db29dd3a6100cdedcb0c17419c041931616b7c4"
       }
     },
     {
@@ -51,7 +42,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "600cf88e5e4876f41903333d7dea6ce8159bd7b7"
+        "revision" : "92f15c9ed0324063262b27bc78ad516df9f97779"
       }
     },
     {
@@ -60,7 +51,16 @@
       "location" : "https://github.com/nathanborror/swift-perplexity",
       "state" : {
         "branch" : "main",
-        "revision" : "98ecc78f202dcaaadfc9052767df1a67b684272d"
+        "revision" : "178c5b4279404bd30f220b9d76894d5aa1a29229"
+      }
+    },
+    {
+      "identity" : "swift-shared-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-shared-kit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a8faf6f7e3c15f8aa9d80c56be6c7aa7fdb9b681"
       }
     }
   ],

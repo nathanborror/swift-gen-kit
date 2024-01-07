@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "GenKit",
+    name: "swift-gen-kit",
     platforms: [
         .iOS(.v16),
         .macOS(.v13),
@@ -15,7 +15,7 @@ let package = Package(
         .library(name: "GenKit", targets: ["GenKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/nathanborror/SharedKit", branch: "main"),
+        .package(url: "https://github.com/nathanborror/swift-shared-kit", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-openai", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-ollama", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-mistral", branch: "main"),
@@ -24,7 +24,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
-            .product(name: "SharedKit", package: "SharedKit"),
+            .product(name: "SharedKit", package: "swift-shared-kit"),
             .product(name: "OpenAI", package: "swift-openai"),
             .product(name: "Ollama", package: "swift-ollama"),
             .product(name: "Mistral", package: "swift-mistral"),
