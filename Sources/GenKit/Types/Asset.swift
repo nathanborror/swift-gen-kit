@@ -1,4 +1,5 @@
 import Foundation
+import SharedKit
 
 public struct Asset: Codable, Equatable, Hashable {
     public let name: String
@@ -28,5 +29,23 @@ public struct Asset: Codable, Equatable, Hashable {
         self.kind = kind
         self.location = location
         self.background = background
+    }
+}
+
+extension Asset {
+    
+    public var url: URL? {
+        switch location {
+        case .bundle:
+            return nil
+        case .filesystem:
+            return Resource.document(name).url
+        case .cache:
+            return Resource.cache(name).url
+        case .url:
+            return URL(string: name)
+        case .none:
+            return nil
+        }
     }
 }
