@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import MistralKit
+import Mistral
 
 private let logger = Logger(subsystem: "MistralService", category: "GenKit")
 
@@ -30,7 +30,7 @@ extension MistralService {
         )
     }
 
-    func decode(role: MistralKit.Message.Role?) -> Message.Role {
+    func decode(role: Mistral.Message.Role?) -> Message.Role {
         switch role {
         case .system: .system
         case .user: .user

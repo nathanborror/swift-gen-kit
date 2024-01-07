@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import OllamaKit
+import Ollama
 
 private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 

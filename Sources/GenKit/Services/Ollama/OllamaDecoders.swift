@@ -1,5 +1,5 @@
 import Foundation
-import OllamaKit
+import Ollama
 
 extension OllamaService {
     
@@ -11,7 +11,7 @@ extension OllamaService {
         )
     }
 
-    func decode(role: OllamaKit.Message.Role?) -> Message.Role {
+    func decode(role: Ollama.Message.Role?) -> Message.Role {
         switch role {
         case .system: .system
         case .user: .user

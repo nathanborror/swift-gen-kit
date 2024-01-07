@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import MistralKit
+import Mistral
 
 private let logger = Logger(subsystem: "MistralService", category: "GenKit")
 

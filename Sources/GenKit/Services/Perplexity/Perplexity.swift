@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import PerplexityKit
+import Perplexity
 
 private let logger = Logger(subsystem: "PerplexityService", category: "GenKit")
 

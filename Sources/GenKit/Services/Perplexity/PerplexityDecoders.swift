@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import PerplexityKit
+import Perplexity
 
 private let logger = Logger(subsystem: "PerplexityService", category: "GenKit")
 
@@ -30,7 +30,7 @@ extension PerplexityService {
         )
     }
 
-    func decode(role: PerplexityKit.Message.Role?) -> Message.Role {
+    func decode(role: Perplexity.Message.Role?) -> Message.Role {
         switch role {
         case .system: .system
         case .user: .user

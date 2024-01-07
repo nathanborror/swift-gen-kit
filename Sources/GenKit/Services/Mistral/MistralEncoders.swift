@@ -1,20 +1,20 @@
 import Foundation
-import MistralKit
+import Mistral
 
 extension MistralService {
     
-    func encode(messages: [Message]) -> [MistralKit.Message] {
+    func encode(messages: [Message]) -> [Mistral.Message] {
         messages.map { encode(message: $0) }
     }
     
-    func encode(message: Message) -> MistralKit.Message {
+    func encode(message: Message) -> Mistral.Message {
         .init(
             role: encode(role: message.role),
             content: message.content ?? ""
         )
     }
     
-    func encode(role: Message.Role) -> MistralKit.Message.Role {
+    func encode(role: Message.Role) -> Mistral.Message.Role {
         switch role {
         case .system: .system
         case .assistant: .assistant

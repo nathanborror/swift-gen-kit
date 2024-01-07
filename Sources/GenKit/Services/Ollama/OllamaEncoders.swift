@@ -1,20 +1,20 @@
 import Foundation
-import OllamaKit
+import Ollama
 
 extension OllamaService {
     
-    func encode(messages: [Message]) -> [OllamaKit.Message] {
+    func encode(messages: [Message]) -> [Ollama.Message] {
         messages.map { encode(message: $0) }
     }
     
-    func encode(message: Message) -> OllamaKit.Message {
+    func encode(message: Message) -> Ollama.Message {
         .init(
             role: encode(role: message.role),
             content: message.content ?? ""
         )
     }
     
-    func encode(role: Message.Role) -> OllamaKit.Message.Role {
+    func encode(role: Message.Role) -> Ollama.Message.Role {
         switch role {
         case .system: .system
         case .assistant: .assistant
