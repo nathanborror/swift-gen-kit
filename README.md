@@ -1,6 +1,6 @@
 # Swift GenKit
 
-GenKit is a library that abstracts away all the differences across generative AI platforms. It's sort of like a lightweight [LangChain](https://www.langchain.com) for Swift.
+GenKit is a library that abstracts away all the differences across generative AI platforms. It's sort of like a lightweight [LangChain](https://www.langchain.com) for Swift. The goal is to make native Swift development with generative AI fast, easy and fun!
 
 ### Services
 
@@ -17,3 +17,7 @@ GenKit is a library that abstracts away all the differences across generative AI
 - [OpenAI](https://github.com/nathanborror/swift-openai) (chats, embeddings, models, images, transcriptions)
 - [Perplexity](https://github.com/nathanborror/swift-perplexity) (chats, models)
 - [Anthropic](https://github.com/nathanborror/swift-anthropic) (chats, models)
+
+### Example Usage
+
+[Heat](https://github.com/nathanborror/Heat) is a good example of how GenKit can be used.
