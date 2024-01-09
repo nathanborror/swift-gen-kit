@@ -11,7 +11,7 @@ public struct Message: Codable, Identifiable {
     public var toolCallID: String?
     public var name: String?
     public var finishReason: FinishReason?
-    public var metadata: [String: AnyValue]
+    public var metadata: [String: String]
     public var created: Date
     public var modified: Date
     
@@ -34,7 +34,7 @@ public struct Message: Codable, Identifiable {
     
     public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
                 attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
-                name: String? = nil, finishReason: FinishReason? = .stop, metadata: [String: AnyValue] = [:]) {
+                name: String? = nil, finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) {
         self.id = id
         self.kind = kind
         self.role = role
