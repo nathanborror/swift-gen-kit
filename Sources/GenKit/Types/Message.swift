@@ -93,4 +93,10 @@ extension Message {
         }
         return self
     }
+    
+    public func apply(kind: Kind) -> Message {
+        var existing = self
+        existing.kind = kind
+        return existing
+    }
 }
