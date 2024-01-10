@@ -85,5 +85,12 @@ extension Message {
         return existing
     }
     
-    
+    public func apply(metadata key: String, value: String?) -> Message {
+        if let value = value {
+            var existing = self
+            existing.metadata[key] = value
+            return existing
+        }
+        return self
+    }
 }
