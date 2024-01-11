@@ -43,7 +43,7 @@ extension OpenAIService {
         .init(name: functionCall.name, arguments: functionCall.arguments)
     }
     
-    func encode(tools: [Tool]?) -> [ChatQuery.Tool]? {
+    func encode(tools: Set<Tool>?) -> [ChatQuery.Tool]? {
         guard let tools, !tools.isEmpty else { return nil }
         return tools.map { encode(tool: $0) }
     }
