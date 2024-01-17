@@ -8,8 +8,9 @@ public final class PerplexityService: ChatService {
     
     let client: PerplexityClient
     
-    public init(token: String) {
-        self.client = PerplexityClient(token: token)
+    public init(configuration: PerplexityClient.Configuration) {
+        self.client = PerplexityClient(configuration: configuration)
+        logger.info("Perplexity Service: \(self.client.configuration.host.absoluteString)")
     }
     
     public func completion(request: ChatServiceRequest) async throws -> Message {

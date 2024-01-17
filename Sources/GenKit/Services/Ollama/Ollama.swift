@@ -8,9 +8,9 @@ public final class OllamaService: ChatService {
     
     private var client: OllamaClient
     
-    public init(url: URL) {
-        self.client = OllamaClient(url: url)
-        logger.debug("Ollama Host: \(url.absoluteString)")
+    public init(configuration: OllamaClient.Configuration) {
+        self.client = OllamaClient(configuration: configuration)
+        logger.info("Ollama Service: \(self.client.configuration.host.absoluteString)")
     }
     
     public func completion(request: ChatServiceRequest) async throws -> Message {

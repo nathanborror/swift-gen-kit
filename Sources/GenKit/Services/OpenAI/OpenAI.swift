@@ -6,10 +6,11 @@ private let logger = Logger(subsystem: "OpenAIService", category: "GenKit")
 
 public final class OpenAIService: ChatService {
     
-    private var client: OpenAIProtocol
+    private var client: OpenAIClient
     
-    public init(token: String) {
-        self.client = OpenAI(apiToken: token)
+    public init(configuration: OpenAIClient.Configuration) {
+        self.client = OpenAIClient(configuration: configuration)
+        logger.info("OpenAI Service: \(self.client.configuration.host.absoluteString)")
     }
     
     public func completion(request: ChatServiceRequest) async throws -> Message {

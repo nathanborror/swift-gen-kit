@@ -8,8 +8,9 @@ public final class MistralService: ChatService {
     
     let client: MistralClient
     
-    public init(token: String) {
-        self.client = MistralClient(token: token)
+    public init(configuration: MistralClient.Configuration) {
+        self.client = MistralClient(configuration: configuration)
+        logger.info("Mistral Service: \(self.client.configuration.host.absoluteString)")
     }
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
