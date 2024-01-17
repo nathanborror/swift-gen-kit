@@ -3,7 +3,7 @@
 
 import Foundation
 
-public struct Service: Codable {
+public struct Service: Codable, Hashable, Identifiable {
     public var id: String
     public var name: String
     public var host: URL?
