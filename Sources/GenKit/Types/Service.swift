@@ -15,7 +15,7 @@ public struct Service: Codable, Hashable, Identifiable {
     public var preferredEmbeddingModel: String?
     public var preferredTranscriptionModel: String?
     
-    init(id: String, name: String, host: URL? = nil, token: String? = nil, models: [Model] = [],
+    public init(id: String, name: String, host: URL? = nil, token: String? = nil, models: [Model] = [],
          preferredChatModel: String? = nil, preferredImageModel: String? = nil, preferredEmbeddingModel: String? = nil,
          preferredTranscriptionModel: String? = nil) {
         self.id = id
