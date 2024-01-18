@@ -53,4 +53,14 @@ extension Service {
     public var supportsTranscriptions: Bool {
         preferredTranscriptionModel != nil
     }
+    
+    public var missingHost: Bool {
+        guard let req = requiresHost, req else { return false }
+        return host == nil
+    }
+    
+    public var missingToken: Bool {
+        guard let req = requiresToken, req else { return false }
+        return token == nil
+    }
 }
