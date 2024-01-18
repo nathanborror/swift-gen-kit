@@ -29,3 +29,22 @@ public struct Service: Codable, Hashable, Identifiable {
         self.preferredTranscriptionModel = preferredTranscriptionModel
     }
 }
+
+extension Service {
+    
+    public var supportsChats: Bool {
+        preferredChatModel != nil
+    }
+    
+    public var supportsImages: Bool {
+        preferredImageModel != nil
+    }
+    
+    public var supportsEmbeddings: Bool {
+        preferredEmbeddingModel != nil
+    }
+    
+    public var supportsTranscriptions: Bool {
+        preferredTranscriptionModel != nil
+    }
+}
