@@ -15,9 +15,13 @@ public struct Service: Codable, Hashable, Identifiable {
     public var preferredEmbeddingModel: String?
     public var preferredTranscriptionModel: String?
     
+    public var requiresHost: Bool?
+    public var requiresToken: Bool?
+    
     public init(id: String, name: String, host: URL? = nil, token: String? = nil, models: [Model] = [],
-         preferredChatModel: String? = nil, preferredImageModel: String? = nil, preferredEmbeddingModel: String? = nil,
-         preferredTranscriptionModel: String? = nil) {
+                preferredChatModel: String? = nil, preferredImageModel: String? = nil, 
+                preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
+                requiresHost: Bool? = nil, requiresToken: Bool? = nil) {
         self.id = id
         self.name = name
         self.host = host
@@ -27,6 +31,8 @@ public struct Service: Codable, Hashable, Identifiable {
         self.preferredImageModel = preferredImageModel
         self.preferredEmbeddingModel = preferredEmbeddingModel
         self.preferredTranscriptionModel = preferredTranscriptionModel
+        self.requiresHost = requiresHost
+        self.requiresToken = requiresToken
     }
 }
 
