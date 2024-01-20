@@ -33,7 +33,7 @@
       "location" : "https://github.com/nathanborror/swift-ollama",
       "state" : {
         "branch" : "main",
-        "revision" : "fba98d8783776f3d8882f04bb5ae4dcb52f193c6"
+        "revision" : "659572b18d8b333b86138cda2058342ca5efc0d9"
       }
     },
     {
@@ -60,7 +60,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "0ec91e139cf30b6a65dba6fbda61eac0454ea579"
+        "revision" : "4bfd558ca0ec1f82e52ff2aecb9dc9e0e4e2db30"
       }
     }
   ],
