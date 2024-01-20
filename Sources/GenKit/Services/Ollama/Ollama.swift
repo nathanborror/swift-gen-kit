@@ -14,7 +14,22 @@ public final class OllamaService: ChatService {
     }
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages))
+        
+        // Prepare messages with tool choice if present
+        var messages = encode(messages: request.messages)
+        if let toolMessage = prepareToolMessage(request.toolChoice) {
+            messages.append(toolMessage)
+        }
+        
+        // Prepare payload
+        var payload = ChatRequest(model: request.model, messages: messages)
+        
+        // Encourage JSON output if tool choice is present
+        if let toolChoice = request.toolChoice {
+            payload.format = "json"
+        }
+        
+        // Result
         let result = try await client.chat(payload)
         return decode(result: result)
     }
@@ -27,6 +42,23 @@ public final class OllamaService: ChatService {
             message.id = messageID
             await delta(message)
         }
+    }
+    
+    private func prepareToolMessage(_ tool: Tool?) -> Ollama.Message? {
+        guard let tool else { return nil }
+        guard let paramData = try? JSONEncoder().encode(tool.function.parameters) else { return nil }
+        
+        let parameters = String(data: paramData, encoding: .utf8) ?? ""
+        return Ollama.Message(
+            role: .user,
+            content: """
+                \(tool.function.description)
+                Respond using JSON
+                
+                JSON schema:
+                \(parameters)
+                """
+        )
     }
 }
 
