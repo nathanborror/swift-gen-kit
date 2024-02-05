@@ -4,7 +4,7 @@ import OpenAI
 
 private let logger = Logger(subsystem: "OpenAIService", category: "GenKit")
 
-public final class OpenAIService: ChatService {
+public final class OpenAIService {
     
     private var client: OpenAIClient
     
@@ -12,6 +12,9 @@ public final class OpenAIService: ChatService {
         self.client = OpenAIClient(configuration: configuration)
         logger.info("OpenAI Service: \(self.client.configuration.host.absoluteString)")
     }
+}
+
+extension OpenAIService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
         let query = ChatQuery(

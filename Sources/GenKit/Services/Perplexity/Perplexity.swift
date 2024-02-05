@@ -4,7 +4,7 @@ import Perplexity
 
 private let logger = Logger(subsystem: "PerplexityService", category: "GenKit")
 
-public final class PerplexityService: ChatService {
+public final class PerplexityService {
     
     let client: PerplexityClient
     
@@ -12,6 +12,9 @@ public final class PerplexityService: ChatService {
         self.client = PerplexityClient(configuration: configuration)
         logger.info("Perplexity Service: \(self.client.configuration.host.absoluteString)")
     }
+}
+
+extension PerplexityService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages))

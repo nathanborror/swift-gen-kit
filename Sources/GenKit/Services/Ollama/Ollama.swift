@@ -4,44 +4,13 @@ import Ollama
 
 private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 
-public final class OllamaService: ChatService {
+public final class OllamaService {
     
     private var client: OllamaClient
     
     public init(configuration: OllamaClient.Configuration) {
         self.client = OllamaClient(configuration: configuration)
         logger.info("Ollama Service: \(self.client.configuration.host.absoluteString)")
-    }
-    
-    public func completion(request: ChatServiceRequest) async throws -> Message {
-        
-        // Prepare messages with tool choice if present
-        var messages = encode(messages: request.messages)
-        if let toolMessage = prepareToolMessage(request.toolChoice) {
-            messages.append(toolMessage)
-        }
-        
-        // Prepare payload
-        var payload = ChatRequest(model: request.model, messages: messages)
-        
-        // Encourage JSON output if tool choice is present
-        if let toolChoice = request.toolChoice {
-            payload.format = "json"
-        }
-        
-        // Result
-        let result = try await client.chat(payload)
-        return decode(result: result)
-    }
-    
-    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
-        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
-        let messageID = String.id
-        for try await result in client.chatStream(payload) {
-            var message = decode(result: result)
-            message.id = messageID
-            await delta(message)
-        }
     }
     
     private func prepareToolMessage(_ tool: Tool?) -> Ollama.Message? {
@@ -59,6 +28,40 @@ public final class OllamaService: ChatService {
                 \(parameters)
                 """
         )
+    }
+}
+
+extension OllamaService: ChatService {
+    
+    public func completion(request: ChatServiceRequest) async throws -> Message {
+        
+        // Prepare messages with tool choice if present
+        var messages = encode(messages: request.messages)
+        if let toolMessage = prepareToolMessage(request.toolChoice) {
+            messages.append(toolMessage)
+        }
+        
+        // Prepare payload
+        var payload = ChatRequest(model: request.model, messages: messages)
+        
+        // Encourage JSON output if tool choice is present
+        if request.toolChoice != nil {
+            payload.format = "json"
+        }
+        
+        // Result
+        let result = try await client.chat(payload)
+        return decode(result: result)
+    }
+    
+    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
+        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
+        let messageID = String.id
+        for try await result in client.chatStream(payload) {
+            var message = decode(result: result)
+            message.id = messageID
+            await delta(message)
+        }
     }
 }
 

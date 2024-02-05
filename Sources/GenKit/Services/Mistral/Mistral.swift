@@ -4,7 +4,7 @@ import Mistral
 
 private let logger = Logger(subsystem: "MistralService", category: "GenKit")
 
-public final class MistralService: ChatService {
+public final class MistralService {
     
     let client: MistralClient
     
@@ -12,6 +12,9 @@ public final class MistralService: ChatService {
         self.client = MistralClient(configuration: configuration)
         logger.info("Mistral Service: \(self.client.configuration.host.absoluteString)")
     }
+}
+
+extension MistralService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages))
