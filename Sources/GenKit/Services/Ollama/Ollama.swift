@@ -81,3 +81,23 @@ extension OllamaService: ModelService {
         return result.models.map { Model(id: $0.name, owner: "ollama") }
     }
 }
+
+extension OllamaService: VisionService {
+
+    public func completion(request: VisionServiceRequest) async throws -> Message {
+        let messages = encode(messages: request.messages)
+        let payload = ChatRequest(model: request.model, messages: messages)
+        let result = try await client.chat(payload)
+        return decode(result: result)
+    }
+    
+    public func completionStream(request: VisionServiceRequest, delta: (Message) async -> Void) async throws {
+        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
+        let messageID = String.id
+        for try await result in client.chatStream(payload) {
+            var message = decode(result: result)
+            message.id = messageID
+            await delta(message)
+        }
+    }
+}
