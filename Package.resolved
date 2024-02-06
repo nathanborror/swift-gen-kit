@@ -42,7 +42,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "c257ccff14ca2dd4263b7da1621382e71aadb339"
+        "revision" : "18e6fa862767a2a4ab38e7f24e779752be657bdc"
       }
     },
     {
@@ -51,7 +51,7 @@
       "location" : "https://github.com/nathanborror/swift-perplexity",
       "state" : {
         "branch" : "main",
-        "revision" : "c438668862497373dd7d718ba09cae7fe8e15216"
+        "revision" : "7e8cff7587b774ebdd92e4e0426ac610c2d10c3b"
       }
     },
     {
@@ -60,7 +60,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "87d218bd95a61dc5e44284819f8a360319209c7e"
+        "revision" : "9321d6686b24a6f121679ba5eb7e5ba89e14f8c6"
       }
     }
   ],
