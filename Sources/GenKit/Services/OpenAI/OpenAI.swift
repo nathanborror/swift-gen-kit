@@ -101,7 +101,8 @@ extension OpenAIService: VisionService {
     public func completion(request: VisionServiceRequest) async throws -> Message {
         let query = ChatVisionQuery(
             model: request.model,
-            messages: encode(visionMessages: request.messages)
+            messages: encode(visionMessages: request.messages),
+            maxTokens: request.maxTokens
         )
         let result = try await client.chatsVision(query: query)
         return decode(result: result)
@@ -110,7 +111,8 @@ extension OpenAIService: VisionService {
     public func completionStream(request: VisionServiceRequest, delta: (Message) async -> Void) async throws {
         let query = ChatVisionQuery(
             model: request.model,
-            messages: encode(visionMessages: request.messages)
+            messages: encode(visionMessages: request.messages),
+            maxTokens: request.maxTokens
         )
         let stream: AsyncThrowingStream<ChatStreamResult, Error> = client.chatsVisionStream(query: query)
         for try await result in stream {

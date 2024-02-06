@@ -8,9 +8,11 @@ public protocol VisionService {
 public struct VisionServiceRequest {
     public var model: String
     public var messages: [Message]
+    public var maxTokens: Int?
     
-    public init(model: String, messages: [Message]) {
+    public init(model: String, messages: [Message], maxTokens: Int? = nil) {
         self.model = model
         self.messages = messages
+        self.maxTokens = maxTokens
     }
 }
