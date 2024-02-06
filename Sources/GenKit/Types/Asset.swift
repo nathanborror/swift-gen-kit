@@ -7,6 +7,8 @@ public struct Asset: Codable, Equatable, Hashable {
     public let kind: Kind
     public let location: Location
     public let background: String?
+    public let foreground: String?
+    public let noop: Bool
     
     public enum Location: Codable {
         case filesystem
@@ -23,16 +25,29 @@ public struct Asset: Codable, Equatable, Hashable {
         case symbol
     }
     
-    public init(name: String, data: Data? = nil, kind: Kind, location: Location, background: String? = nil) {
+    public init(name: String, data: Data? = nil, kind: Kind, location: Location, 
+                background: String? = nil, foreground: String? = nil, noop: Bool = true) {
         self.name = name
         self.data = data
         self.kind = kind
         self.location = location
         self.background = background
+        self.foreground = foreground
+        self.noop = noop
     }
 }
 
 extension Asset {
+    
+    public static var empty: Self {
+        .init(
+            name: "sparkle",
+            kind: .symbol,
+            location: .none,
+            background: "#F5F5F5",
+            foreground: "#7A7A7A"
+        )
+    }
     
     public var url: URL? {
         switch location {
