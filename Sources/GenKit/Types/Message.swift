@@ -69,6 +69,7 @@ extension Message {
         var existing = self
         existing.content = existing.content.apply(with: message.content)
         existing.finishReason = message.finishReason
+        existing.toolCallID = message.toolCallID
         existing.modified = .now
         
         if let toolCalls = message.toolCalls {
@@ -81,6 +82,10 @@ extension Message {
                 } else {
                     existing.toolCalls = [toolCall]
                 }
+            }
+        } else {
+            if message.finishReason != .toolCalls {
+                existing.toolCalls = message.toolCalls
             }
         }
         return existing
