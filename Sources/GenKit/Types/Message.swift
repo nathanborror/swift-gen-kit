@@ -31,6 +31,12 @@ public struct Message: Codable, Identifiable {
         case asset(Asset)
         case agent(String)
         case automation(String)
+        case component(Component)
+    }
+    
+    public struct Component: Codable {
+        public var name: String
+        public var json: String
     }
     
     public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
