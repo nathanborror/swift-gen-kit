@@ -16,7 +16,7 @@ public struct Message: Codable, Identifiable {
     public var modified: Date
     
     public enum Kind: String, Codable {
-        case instruction, introduction, transcription, error, none
+        case instruction, introduction, transcription, error, ignore, none
     }
     
     public enum Role: String, Codable {
