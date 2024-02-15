@@ -37,6 +37,11 @@ public struct Message: Codable, Identifiable {
     public struct Component: Codable {
         public var name: String
         public var json: String
+        
+        public init(name: String, json: String) {
+            self.name = name
+            self.json = json
+        }
     }
     
     public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
