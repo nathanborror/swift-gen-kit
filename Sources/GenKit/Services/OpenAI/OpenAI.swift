@@ -121,3 +121,18 @@ extension OpenAIService: VisionService {
         }
     }
 }
+
+extension OpenAIService: SpeechService {
+    
+    public func speak(request: SpeechServiceRequest) async throws -> Data {
+        let query = AudioSpeechQuery(
+            model: request.model,
+            input: request.input,
+            voice: .init(rawValue: request.voice) ?? .alloy,
+            responseFormat: .init(rawValue: request.responseFormat ?? "aac") ?? .aac,
+            speed: request.speed
+        )
+        let result = try await client.audioSpeech(query: query)
+        return result
+    }
+}
