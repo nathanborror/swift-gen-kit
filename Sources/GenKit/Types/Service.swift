@@ -16,6 +16,7 @@ public struct Service: Codable, Hashable, Identifiable {
     public var preferredTranscriptionModel: String?
     public var preferredToolModel: String?
     public var preferredVisionModel: String?
+    public var preferredSpeechModel: String?
     
     public var requiresHost: Bool?
     public var requiresToken: Bool?
@@ -24,7 +25,7 @@ public struct Service: Codable, Hashable, Identifiable {
                 preferredChatModel: String? = nil, preferredImageModel: String? = nil, 
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
                 preferredToolModel: String? = nil, preferredVisionModel: String? = nil,
-                requiresHost: Bool? = nil, requiresToken: Bool? = nil) {
+                preferredSpeechModel: String? = nil, requiresHost: Bool? = nil, requiresToken: Bool? = nil) {
         self.id = id
         self.name = name
         self.host = host
@@ -37,6 +38,7 @@ public struct Service: Codable, Hashable, Identifiable {
         self.preferredTranscriptionModel = preferredTranscriptionModel
         self.preferredToolModel = preferredToolModel
         self.preferredVisionModel = preferredVisionModel
+        self.preferredSpeechModel = preferredSpeechModel
         
         self.requiresHost = requiresHost
         self.requiresToken = requiresToken
@@ -67,6 +69,10 @@ extension Service {
     
     public var supportsVision: Bool {
         preferredVisionModel != nil
+    }
+    
+    public var supportsSpeech: Bool {
+        preferredSpeechModel != nil
     }
     
     public var missingHost: Bool {
