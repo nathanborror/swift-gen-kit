@@ -21,6 +21,7 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/swift-mistral", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-perplexity", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-anthropic", branch: "main"),
+        .package(url: "https://github.com/nathanborror/swift-elevenlabs", branch: "main"),
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
@@ -30,6 +31,7 @@ let package = Package(
             .product(name: "Mistral", package: "swift-mistral"),
             .product(name: "Perplexity", package: "swift-perplexity"),
             .product(name: "Anthropic", package: "swift-anthropic"),
+            .product(name: "ElevenLabs", package: "swift-elevenlabs"),
         ]),
         .testTarget(name: "GenKitTests", dependencies: ["GenKit"]),
     ]

@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "swift-elevenlabs",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-elevenlabs",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d273eaa4095a62ad6f1aa82067b0a539ea1ba12a"
+      }
+    },
+    {
       "identity" : "swift-mistral",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-mistral",
@@ -42,7 +51,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "14f03bc99c0007787c0add0a4fd7d966bc880aaa"
+        "revision" : "c7f72ddfd0567a0c4f59ea8e211c2df68b178ab3"
       }
     },
     {
@@ -60,7 +69,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "9321d6686b24a6f121679ba5eb7e5ba89e14f8c6"
+        "revision" : "a1836e402067463d7342f0c87e9c103416f157f0"
       }
     }
   ],
