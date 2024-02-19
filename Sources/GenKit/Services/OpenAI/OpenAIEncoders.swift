@@ -121,4 +121,22 @@ extension OpenAIService {
         }
         return .init(role: encode(role: message.role), content: contents)
     }
+    
+    // Speech
+    
+    func encode(responseFormat: SpeechServiceRequest.ResponseFormat?) throws -> AudioSpeechQuery.ResponseFormat? {
+        guard let responseFormat else { return nil }
+        switch responseFormat {
+        case .mp3:
+            return .mp3
+        case .opus:
+            return .opus
+        case .aac:
+            return .aac
+        case .flac:
+            return .flac
+        case .custom:
+            throw ServiceError.unsupportedResponseFormat
+        }
+    }
 }

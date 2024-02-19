@@ -129,7 +129,7 @@ extension OpenAIService: SpeechService {
             model: request.model,
             input: request.input,
             voice: .init(rawValue: request.voice) ?? .alloy,
-            responseFormat: .init(rawValue: request.responseFormat ?? "aac") ?? .aac,
+            responseFormat: try encode(responseFormat: request.responseFormat),
             speed: request.speed
         )
         let result = try await client.audioSpeech(query: query)

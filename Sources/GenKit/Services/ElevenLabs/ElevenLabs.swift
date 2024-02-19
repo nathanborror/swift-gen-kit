@@ -18,7 +18,7 @@ extension ElevenLabsService: SpeechService {
     
     public func speak(request: SpeechServiceRequest) async throws -> Data {
         let query = TextToSpeechQuery(text: request.input)
-        return try await client.textToSpeech(query, voice: request.voice, outputFormat: request.responseFormat)
+        return try await client.textToSpeech(query, voice: request.voice, outputFormat: try encode(responseFormat: request.responseFormat))
     }
 }
 
