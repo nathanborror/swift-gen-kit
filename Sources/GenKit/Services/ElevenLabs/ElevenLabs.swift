@@ -21,3 +21,11 @@ extension ElevenLabsService: SpeechService {
         return try await client.textToSpeech(query, voice: request.voice, outputFormat: request.responseFormat)
     }
 }
+
+extension ElevenLabsService: ModelService {
+    
+    public func models() async throws -> [Model] {
+        let results = try await client.models()
+        return results.map { Model(id: $0.modelID, owner: "") }
+    }
+}
