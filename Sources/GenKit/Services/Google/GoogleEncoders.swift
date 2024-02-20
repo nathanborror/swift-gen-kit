@@ -13,9 +13,9 @@ extension GoogleService {
     
     func encode(role: Message.Role) -> String? {
         switch role {
-        case .assistant, .tool:
+        case .system, .assistant:
             return "model"
-        case .user, .system:
+        case .user, .tool:
             return "user"
         }
     }
