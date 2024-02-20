@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "swift-google-gen",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-google-gen",
+      "state" : {
+        "branch" : "main",
+        "revision" : "db93327b1d7f038219787e875b7bcacb726b0708"
+      }
+    },
+    {
       "identity" : "swift-mistral",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-mistral",
@@ -69,7 +78,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "a1836e402067463d7342f0c87e9c103416f157f0"
+        "revision" : "a1f7aceb6653df58ae088199a6db10ffc174e990"
       }
     }
   ],
