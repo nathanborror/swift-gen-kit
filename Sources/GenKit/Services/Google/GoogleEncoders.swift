@@ -4,11 +4,17 @@ import GoogleGen
 extension GoogleService {
     
     func encode(messages: [Message]) -> [Content] {
-        messages.map { encode(message: $0) }
+        messages
+            .map { encode(message: $0) }
+            .filter { !$0.parts.isEmpty }
     }
     
     func encode(message: Message) -> Content {
-        .init(role: encode(role: message.role), parts: [.init(text: message.content ?? "")])
+        var parts = [Content.Part]()
+        if let content = message.content {
+            parts.append(.init(text: content))
+        }
+        return .init(role: encode(role: message.role), parts: parts)
     }
     
     func encode(role: Message.Role) -> String? {
