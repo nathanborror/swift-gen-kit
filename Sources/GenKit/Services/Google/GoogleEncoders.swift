@@ -5,6 +5,7 @@ extension GoogleService {
     
     func encode(messages: [Message]) -> [Content] {
         messages
+            .filter { $0.role != .system } // Gemini doesn't support context or system messages
             .map { encode(message: $0) }
             .filter { !$0.parts.isEmpty }
     }
