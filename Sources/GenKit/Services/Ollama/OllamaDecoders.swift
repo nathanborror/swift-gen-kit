@@ -1,4 +1,5 @@
 import Foundation
+import SharedKit
 import Ollama
 
 extension OllamaService {
@@ -7,6 +8,20 @@ extension OllamaService {
         return .init(
             role: decode(role: result.message?.role),
             content: result.message?.content,
+            finishReason: decode(done: result.done)
+        )
+    }
+    
+    func decode(tool: Tool, result: ChatResponse) -> Message {
+        guard let arguments = result.message?.content else {
+            return decode(result: result)
+        }
+        return .init(
+            role: decode(role: result.message?.role),
+            content: nil,
+            toolCalls: [
+                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: arguments), index: 0)
+            ],
             finishReason: decode(done: result.done)
         )
     }

@@ -119,7 +119,7 @@ extension OllamaService: ToolService {
         let tools = encode(tools: [request.tool])
         let payload = ChatRequest(model: request.model, messages: messages + tools, format: "json")
         let result = try await client.chat(payload)
-        return decode(result: result)
+        return decode(tool: request.tool, result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
@@ -128,7 +128,7 @@ extension OllamaService: ToolService {
         let payload = ChatRequest(model: request.model, messages: messages + tools, stream: true, format: "json")
         let messageID = String.id
         for try await result in client.chatStream(payload) {
-            var message = decode(result: result)
+            var message = decode(tool: request.tool, result: result)
             message.id = messageID
             await delta(message)
             
