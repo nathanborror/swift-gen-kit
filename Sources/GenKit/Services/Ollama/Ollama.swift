@@ -61,6 +61,11 @@ extension OllamaService: ChatService {
             var message = decode(result: result)
             message.id = messageID
             await delta(message)
+            
+            // The connection hangs if we don't explicitly return when the stream has stopped.
+            if message.finishReason == .stop {
+                return
+            }
         }
     }
 }
@@ -98,6 +103,11 @@ extension OllamaService: VisionService {
             var message = decode(result: result)
             message.id = messageID
             await delta(message)
+            
+            // The connection hangs if we don't explicitly return when the stream has stopped.
+            if message.finishReason == .stop {
+                return
+            }
         }
     }
 }
@@ -121,6 +131,11 @@ extension OllamaService: ToolService {
             var message = decode(result: result)
             message.id = messageID
             await delta(message)
+            
+            // The connection hangs if we don't explicitly return when the stream has stopped.
+            if message.finishReason == .stop {
+                return
+            }
         }
     }
 }
