@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SharedKit
 import Mistral
 
 private let logger = Logger(subsystem: "MistralService", category: "GenKit")
@@ -26,6 +27,36 @@ extension MistralService {
         return .init(
             role: decode(role: choice.delta.role ?? .assistant),
             content: choice.delta.content,
+            finishReason: decode(finishReason: choice.finishReason)
+        )
+    }
+    
+    func decode(tool: Tool, result: ChatResponse) -> Message {
+        guard let choice = result.choices.first else {
+            logger.warning("failed to decode choice")
+            return .init(role: .assistant)
+        }
+        return .init(
+            role: decode(role: choice.message.role),
+            content: nil,
+            toolCalls: [
+                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.message.content ?? "{}"), index: 0)
+            ],
+            finishReason: decode(finishReason: choice.finishReason)
+        )
+    }
+    
+    func decode(tool: Tool, result: ChatStreamResponse) -> Message {
+        guard let choice = result.choices.first else {
+            logger.warning("failed to decode choice")
+            return .init(role: .assistant)
+        }
+        return .init(
+            role: decode(role: choice.delta.role ?? .assistant),
+            content: nil,
+            toolCalls: [
+                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.delta.content ?? "{}"), index: 0)
+            ],
             finishReason: decode(finishReason: choice.finishReason)
         )
     }

@@ -48,3 +48,25 @@ extension MistralService: ModelService {
         return result.data.map { Model(id: $0.id, owner: $0.ownedBy) }
     }
 }
+
+extension MistralService: ToolService {
+    
+    public func completion(request: ToolServiceRequest) async throws -> Message {
+        let messages = encode(messages: request.messages)
+        let tools = encode(tools: [request.tool])
+        let payload = ChatRequest(model: request.model, messages: messages + tools)
+        let result = try await client.chat(payload)
+        return decode(tool: request.tool, result: result)
+    }
+    
+    public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
+        let messages = encode(messages: request.messages)
+        let tools = encode(tools: [request.tool])
+        let payload = ChatRequest(model: request.model, messages: messages + tools, stream: true)
+        for try await result in client.chatStream(payload) {
+            var message = decode(tool: request.tool, result: result)
+            message.id = result.id
+            await delta(message)
+        }
+    }
+}
