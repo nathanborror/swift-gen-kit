@@ -40,8 +40,9 @@ extension MistralService {
                 \(json)
                 ```
                 
-                This JSON Schema represents the format I want you to follow to generate your answer. Now, generate \
-                a JSON object that will contain the following information:
+                This JSON Schema represents the format I want you to follow to generate your answer. You will only \
+                respond with a JSON object. Do not provide explanations. Generate a JSON object that will contain \
+                the following information:
                 
                 \(tool.function.description)
                 """
