@@ -18,7 +18,6 @@ extension OllamaService {
         }
         return .init(
             role: decode(role: result.message?.role),
-            content: nil,
             toolCalls: [
                 .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: arguments), index: 0)
             ],

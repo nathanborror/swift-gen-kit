@@ -38,7 +38,6 @@ extension MistralService {
         }
         return .init(
             role: decode(role: choice.message.role),
-            content: nil,
             toolCalls: [
                 .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.message.content ?? "{}"), index: 0)
             ],
@@ -53,7 +52,6 @@ extension MistralService {
         }
         return .init(
             role: decode(role: choice.delta.role ?? .assistant),
-            content: nil,
             toolCalls: [
                 .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.delta.content ?? "{}"), index: 0)
             ],
