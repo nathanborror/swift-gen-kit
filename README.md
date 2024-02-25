@@ -19,7 +19,8 @@ GenKit is a library that abstracts away all the differences across generative AI
 - [OpenAI](https://github.com/nathanborror/swift-openai) (chats, embeddings, models, images, transcriptions, vision, speech)
 - [Perplexity](https://github.com/nathanborror/swift-perplexity) (chats, models)
 - [Anthropic](https://github.com/nathanborror/swift-anthropic) (chats, models)
-- [ElevenLabs](https://github.com/nathanborror/swift-elevenlabs) (speech)
+- [ElevenLabs](https://github.com/nathanborror/swift-elevenlabs) (speech, models)
+- [Google](https://github.com/nathanborror/swift-google-gen) (chat, models)
 
 ### Example Usage
 
