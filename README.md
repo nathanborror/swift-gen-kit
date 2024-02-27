@@ -9,6 +9,7 @@ GenKit is a library that abstracts away all the differences across generative AI
 - [Image Service](Sources/GenKit/Services/ImageService.swift)
 - [Model Service](Sources/GenKit/Services/ModelService.swift)
 - [Transcription Service](Sources/GenKit/Services/TranscriptionService.swift)
+- [Tool Service](Sources/GenKit/Services/ToolService.swift)
 - [Vision Service](Sources/GenKit/Services/VisionService.swift)
 - [Speech Service](Sources/GenKit/Services/SpeechService.swift)
 
