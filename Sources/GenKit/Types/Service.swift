@@ -64,6 +64,38 @@ public struct Service: Codable, Identifiable {
 
 extension Service {
     
+    public func modelService() throws -> ModelService {
+        guard preferredChatModel != nil else {
+            throw ServiceError.missingService
+        }
+        guard let credentials else {
+            throw ServiceError.missingCredentials
+        }
+        switch id {
+        case .anthropic:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return AnthropicService(configuration: .init(token: token))
+        case .elevenLabs:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return ElevenLabsService(configuration: .init(token: token))
+        case .google:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return GoogleService(configuration: .init(token: token))
+        case .mistral:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return MistralService(configuration: .init(token: token))
+        case .ollama:
+            guard let host = credentials.host else { throw ServiceError.missingCredentials }
+            return OllamaService(configuration: .init(host: host))
+        case .openAI:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token))
+        case .perplexity:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return PerplexityService(configuration: .init(token: token))
+        }
+    }
+    
     public func chatService() throws -> ChatService {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
