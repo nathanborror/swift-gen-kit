@@ -13,7 +13,7 @@ GenKit is a library that abstracts away all the differences across generative AI
 - [Vision Service](Sources/GenKit/Services/VisionService.swift)
 - [Speech Service](Sources/GenKit/Services/SpeechService.swift)
 
-### Supported Platforms
+### Platform Packages
 
 - [Mistral](https://github.com/nathanborror/swift-mistral) (chats, embeddings, models)
 - [Ollama](https://github.com/nathanborror/swift-ollama) (chats, embeddings, models, vision)
