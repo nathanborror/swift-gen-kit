@@ -65,9 +65,6 @@ public struct Service: Codable, Identifiable {
 extension Service {
     
     public func modelService() throws -> ModelService {
-        guard preferredChatModel != nil else {
-            throw ServiceError.missingService
-        }
         guard let credentials else {
             throw ServiceError.missingCredentials
         }
