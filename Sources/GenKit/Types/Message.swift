@@ -94,10 +94,6 @@ extension Message {
                     existing.toolCalls = [toolCall]
                 }
             }
-        } else {
-            if message.finishReason != .toolCalls {
-                existing.toolCalls = message.toolCalls
-            }
         }
         return existing
     }
