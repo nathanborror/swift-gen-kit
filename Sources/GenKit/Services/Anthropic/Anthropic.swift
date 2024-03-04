@@ -17,13 +17,15 @@ public final class AnthropicService {
 extension AnthropicService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages))
+        let (system, messages) = encode(messages: request.messages)
+        let payload = ChatRequest(model: request.model, messages: messages, system: system)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
-        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
+        let (system, messages) = encode(messages: request.messages)
+        let payload = ChatRequest(model: request.model, messages: messages, system: system, stream: true)
         let messageID = String.id
         for try await result in client.chatStream(payload) {
             var message = decode(result: result)
