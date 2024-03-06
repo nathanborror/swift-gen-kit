@@ -25,6 +25,7 @@ public struct Service: Codable, Identifiable {
         case ollama
         case openAI
         case perplexity
+        case fal
     }
     
     public enum Credentials: Codable {
@@ -90,6 +91,8 @@ extension Service {
         case .perplexity:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
+        case .fal:
+            throw ServiceError.unsupportedService
         }
     }
     
@@ -121,6 +124,8 @@ extension Service {
         case .perplexity:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
+        case .fal:
+            throw ServiceError.unsupportedService
         }
     }
     
@@ -147,6 +152,9 @@ extension Service {
             return OpenAIService(configuration: .init(token: token))
         case .perplexity:
             throw ServiceError.unsupportedService
+        case .fal:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return FalService(configuration: .init(token: token))
         }
     }
     
@@ -175,6 +183,8 @@ extension Service {
             return OpenAIService(configuration: .init(token: token))
         case .perplexity:
             throw ServiceError.unsupportedService
+        case .fal:
+            throw ServiceError.unsupportedService
         }
     }
     
@@ -200,6 +210,8 @@ extension Service {
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
         case .perplexity:
+            throw ServiceError.unsupportedService
+        case .fal:
             throw ServiceError.unsupportedService
         }
     }
@@ -230,6 +242,8 @@ extension Service {
         case .perplexity:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
+        case .fal:
+            throw ServiceError.unsupportedService
         }
     }
     
@@ -257,6 +271,8 @@ extension Service {
             return OpenAIService(configuration: .init(token: token))
         case .perplexity:
             throw ServiceError.unsupportedService
+        case .fal:
+            throw ServiceError.unsupportedService
         }
     }
     
@@ -283,6 +299,8 @@ extension Service {
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
         case .perplexity:
+            throw ServiceError.unsupportedService
+        case .fal:
             throw ServiceError.unsupportedService
         }
     }

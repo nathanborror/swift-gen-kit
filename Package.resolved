@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "swift-fal",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-fal",
+      "state" : {
+        "branch" : "main",
+        "revision" : "112d027063b371f4518f4d7b827b5e1ea99ab57e"
+      }
+    },
+    {
       "identity" : "swift-google-gen",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-google-gen",

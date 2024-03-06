@@ -23,6 +23,7 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/swift-anthropic", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-elevenlabs", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-google-gen", branch: "main"),
+        .package(url: "https://github.com/nathanborror/swift-fal", branch: "main"),
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
@@ -34,6 +35,7 @@ let package = Package(
             .product(name: "Anthropic", package: "swift-anthropic"),
             .product(name: "ElevenLabs", package: "swift-elevenlabs"),
             .product(name: "GoogleGen", package: "swift-google-gen"),
+            .product(name: "Fal", package: "swift-fal"),
         ]),
         .testTarget(name: "GenKitTests", dependencies: ["GenKit"]),
     ]
