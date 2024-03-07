@@ -69,6 +69,12 @@ extension OpenAIService: ImageService {
             size: request.size
         )
         let result = try await client.images(query: query)
+        
+        // HACK: Wait for a second for the images to be available on OpenAI's CDN. Without this the URLs in the
+        // result may fail.
+        let seconds = 1
+        try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+        
         if let data = result.data {
             return try data.map {
                 guard let url = $0.url else { return nil }
