@@ -8,6 +8,10 @@ public struct Asset: Codable, Equatable, Hashable {
     public let location: Location
     public let background: String?
     public let foreground: String?
+    public let description: String?
+    public let metadata: [String: String]
+    
+    /// Set to false when you want the asset to be included in the message history. Typically used for multimodal requests.
     public let noop: Bool
     
     public enum Location: Codable {
@@ -25,14 +29,17 @@ public struct Asset: Codable, Equatable, Hashable {
         case symbol
     }
     
-    public init(name: String, data: Data? = nil, kind: Kind, location: Location, 
-                background: String? = nil, foreground: String? = nil, noop: Bool = true) {
+    public init(name: String, data: Data? = nil, kind: Kind, location: Location, background: String? = nil,
+                foreground: String? = nil, description: String? = nil, metadata: [String: String] = [:],
+                noop: Bool = true) {
         self.name = name
         self.data = data
         self.kind = kind
         self.location = location
         self.background = background
         self.foreground = foreground
+        self.description = description
+        self.metadata = metadata
         self.noop = noop
     }
 }
