@@ -16,6 +16,7 @@ public struct Service: Codable, Identifiable {
     public var preferredToolModel: String?
     public var preferredVisionModel: String?
     public var preferredSpeechModel: String?
+    public var preferredSummarizationModel: String?
     
     public enum ServiceID: String, Codable {
         case anthropic
@@ -47,7 +48,7 @@ public struct Service: Codable, Identifiable {
                 preferredChatModel: String? = nil, preferredImageModel: String? = nil,
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
                 preferredToolModel: String? = nil, preferredVisionModel: String? = nil,
-                preferredSpeechModel: String? = nil) {
+                preferredSpeechModel: String? = nil, preferredSummarizationModel: String? = nil) {
         self.id = id
         self.name = name
         self.credentials = credentials
@@ -60,6 +61,7 @@ public struct Service: Codable, Identifiable {
         self.preferredToolModel = preferredToolModel
         self.preferredVisionModel = preferredVisionModel
         self.preferredSpeechModel = preferredSpeechModel
+        self.preferredSummarizationModel = preferredSummarizationModel
     }
 }
 
@@ -304,6 +306,39 @@ extension Service {
             throw ServiceError.unsupportedService
         }
     }
+    
+    public func summarizationService() throws -> ChatService {
+        guard preferredChatModel != nil else {
+            throw ServiceError.missingService
+        }
+        guard let credentials else {
+            throw ServiceError.missingCredentials
+        }
+        switch id {
+        case .anthropic:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return AnthropicService(configuration: .init(token: token))
+        case .elevenLabs:
+            throw ServiceError.unsupportedService
+        case .google:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return GoogleService(configuration: .init(token: token))
+        case .mistral:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return MistralService(configuration: .init(token: token))
+        case .ollama:
+            guard let host = credentials.host else { throw ServiceError.missingCredentials }
+            return OllamaService(configuration: .init(host: host))
+        case .openAI:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token))
+        case .perplexity:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return PerplexityService(configuration: .init(token: token))
+        case .fal:
+            throw ServiceError.unsupportedService
+        }
+    }
 }
 
 extension Service {
@@ -334,5 +369,9 @@ extension Service {
     
     public var supportsSpeech: Bool {
         preferredSpeechModel != nil
+    }
+    
+    public var supportsSummarization: Bool {
+        preferredSummarizationModel != nil
     }
 }
