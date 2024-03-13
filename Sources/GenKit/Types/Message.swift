@@ -83,15 +83,15 @@ extension Message {
         existing.toolCallID = message.toolCallID
         existing.modified = .now
         
-        if let toolCalls = message.toolCalls {
-            for toolCall in toolCalls {
-                if toolCall.index < (existing.toolCalls?.count ?? 0) {
-                    var existingToolCall = existing.toolCalls![toolCall.index]
-                    existingToolCall.function.name = existingToolCall.function.name.apply(with: toolCall.function.name)
-                    existingToolCall.function.arguments = existingToolCall.function.arguments.apply(with: toolCall.function.arguments)
-                    existing.toolCalls![toolCall.index] = existingToolCall
-                } else {
+        for toolCall in message.toolCalls ?? [] {
+            if existing.toolCalls?.indices.contains(toolCall.index) ?? false {
+                let existingToolCall = existing.toolCalls![toolCall.index]
+                existing.toolCalls![toolCall.index] = existingToolCall.apply(toolCall)
+            } else {
+                if existing.toolCalls == nil {
                     existing.toolCalls = [toolCall]
+                } else {
+                    existing.toolCalls?.append(toolCall)
                 }
             }
         }

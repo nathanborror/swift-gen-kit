@@ -50,3 +50,13 @@ public struct ToolCall: Codable {
         public var arguments: String
     }
 }
+
+extension ToolCall {
+    
+    public func apply(_ toolCall: ToolCall) -> ToolCall {
+        var existing = self
+        existing.function.name = existing.function.name.apply(with: toolCall.function.name)
+        existing.function.arguments = existing.function.arguments.apply(with: toolCall.function.arguments)
+        return existing
+    }
+}
