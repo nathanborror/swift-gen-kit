@@ -19,33 +19,29 @@ extension MistralService {
         case .system: .system
         case .assistant: .assistant
         case .user: .user
-        case .tool: .assistant
+        case .tool: .tool
         }
     }
     
-    func encode(tools: [Tool]) -> [Mistral.Message] {
+    func encode(tools: Set<Tool>) -> [Mistral.Tool] {
         tools.map { encode(tool: $0) }
     }
 
-    func encode(tool: Tool) -> Mistral.Message {
-        let jsonData = try? JSONEncoder().encode(tool.function.parameters)
-        let json = String(data: jsonData!, encoding: .utf8)!
-        
-        return .init(
-            role: .user,
-            content: """
-                Consider the following JSON Schema based on the 2020-12 specification:
-                
-                ```json
-                \(json)
-                ```
-                
-                This JSON Schema represents the format I want you to follow to generate your answer. You will only \
-                respond with a JSON object. Do not provide explanations. Generate a JSON object that will contain \
-                the following information:
-                
-                \(tool.function.description)
-                """
+    func encode(tool: Tool) -> Mistral.Tool {
+        .init(
+            type: tool.type.rawValue,
+            function: .init(
+                name: tool.function.name,
+                description: tool.function.description,
+                parameters: tool.function.parameters
+            )
         )
+    }
+    
+    func encode(toolChoice: Tool?) -> ChatRequest.ToolChoice {
+        if toolChoice != nil {
+            return .any
+        }
+        return .auto
     }
 }

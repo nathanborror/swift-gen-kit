@@ -17,13 +17,24 @@ public final class MistralService {
 extension MistralService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages))
+        let payload = ChatRequest(
+            model: request.model,
+            messages: encode(messages: request.messages),
+            tools: encode(tools: request.tools),
+            toolChoice: encode(toolChoice: request.toolChoice)
+        )
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
-        let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
+        let payload = ChatRequest(
+            model: request.model,
+            messages: encode(messages: request.messages),
+            tools: encode(tools: request.tools),
+            toolChoice: encode(toolChoice: request.toolChoice),
+            stream: true
+        )
         for try await result in client.chatStream(payload) {
             var message = decode(result: result)
             message.id = result.id
@@ -54,17 +65,28 @@ extension MistralService: ToolService {
     public func completion(request: ToolServiceRequest) async throws -> Message {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
-        let payload = ChatRequest(model: request.model, messages: messages + tools)
+        let payload = ChatRequest(
+            model: request.model,
+            messages: messages,
+            tools: tools,
+            toolChoice: .any
+        )
         let result = try await client.chat(payload)
-        return decode(tool: request.tool, result: result)
+        return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
-        let payload = ChatRequest(model: request.model, messages: messages + tools, stream: true)
+        let payload = ChatRequest(
+            model: request.model,
+            messages: messages,
+            tools: tools,
+            toolChoice: .any,
+            stream: true
+        )
         for try await result in client.chatStream(payload) {
-            var message = decode(tool: request.tool, result: result)
+            var message = decode(result: result)
             message.id = result.id
             await delta(message)
         }

@@ -15,6 +15,8 @@ extension MistralService {
         return .init(
             role: decode(role: choice.message.role),
             content: choice.message.content,
+            toolCalls: decode(toolCalls: choice.message.toolCalls),
+            toolCallID: nil,
             finishReason: decode(finishReason: choice.finishReason)
         )
     }
@@ -31,31 +33,22 @@ extension MistralService {
         )
     }
     
-    func decode(tool: Tool, result: ChatResponse) -> Message {
-        guard let choice = result.choices.first else {
-            logger.warning("failed to decode choice")
-            return .init(role: .assistant)
+    func decode(toolCalls: [Mistral.Message.ToolCall]?) -> [ToolCall]? {
+        guard let toolCalls else { return nil }
+        return toolCalls.enumerated().map { index, toolCall in
+            decode(toolCall: toolCall, index: index)
         }
-        return .init(
-            role: decode(role: choice.message.role),
-            toolCalls: [
-                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.message.content ?? "{}"), index: 0)
-            ],
-            finishReason: decode(finishReason: choice.finishReason)
-        )
     }
     
-    func decode(tool: Tool, result: ChatStreamResponse) -> Message {
-        guard let choice = result.choices.first else {
-            logger.warning("failed to decode choice")
-            return .init(role: .assistant)
-        }
-        return .init(
-            role: decode(role: choice.delta.role ?? .assistant),
-            toolCalls: [
-                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.delta.content ?? "{}"), index: 0)
-            ],
-            finishReason: decode(finishReason: choice.finishReason)
+    func decode(toolCall: Mistral.Message.ToolCall, index: Int) -> ToolCall {
+        .init(
+            id: .id,
+            type: "function",
+            function: .init(
+                name: toolCall.function.name ?? "",
+                arguments: toolCall.function.arguments ?? ""
+            ),
+            index: index
         )
     }
 
@@ -64,6 +57,7 @@ extension MistralService {
         case .system: .system
         case .user: .user
         case .assistant, .none: .assistant
+        case .tool: .tool
         }
     }
 
@@ -74,6 +68,10 @@ extension MistralService {
             return .stop
         case .length, .model_length:
             return .length
+        case .tool_calls:
+            return .toolCalls
+        case .error:
+            return .cancelled
         }
     }
 }

@@ -51,7 +51,7 @@
       "location" : "https://github.com/nathanborror/swift-mistral",
       "state" : {
         "branch" : "main",
-        "revision" : "e49f6f9e8bc319ff0f21990dffd1d3c3f872c26f"
+        "revision" : "40c9b4f6afe0f67f26cac056681b45dfdb82e108"
       }
     },
     {
@@ -69,7 +69,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "412e686ec6ad292289b410bca04a5dd438e7b9c9"
+        "revision" : "26fe30cb7db3ca174d5682726100c934142fa13d"
       }
     },
     {
@@ -87,7 +87,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "2250f24084dd6153d978f852be1ba32738ba9995"
+        "revision" : "6f337fff5f44d79640a05e44aa9408ce64a3c63b"
       }
     }
   ],

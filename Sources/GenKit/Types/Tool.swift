@@ -1,5 +1,5 @@
 import Foundation
-import OpenAI
+import SharedKit
 
 public struct Tool: Codable {
     public var type: ToolType
