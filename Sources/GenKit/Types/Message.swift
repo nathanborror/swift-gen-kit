@@ -113,3 +113,17 @@ extension Message {
         return existing
     }
 }
+
+extension Message {
+    
+    var visionImages: [Asset] {
+        attachments
+            .map { (attachment) -> Asset? in
+                guard case .asset(let asset) = attachment else { return nil }
+                return asset
+            }
+            .filter { $0?.kind == .image }
+            .filter { $0?.noop == false }
+            .compactMap { $0 }
+    }
+}

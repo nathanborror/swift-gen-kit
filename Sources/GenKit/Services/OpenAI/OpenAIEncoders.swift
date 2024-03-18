@@ -92,15 +92,7 @@ extension OpenAIService {
     }
     
     func encode(message: Message) -> ChatVision {
-        // Filter attachments to only images and igonore noops
-        let assets: [Asset] = message.attachments
-            .map { (attachment) -> Asset? in
-                guard case .asset(let asset) = attachment else { return nil }
-                return asset
-            }
-            .filter { $0?.kind == .image }
-            .filter { $0?.noop == false }
-            .compactMap { $0 }
+        let assets: [Asset] = message.visionImages
         
         // Prepare all the image assets attached to the message
         var contents = assets.map { (asset) -> ChatVision.Content? in
