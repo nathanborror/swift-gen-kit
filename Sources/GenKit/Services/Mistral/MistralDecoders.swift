@@ -16,7 +16,6 @@ extension MistralService {
             role: decode(role: choice.message.role),
             content: choice.message.content,
             toolCalls: decode(toolCalls: choice.message.toolCalls),
-            toolCallID: nil,
             finishReason: decode(finishReason: choice.finishReason)
         )
     }
@@ -29,6 +28,7 @@ extension MistralService {
         return .init(
             role: decode(role: choice.delta.role ?? .assistant),
             content: choice.delta.content,
+            toolCalls: decode(toolCalls: choice.delta.toolCalls),
             finishReason: decode(finishReason: choice.finishReason)
         )
     }
