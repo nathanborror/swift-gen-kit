@@ -9,6 +9,7 @@ public struct Message: Codable, Identifiable {
     public var attachments: [Attachment]
     public var toolCalls: [ToolCall]?
     public var toolCallID: String?
+    public var runID: String?
     public var name: String?
     public var finishReason: FinishReason?
     public var metadata: [String: String]
@@ -16,7 +17,14 @@ public struct Message: Codable, Identifiable {
     public var modified: Date
     
     public enum Kind: String, Codable {
-        case instruction, introduction, transcription, error, ignore, none
+        /// Instructions are sent to APIs but not shown in the UI (unless in a debug mode).
+        case instruction
+        /// Local messages are never sent to an API but always displayed in the UI.
+        case local
+        /// Error messages are never sent to an API but always displayed in the UI.
+        case error
+        /// Messages without a `kind` are always sent to APIs and always shown in the UI.
+        case none
     }
     
     public enum Role: String, Codable {
@@ -46,7 +54,8 @@ public struct Message: Codable, Identifiable {
     
     public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
                 attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
-                name: String? = nil, finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) {
+                runID: String? = nil, name: String? = nil, finishReason: FinishReason? = .stop,
+                metadata: [String: String] = [:]) {
         self.id = id
         self.kind = kind
         self.role = role
@@ -54,6 +63,7 @@ public struct Message: Codable, Identifiable {
         self.attachments = attachments
         self.toolCalls = toolCalls
         self.toolCallID = toolCallID
+        self.runID = runID
         self.name = name
         self.finishReason = finishReason
         self.metadata = metadata
@@ -81,6 +91,7 @@ extension Message {
         existing.content = existing.content.apply(with: message.content)
         existing.finishReason = message.finishReason
         existing.toolCallID = message.toolCallID
+        existing.runID = message.runID
         existing.modified = .now
         
         for toolCall in message.toolCalls ?? [] {
