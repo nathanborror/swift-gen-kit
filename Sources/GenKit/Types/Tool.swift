@@ -48,6 +48,18 @@ public struct ToolCall: Codable {
     public struct FunctionCall: Codable {
         public var name: String
         public var arguments: String
+        
+        public init(name: String, arguments: String) {
+            self.name = name
+            self.arguments = arguments
+        }
+    }
+    
+    public init(id: String = .id, type: String = "function", function: FunctionCall, index: Int) {
+        self.id = id
+        self.type = type
+        self.function = function
+        self.index = index
     }
 }
 
