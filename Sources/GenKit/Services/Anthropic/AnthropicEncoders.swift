@@ -41,10 +41,23 @@ extension AnthropicService {
         return out
     }
     
-    func encode(role: Message.Role) -> Anthropic.ChatRequest.Message.Role {
+    func encode(role: Message.Role) -> Anthropic.Role {
         switch role {
         case .system, .user: .user
         case .assistant, .tool: .assistant
         }
+    }
+    
+    func encode(tools: Set<Tool>) -> [Anthropic.ChatRequest.Tool]? {
+        guard !tools.isEmpty else { return nil }
+        return tools.map { encode(tool: $0) }
+    }
+    
+    func encode(tool: Tool) -> Anthropic.ChatRequest.Tool {
+        .init(
+            name: tool.function.name,
+            description: tool.function.description,
+            inputSchema: tool.function.parameters
+        )
     }
 }

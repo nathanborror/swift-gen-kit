@@ -108,7 +108,7 @@ extension Service {
         switch id {
         case .anthropic:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return AnthropicService(configuration: .init(token: token))
+            return AnthropicService(configuration: .init(token: token, beta: "tools-2024-04-04"))
         case .elevenLabs:
             throw ServiceError.unsupportedService
         case .google:
@@ -227,7 +227,8 @@ extension Service {
         }
         switch id {
         case .anthropic:
-            throw ServiceError.unsupportedService
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return AnthropicService(configuration: .init(token: token, beta: "tools-2024-04-04"))
         case .elevenLabs:
             throw ServiceError.unsupportedService
         case .google:

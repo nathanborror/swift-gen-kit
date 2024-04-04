@@ -30,21 +30,23 @@ extension AnthropicService {
         )
     }
 
-    func decode(role: Anthropic.ChatResponse.Role?) -> Message.Role {
+    func decode(role: Anthropic.Role?) -> Message.Role {
         switch role {
         case .user: .user
         case .assistant, .none: .assistant
         }
     }
 
-    func decode(finishReason: String?) -> Message.FinishReason? {
+    func decode(finishReason: Anthropic.StopReason?) -> Message.FinishReason? {
         switch finishReason {
-        case "end_turn":
+        case .end_turn:
             return .stop
-        case "max_tokens":
+        case .max_tokens:
             return .length
-        case "stop_sequence":
+        case .stop_sequence:
             return .cancelled
+        case .tool_use:
+            return .toolCalls
         default:
             return .none
         }

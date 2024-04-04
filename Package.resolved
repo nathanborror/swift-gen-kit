@@ -6,7 +6,7 @@
       "location" : "https://github.com/nathanborror/swift-anthropic",
       "state" : {
         "branch" : "main",
-        "revision" : "44243d6b4355ad04f74dbd0d7a366bbae741b8bf"
+        "revision" : "3062c6ffa1b16b3ba136e7c330174ba10524a7a4"
       }
     },
     {
@@ -78,7 +78,7 @@
       "location" : "https://github.com/nathanborror/swift-perplexity",
       "state" : {
         "branch" : "main",
-        "revision" : "7e8cff7587b774ebdd92e4e0426ac610c2d10c3b"
+        "revision" : "c9df8111f9f77e7821a40a2dd91a32d1d667acbe"
       }
     },
     {
@@ -87,7 +87,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "6f337fff5f44d79640a05e44aa9408ce64a3c63b"
+        "revision" : "f026d3cd37fac84f99141346a2a4447e000f3078"
       }
     }
   ],
