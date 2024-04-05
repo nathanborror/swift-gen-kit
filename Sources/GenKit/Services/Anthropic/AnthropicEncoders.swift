@@ -1,5 +1,6 @@
 import Foundation
 import Anthropic
+import SharedKit
 
 extension AnthropicService {
     
@@ -48,6 +49,21 @@ extension AnthropicService {
             }
         }.compactMap { $0 }
         out.content += contents
+        
+        // Prepare tool calls
+        if let toolCalls = message.toolCalls {
+            for toolCall in toolCalls {
+                if let data = toolCall.function.arguments.data(using: .utf8), let input = try? JSONDecoder().decode([String: AnyValue].self, from: data) {
+                    let content = Anthropic.ChatRequest.Message.Content(
+                        type: .tool_use,
+                        id: toolCall.id,
+                        name: toolCall.function.name,
+                        input: input
+                    )
+                    out.content.append(content)
+                }
+            }
+        }
         
         // Handle tool responses or append message content
         if message.role == .tool {
