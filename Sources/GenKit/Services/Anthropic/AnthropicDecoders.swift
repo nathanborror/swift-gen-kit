@@ -7,15 +7,34 @@ private let logger = Logger(subsystem: "AnthropicService", category: "GenKit")
 extension AnthropicService {
     
     func decode(result: ChatResponse) -> Message {
-        guard let content = result.content.first else {
-            logger.warning("failed to decode content")
-            return .init(role: .assistant)
-        }
-        return .init(
+        var message = Message(
             role: decode(role: result.role),
-            content: content.text,
             finishReason: decode(finishReason: result.stopReason)
         )
+        var toolIndex = 0
+        
+        for content in result.content {
+            switch content.type {
+            case .text:
+                message.content = content.text
+            case .tool_use:
+                let data = try? JSONEncoder().encode(content.input)
+                let toolCall = ToolCall(
+                    id: content.id ?? .id,
+                    function: .init(
+                        name: content.name ?? "",
+                        arguments: (data != nil) ? String(data: data!, encoding: .utf8)! : ""
+                    ),
+                    index: toolIndex
+                )
+                if message.toolCalls == nil {
+                    message.toolCalls = []
+                }
+                message.toolCalls?.append(toolCall)
+                toolIndex += 1
+            }
+        }
+        return message
     }
     
     func decode(result: ChatStreamResponse) -> Message {

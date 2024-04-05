@@ -15,7 +15,21 @@ extension AnthropicService {
                 messagesOut.append(message)
             }
         }
-        return (systemOut, messagesOut)
+        
+        // Collapse user images so there is only one before or after an assistant message.
+        let collapsedMessages = messagesOut.reduce(into: [Anthropic.ChatRequest.Message]()) { result, message in
+            if let lastMessage = result.last {
+                if lastMessage.role == .user && message.role == .user {
+                    // Combine the content of consecutive user messages
+                    result[result.count - 1].content += message.content
+                } else {
+                    result.append(message)
+                }
+            } else {
+                result.append(message)
+            }
+        }
+        return (systemOut, collapsedMessages)
     }
     
     func encode(message: Message) -> Anthropic.ChatRequest.Message {
