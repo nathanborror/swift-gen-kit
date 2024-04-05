@@ -25,6 +25,7 @@ extension AnthropicService: ChatService {
             tools: encode(tools: request.tools)
         )
         let result = try await client.chat(payload)
+        if let error = result.error { throw error }
         return decode(result: result)
     }
     
@@ -39,6 +40,7 @@ extension AnthropicService: ChatService {
         )
         let messageID = String.id
         for try await result in client.chatStream(payload) {
+            if let error = result.error { throw error }
             var message = decode(result: result)
             message.id = messageID
             await delta(message)
