@@ -35,16 +35,19 @@ extension AnthropicService {
         }.compactMap { $0 }
         out.content += contents
         
-        if let content = message.content {
-            out.content.append(.init(type: .text, text: content))
+        // Handle tool responses or append message content
+        if message.role == .tool {
+            out.content.append(.init(type: .tool_result, content: [.init(type: .text, text: message.content)], toolUseID: message.toolCallID))
+        } else {
+            out.content.append(.init(type: .text, text: message.content))
         }
         return out
     }
     
     func encode(role: Message.Role) -> Anthropic.Role {
         switch role {
-        case .system, .user: .user
-        case .assistant, .tool: .assistant
+        case .system, .user, .tool: .user
+        case .assistant: .assistant
         }
     }
     
