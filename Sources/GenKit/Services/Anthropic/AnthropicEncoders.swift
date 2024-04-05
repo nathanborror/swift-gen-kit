@@ -36,10 +36,9 @@ extension AnthropicService {
     func encode(message: Message) -> Anthropic.ChatRequest.Message {
         var out = Anthropic.ChatRequest.Message(role: encode(role: message.role), content: [])
         
-        let assets: [Asset] = message.visionImages
-        
         // Prepare all the image assets attached to the message
-        let contents = assets.map { (asset) -> Anthropic.ChatRequest.Message.Content? in
+        let assets: [Asset] = message.visionImages
+        out.content += assets.map { (asset) -> Anthropic.ChatRequest.Message.Content? in
             switch asset.location {
             case .none:
                 guard let data = asset.data else { return nil }
@@ -48,7 +47,6 @@ extension AnthropicService {
                 return nil
             }
         }.compactMap { $0 }
-        out.content += contents
         
         // Prepare tool calls
         if let toolCalls = message.toolCalls {
@@ -69,7 +67,9 @@ extension AnthropicService {
         if message.role == .tool {
             out.content.append(.init(type: .tool_result, content: [.init(type: .text, text: message.content)], toolUseID: message.toolCallID))
         } else {
-            out.content.append(.init(type: .text, text: message.content))
+            if let text = message.content {
+                out.content.append(.init(type: .text, text: text))
+            }
         }
         return out
     }
