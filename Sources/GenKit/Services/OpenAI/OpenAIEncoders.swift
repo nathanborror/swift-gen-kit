@@ -67,7 +67,7 @@ extension OpenAIService {
         return .tool(
             .init(
                 type: toolChoice.type.rawValue,
-                function: encode(function: toolChoice.function)
+                function: .init(name: toolChoice.function.name)
             )
         )
     }
