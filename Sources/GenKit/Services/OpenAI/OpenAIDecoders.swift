@@ -54,8 +54,7 @@ extension OpenAIService {
             function: .init(
                 name: toolCall.function.name ?? "",
                 arguments: toolCall.function.arguments ?? ""
-            ),
-            index: toolCall.index ?? 0
+            )
         )
     }
 }

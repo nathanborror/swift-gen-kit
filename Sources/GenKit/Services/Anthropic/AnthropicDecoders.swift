@@ -11,8 +11,6 @@ extension AnthropicService {
             role: decode(role: result.role),
             finishReason: decode(finishReason: result.stopReason)
         )
-        var toolIndex = 0
-        
         for content in result.content {
             switch content.type {
             case .text:
@@ -24,14 +22,12 @@ extension AnthropicService {
                     function: .init(
                         name: content.name ?? "",
                         arguments: (data != nil) ? String(data: data!, encoding: .utf8)! : ""
-                    ),
-                    index: toolIndex
+                    )
                 )
                 if message.toolCalls == nil {
                     message.toolCalls = []
                 }
                 message.toolCalls?.append(toolCall)
-                toolIndex += 1
             }
         }
         return message

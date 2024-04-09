@@ -94,15 +94,17 @@ extension Message {
         existing.runID = message.runID
         existing.modified = .now
         
-        for toolCall in message.toolCalls ?? [] {
-            if existing.toolCalls?.indices.contains(toolCall.index) ?? false {
-                let existingToolCall = existing.toolCalls![toolCall.index]
-                existing.toolCalls![toolCall.index] = existingToolCall.apply(toolCall)
-            } else {
-                if existing.toolCalls == nil {
-                    existing.toolCalls = [toolCall]
+        if var toolCalls = message.toolCalls {
+            for toolCall in toolCalls {
+                if let index = existing.toolCalls?.firstIndex(where: { $0.id == toolCall.id }) {
+                    let existingToolCall = existing.toolCalls![index]
+                    existing.toolCalls![index] = existingToolCall.apply(toolCall)
                 } else {
-                    existing.toolCalls?.append(toolCall)
+                    if existing.toolCalls == nil {
+                        existing.toolCalls = [toolCall]
+                    } else {
+                        existing.toolCalls!.append(toolCall)
+                    }
                 }
             }
         }

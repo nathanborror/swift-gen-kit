@@ -34,21 +34,17 @@ extension MistralService {
     }
     
     func decode(toolCalls: [Mistral.Message.ToolCall]?) -> [ToolCall]? {
-        guard let toolCalls else { return nil }
-        return toolCalls.enumerated().map { index, toolCall in
-            decode(toolCall: toolCall, index: index)
-        }
+        toolCalls?.map { decode(toolCall: $0) }
     }
     
-    func decode(toolCall: Mistral.Message.ToolCall, index: Int) -> ToolCall {
+    func decode(toolCall: Mistral.Message.ToolCall) -> ToolCall {
         .init(
             id: .id,
             type: "function",
             function: .init(
                 name: toolCall.function.name ?? "",
                 arguments: toolCall.function.arguments ?? ""
-            ),
-            index: index
+            )
         )
     }
 

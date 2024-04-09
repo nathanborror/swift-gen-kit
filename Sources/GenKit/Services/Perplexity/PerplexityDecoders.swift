@@ -38,7 +38,7 @@ extension PerplexityService {
         return .init(
             role: decode(role: choice.message.role),
             toolCalls: [
-                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.message.content), index: 0)
+                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.message.content))
             ],
             finishReason: decode(finishReason: choice.finishReason)
         )
@@ -52,7 +52,7 @@ extension PerplexityService {
         return .init(
             role: decode(role: choice.delta.role),
             toolCalls: [
-                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.message.content), index: 0)
+                .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: choice.message.content))
             ],
             finishReason: decode(finishReason: choice.finishReason)
         )

@@ -34,8 +34,7 @@ extension OpenAIService {
         .init(
             id: toolCall.id,
             type: toolCall.type,
-            function: encode(functionCall: toolCall.function),
-            index: toolCall.index
+            function: encode(functionCall: toolCall.function)
         )
     }
     

@@ -43,7 +43,6 @@ public struct ToolCall: Codable {
     public var id: String
     public var type: String
     public var function: FunctionCall
-    public var index: Int
     
     public struct FunctionCall: Codable {
         public var name: String
@@ -55,11 +54,10 @@ public struct ToolCall: Codable {
         }
     }
     
-    public init(id: String = .id, type: String = "function", function: FunctionCall, index: Int) {
+    public init(id: String = .id, type: String = "function", function: FunctionCall) {
         self.id = id
         self.type = type
         self.function = function
-        self.index = index
     }
 }
 
