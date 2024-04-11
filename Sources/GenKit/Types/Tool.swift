@@ -65,7 +65,12 @@ extension ToolCall {
     
     public func apply(_ toolCall: ToolCall) -> ToolCall {
         var existing = self
-        existing.function.name = existing.function.name.apply(with: toolCall.function.name)
+        
+        // Name should never be a fragment so we shouldn't 'apply' it like other strings.
+        if existing.function.name.isEmpty {
+            existing.function.name = toolCall.function.name
+        }
+        
         existing.function.arguments = existing.function.arguments.apply(with: toolCall.function.arguments)
         return existing
     }
