@@ -12,7 +12,7 @@ public struct Message: Codable, Identifiable {
     public var runID: String?
     public var name: String?
     public var finishReason: FinishReason?
-    public var metadata: [String: String]
+    public var metadata: Metadata
     public var created: Date
     public var modified: Date
     
@@ -66,7 +66,7 @@ public struct Message: Codable, Identifiable {
         self.runID = runID
         self.name = name
         self.finishReason = finishReason
-        self.metadata = metadata
+        self.metadata = .init(metadata)
         self.created = .now
         self.modified = .now
     }
@@ -132,15 +132,6 @@ extension Message {
             }
         }
         return existing
-    }
-    
-    public func apply(metadata key: String, value: String?) -> Message {
-        if let value = value {
-            var existing = self
-            existing.metadata[key] = value
-            return existing
-        }
-        return self
     }
     
     public func apply(kind: Kind) -> Message {

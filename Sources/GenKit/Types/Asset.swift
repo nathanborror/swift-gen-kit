@@ -9,7 +9,7 @@ public struct Asset: Codable, Equatable, Hashable {
     public let background: String?
     public let foreground: String?
     public let description: String?
-    public let metadata: [String: String]
+    public let metadata: Metadata
     
     /// Set to false when you want the asset to be included in the message history. Typically used for multimodal requests.
     public let noop: Bool
@@ -39,7 +39,7 @@ public struct Asset: Codable, Equatable, Hashable {
         self.background = background
         self.foreground = foreground
         self.description = description
-        self.metadata = metadata
+        self.metadata = .init(metadata)
         self.noop = noop
     }
 }
