@@ -377,3 +377,17 @@ extension Service {
         preferredSummarizationModel != nil
     }
 }
+
+extension Service {
+    
+    public mutating func applyPreferredModels(_ service: Service) {
+        self.preferredChatModel = service.preferredChatModel
+        self.preferredImageModel = service.preferredImageModel
+        self.preferredEmbeddingModel = service.preferredEmbeddingModel
+        self.preferredTranscriptionModel = service.preferredTranscriptionModel
+        self.preferredToolModel = service.preferredToolModel
+        self.preferredVisionModel = service.preferredVisionModel
+        self.preferredSpeechModel = service.preferredSpeechModel
+        self.preferredSummarizationModel = service.preferredSummarizationModel
+    }
+}
