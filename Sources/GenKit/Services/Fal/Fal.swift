@@ -28,3 +28,15 @@ extension FalService: ImageService {
         }.compactMap { $0 }
     }
 }
+
+extension FalService: ModelService {
+    
+    public func models() async throws -> [Model] {
+        [
+            .init(id: "fast-sdxl", owner: "fal"),
+            .init(id: "stable-cascade", owner: "fal"),
+            .init(id: "lora", owner: "fal"),
+            .init(id: "fast-turbo-diffusion", owner: "fal"),
+        ]
+    }
+}

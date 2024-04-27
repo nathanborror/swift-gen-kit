@@ -94,7 +94,8 @@ extension Service {
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
         case .fal:
-            throw ServiceError.unsupportedService
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return FalService(configuration: .init(token: token))
         }
     }
     
