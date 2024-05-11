@@ -21,7 +21,7 @@ public struct Tool: Codable {
         }
     }
     
-    public init(type: ToolType, function: Function) {
+    public init(type: ToolType = .function, function: Function) {
         self.type = type
         self.function = function
     }
