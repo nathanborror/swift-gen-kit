@@ -11,7 +11,7 @@ extension AnthropicService {
             role: decode(role: result.role),
             finishReason: decode(finishReason: result.stopReason)
         )
-        for content in result.content {
+        for content in result.content ?? [] {
             switch content.type {
             case .text:
                 message.content = content.text
@@ -40,7 +40,7 @@ extension AnthropicService {
         }
         return .init(
             role: decode(role: result.message?.role ?? .assistant),
-            content: result.message?.content.first?.text ?? delta.text,
+            content: result.message?.content?.first?.text ?? delta.text,
             finishReason: decode(finishReason: result.message?.stopReason ?? delta.stopReason)
         )
     }
