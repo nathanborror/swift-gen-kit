@@ -25,6 +25,7 @@ public struct Service: Codable, Identifiable {
         case mistral
         case ollama
         case openAI
+        case groq
         case perplexity
         case fal
     }
@@ -67,6 +68,8 @@ public struct Service: Codable, Identifiable {
 
 extension Service {
     
+    static let groqEndpoint = URL(string: "https://api.groq.com/openai/v1")!
+    
     public func modelService() throws -> ModelService {
         guard let credentials else {
             throw ServiceError.missingCredentials
@@ -90,6 +93,9 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: Self.groqEndpoint))
         case .perplexity:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
@@ -124,6 +130,9 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: Self.groqEndpoint))
         case .perplexity:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
@@ -153,6 +162,8 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            throw ServiceError.unsupportedService
         case .perplexity:
             throw ServiceError.unsupportedService
         case .fal:
@@ -184,6 +195,8 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            throw ServiceError.unsupportedService
         case .perplexity:
             throw ServiceError.unsupportedService
         case .fal:
@@ -212,6 +225,8 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            throw ServiceError.unsupportedService
         case .perplexity:
             throw ServiceError.unsupportedService
         case .fal:
@@ -243,6 +258,9 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: Self.groqEndpoint))
         case .perplexity:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
@@ -274,6 +292,8 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            throw ServiceError.unsupportedService
         case .perplexity:
             throw ServiceError.unsupportedService
         case .fal:
@@ -303,6 +323,8 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            throw ServiceError.unsupportedService
         case .perplexity:
             throw ServiceError.unsupportedService
         case .fal:
@@ -335,6 +357,9 @@ extension Service {
         case .openAI:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return OpenAIService(configuration: .init(token: token))
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: Self.groqEndpoint))
         case .perplexity:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return PerplexityService(configuration: .init(token: token))
