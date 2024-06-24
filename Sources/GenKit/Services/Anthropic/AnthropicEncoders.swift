@@ -5,20 +5,18 @@ import SharedKit
 extension AnthropicService {
     
     func encode(messages: [Message]) -> (String?, [Anthropic.ChatRequestMessage]) {
-        var systemOut: String? = nil
-        var messagesOut = [Anthropic.ChatRequestMessage]()
+        let system = messages
+            .filter { $0.role == .system }
+            .map { $0.content }
+            .compactMap { $0 }
+            .joined(separator: "\n\n")
         
-        for i in messages.indices {
-            if i == 0 && messages[i].role == .system {
-                systemOut = messages[i].content
-            } else {
-                let message = encode(message: messages[i])
-                messagesOut.append(message)
-            }
-        }
+        let messagesFiltered = messages
+            .filter { $0.role != .system }
+            .map { encode(message: $0) }
         
         // Collapse user images so there is only one before or after an assistant message.
-        let collapsedMessages = messagesOut.reduce(into: [Anthropic.ChatRequestMessage]()) { result, message in
+        let messagesCleaned = messagesFiltered.reduce(into: [Anthropic.ChatRequestMessage]()) { result, message in
             if let lastMessage = result.last {
                 if lastMessage.role == .user && message.role == .user {
                     // Combine the content of consecutive user messages
@@ -30,7 +28,7 @@ extension AnthropicService {
                 result.append(message)
             }
         }
-        return (systemOut, collapsedMessages)
+        return (system, messagesCleaned)
     }
     
     func encode(message: Message) -> Anthropic.ChatRequestMessage {
