@@ -37,15 +37,21 @@ extension AnthropicService {
     }
     
     func decode(result: ChatStreamResponse) -> Message {
-        guard let delta = result.delta else {
-            logger.warning("failed to decode delta")
-            return .init(role: .assistant)
+        if let delta = result.delta {
+            return .init(
+                role: decode(role: result.message?.role ?? .assistant),
+                content: result.message?.content?.first?.text ?? delta.text,
+                finishReason: decode(finishReason: result.message?.stopReason)
+            )
         }
-        return .init(
-            role: decode(role: result.message?.role ?? .assistant),
-            content: result.message?.content?.first?.text ?? delta.text,
-            finishReason: decode(finishReason: result.message?.stopReason)
-        )
+        if let message = result.message {
+            return .init(
+                role: decode(role: message.role),
+                content: message.content?.first?.text,
+                finishReason: decode(finishReason: message.stopReason)
+            )
+        }
+        return .init(role: .assistant)
     }
 
     func decode(role: Anthropic.Role?) -> Message.Role {
