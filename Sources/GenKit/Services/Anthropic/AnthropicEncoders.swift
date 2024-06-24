@@ -4,6 +4,9 @@ import SharedKit
 
 extension AnthropicService {
     
+    // Extract all system messages and combine into one because Anthropic accepts a single system prompt as part of the
+    // chat request instead of system messages. Combine multiple user messages so we always have alternating user and
+    // assistant messages.
     func encode(messages: [Message]) -> (String?, [Anthropic.ChatRequestMessage]) {
         let system = messages
             .filter { $0.role == .system }
@@ -15,11 +18,9 @@ extension AnthropicService {
             .filter { $0.role != .system }
             .map { encode(message: $0) }
         
-        // Collapse user images so there is only one before or after an assistant message.
         let messagesCleaned = messagesFiltered.reduce(into: [Anthropic.ChatRequestMessage]()) { result, message in
             if let lastMessage = result.last {
                 if lastMessage.role == .user && message.role == .user {
-                    // Combine the content of consecutive user messages
                     result[result.count - 1].content += message.content
                 } else {
                     result.append(message)
