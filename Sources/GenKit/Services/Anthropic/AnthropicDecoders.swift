@@ -13,21 +13,24 @@ extension AnthropicService {
         )
         for content in result.content ?? [] {
             switch content.type {
-            case .text:
+            case .text, .text_delta:
                 message.content = content.text
             case .tool_use:
+                if message.toolCalls == nil {
+                    message.toolCalls = []
+                }
                 let data = try? JSONEncoder().encode(content.input)
-                let toolCall = ToolCall(
+                message.toolCalls?.append(.init(
                     id: content.id ?? .id,
                     function: .init(
                         name: content.name ?? "",
                         arguments: (data != nil) ? String(data: data!, encoding: .utf8)! : ""
                     )
-                )
-                if message.toolCalls == nil {
-                    message.toolCalls = []
-                }
-                message.toolCalls?.append(toolCall)
+                ))
+            case .input_json_delta:
+                break
+            case .none:
+                break
             }
         }
         return message
@@ -41,7 +44,7 @@ extension AnthropicService {
         return .init(
             role: decode(role: result.message?.role ?? .assistant),
             content: result.message?.content?.first?.text ?? delta.text,
-            finishReason: decode(finishReason: result.message?.stopReason ?? delta.stopReason)
+            finishReason: decode(finishReason: result.message?.stopReason)
         )
     }
 

@@ -4,9 +4,9 @@ import SharedKit
 
 extension AnthropicService {
     
-    func encode(messages: [Message]) -> (String?, [Anthropic.ChatRequest.Message]) {
+    func encode(messages: [Message]) -> (String?, [Anthropic.ChatRequestMessage]) {
         var systemOut: String? = nil
-        var messagesOut = [Anthropic.ChatRequest.Message]()
+        var messagesOut = [Anthropic.ChatRequestMessage]()
         
         for i in messages.indices {
             if i == 0 && messages[i].role == .system {
@@ -18,7 +18,7 @@ extension AnthropicService {
         }
         
         // Collapse user images so there is only one before or after an assistant message.
-        let collapsedMessages = messagesOut.reduce(into: [Anthropic.ChatRequest.Message]()) { result, message in
+        let collapsedMessages = messagesOut.reduce(into: [Anthropic.ChatRequestMessage]()) { result, message in
             if let lastMessage = result.last {
                 if lastMessage.role == .user && message.role == .user {
                     // Combine the content of consecutive user messages
@@ -33,12 +33,12 @@ extension AnthropicService {
         return (systemOut, collapsedMessages)
     }
     
-    func encode(message: Message) -> Anthropic.ChatRequest.Message {
-        var out = Anthropic.ChatRequest.Message(role: encode(role: message.role), content: [])
+    func encode(message: Message) -> Anthropic.ChatRequestMessage {
+        var out = Anthropic.ChatRequestMessage(role: encode(role: message.role), content: [])
         
         // Prepare all the image assets attached to the message
         let assets: [Asset] = message.visionImages
-        out.content += assets.map { (asset) -> Anthropic.ChatRequest.Message.Content? in
+        out.content += assets.map { (asset) -> Anthropic.ChatRequestMessage.Content? in
             switch asset.location {
             case .none:
                 guard let data = asset.data else { return nil }
@@ -52,7 +52,7 @@ extension AnthropicService {
         if let toolCalls = message.toolCalls {
             for toolCall in toolCalls {
                 if let data = toolCall.function.arguments.data(using: .utf8), let input = try? JSONDecoder().decode([String: AnyValue].self, from: data) {
-                    let content = Anthropic.ChatRequest.Message.Content(
+                    let content = Anthropic.ChatRequestMessage.Content(
                         type: .tool_use,
                         id: toolCall.id,
                         name: toolCall.function.name,
