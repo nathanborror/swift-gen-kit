@@ -4,30 +4,6 @@ import SharedKit
 
 extension OpenAIService {
     
-    func decode(result: ChatStreamResult, into message: Message) -> Message {
-        var message = message
-        let choice = result.choices.first
-        
-        message.content = patch(string: message.content, with: choice?.delta.content)
-        message.finishReason = decode(finishReason: choice?.finishReason)
-        
-        for toolCall in choice?.delta.toolCalls ?? [] {
-            if let index = message.toolCalls?.firstIndex(where: { $0.id == toolCall.id }) {
-                var existing = message.toolCalls![index]
-                existing.function.arguments = patch(string: existing.function.arguments, with: toolCall.function.arguments) ?? ""
-                message.toolCalls![index] = existing
-            } else {
-                if message.toolCalls == nil {
-                    message.toolCalls = []
-                }
-                let newToolCall = decode(toolCall: toolCall)
-                message.toolCalls?.append(newToolCall)
-            }
-        }
-        message.modified = .now
-        return message
-    }
-
     func decode(result: ChatResult) -> Message {
         let choice = result.choices.first
         let message = choice?.message
@@ -40,6 +16,35 @@ extension OpenAIService {
             toolCallID: message?.toolCallID,
             name: message?.name,
             finishReason: decode(finishReason: choice?.finishReason))
+    }
+    
+    func decode(result: ChatStreamResult, into message: Message) -> Message {
+        var message = message
+        let choice = result.choices.first
+        
+        message.content = patch(string: message.content, with: choice?.delta.content)
+        message.finishReason = decode(finishReason: choice?.finishReason)
+        
+        // Convoluted way to add new tool calls and patch the last tool call being streamed in.
+        if let toolCalls = choice?.delta.toolCalls {
+            if message.toolCalls == nil {
+                message.toolCalls = []
+            }
+            for toolCall in toolCalls {
+                if toolCall.id == nil {
+                    if var existing = message.toolCalls?.last {
+                        existing.function.arguments = patch(string: existing.function.arguments, with: toolCall.function.arguments) ?? ""
+                        message.toolCalls![message.toolCalls!.count-1] = existing
+                    }
+                } else {
+                    let newToolCall = decode(toolCall: toolCall)
+                    message.toolCalls?.append(newToolCall)
+                }
+            }
+        }
+        
+        message.modified = .now
+        return message
     }
 
     func decode(role: Chat.Role) -> Message.Role {
