@@ -20,17 +20,19 @@ extension MistralService {
         )
     }
     
-    func decode(result: ChatStreamResponse) -> Message {
+    func decode(result: ChatStreamResponse, into message: Message) -> Message {
+        var message = message
         guard let choice = result.choices.first else {
             logger.warning("failed to decode choice")
             return .init(role: .assistant)
         }
-        return .init(
-            role: decode(role: choice.delta.role ?? .assistant),
-            content: choice.delta.content,
-            toolCalls: decode(toolCalls: choice.delta.toolCalls),
-            finishReason: decode(finishReason: choice.finishReason)
-        )
+        
+        message.content = patch(string: message.content, with: choice.delta.content)
+        message.finishReason = decode(finishReason: choice.finishReason)
+        message.modified = .now
+        message.toolCalls = decode(toolCalls: choice.delta.toolCalls)
+        
+        return message
     }
     
     func decode(toolCalls: [Mistral.Message.ToolCall]?) -> [ToolCall]? {

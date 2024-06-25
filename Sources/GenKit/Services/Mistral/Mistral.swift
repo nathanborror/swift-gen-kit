@@ -12,32 +12,31 @@ public final class MistralService {
         self.client = MistralClient(configuration: configuration)
         logger.info("Mistral Service: \(self.client.configuration.host.absoluteString)")
     }
+    
+    private func makeRequest(model: String, messages: [Message], tools: Set<Tool> = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
+        return .init(
+            model: model,
+            messages: encode(messages: messages),
+            tools: encode(tools: tools),
+            toolChoice: encode(toolChoice: toolChoice),
+            stream: stream
+        )
+    }
 }
 
 extension MistralService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = ChatRequest(
-            model: request.model,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
-            toolChoice: encode(toolChoice: request.toolChoice)
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
-        let payload = ChatRequest(
-            model: request.model,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
-            toolChoice: encode(toolChoice: request.toolChoice),
-            stream: true
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice, stream: true)
+        var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
-            var message = decode(result: result)
-            message.id = result.id
+            message = decode(result: result, into: message)
             await update(message)
         }
     }
@@ -63,31 +62,16 @@ extension MistralService: ModelService {
 extension MistralService: ToolService {
     
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let messages = encode(messages: request.messages)
-        let tools = encode(tools: [request.tool])
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            tools: tools,
-            toolChoice: .any
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
-        let messages = encode(messages: request.messages)
-        let tools = encode(tools: [request.tool])
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            tools: tools,
-            toolChoice: .any,
-            stream: true
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
+        var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
-            var message = decode(result: result)
-            message.id = result.id
+            message = decode(result: result, into: message)
             await update(message)
         }
     }
