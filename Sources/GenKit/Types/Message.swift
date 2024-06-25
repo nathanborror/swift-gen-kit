@@ -86,63 +86,6 @@ extension Message: Hashable, Equatable {
 
 extension Message {
     
-    public func apply(_ message: Message) -> Message {
-        var existing = self
-        existing.content = existing.content.apply(with: message.content)
-        existing.finishReason = message.finishReason
-        existing.toolCallID = message.toolCallID
-        existing.runID = message.runID
-        existing.modified = .now
-        
-        // This is tricky due to the way toolCalls are streamed. We don't always have a clear identifier from the
-        // streaming response so must assume the partial toolCall object should be applied to the last object in the
-        // existing array. Since we're using this function for full responses too we can't assume that's always the
-        // case so the first `if` statement addresses that. It appears there is only ever one partial toolCall at a
-        // time when streaming.
-        if let toolCalls = message.toolCalls {
-            if toolCalls.count > 1 {
-                // Apply changes to whatever exists using the id.
-                for toolCall in toolCalls {
-                    if let index = existing.toolCalls?.firstIndex(where: { $0.id == toolCall.id }) {
-                        let existingToolCall = existing.toolCalls![index]
-                        existing.toolCalls![index] = existingToolCall.apply(toolCall)
-                    } else {
-                        if existing.toolCalls == nil {
-                            existing.toolCalls = [toolCall]
-                        } else {
-                            existing.toolCalls!.append(toolCall)
-                        }
-                    }
-                }
-            } else if toolCalls.count == 1 {
-                let toolCall = toolCalls[0]
-                
-                if existing.toolCalls == nil {
-                    existing.toolCalls = []
-                }
-                
-                // Append to the end of whatever is existing or if there is an id present, create a new entry.
-                if toolCall.id.isEmpty {
-                    if let lastExistingToolCall = existing.toolCalls?.last {
-                        existing.toolCalls![existing.toolCalls!.count-1] = lastExistingToolCall.apply(toolCalls[0])
-                    }
-                } else {
-                    existing.toolCalls?.append(toolCall)
-                }
-            }
-        }
-        return existing
-    }
-    
-    public func apply(kind: Kind) -> Message {
-        var existing = self
-        existing.kind = kind
-        return existing
-    }
-}
-
-extension Message {
-    
     var visionImages: [Asset] {
         attachments
             .map { (attachment) -> Asset? in
