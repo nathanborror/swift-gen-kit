@@ -146,25 +146,15 @@ extension OpenAIService: SpeechService {
 extension OpenAIService: ToolService {
     
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let query = ChatQuery(
-            model: request.model,
-            messages: encode(messages: request.messages),
-            tools: [encode(tool: request.tool)],
-            toolChoice: encode(toolChoice: request.tool)
-        )
-        let result = try await client.chats(query: query)
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
+        let result = try await client.chats(query: payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
-        let query = ChatQuery(
-            model: request.model,
-            messages: encode(messages: request.messages),
-            tools: [encode(tool: request.tool)],
-            toolChoice: encode(toolChoice: request.tool)
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
         var message = Message(role: .assistant)
-        for try await result in client.chatsStream(query: query) {
+        for try await result in client.chatsStream(query: payload) {
             message = decode(result: result, into: message)
             await update(message)
         }
