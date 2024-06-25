@@ -89,6 +89,7 @@ extension AnthropicService {
         case .content_block_stop:
             break // nothing to do here
         }
+        message.modified = .now
         return message
     }
 

@@ -23,7 +23,7 @@ extension OpenAIService {
                 message.toolCalls?.append(newToolCall)
             }
         }
-        
+        message.modified = .now
         return message
     }
 
