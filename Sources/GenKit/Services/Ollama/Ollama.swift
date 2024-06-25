@@ -54,13 +54,13 @@ extension OllamaService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
         let messageID = String.id
         for try await result in client.chatStream(payload) {
             var message = decode(result: result)
             message.id = messageID
-            await delta(message)
+            await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
             if message.finishReason == .stop {
@@ -96,13 +96,13 @@ extension OllamaService: VisionService {
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: VisionServiceRequest, update: (Message) async -> Void) async throws {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
         let messageID = String.id
         for try await result in client.chatStream(payload) {
             var message = decode(result: result)
             message.id = messageID
-            await delta(message)
+            await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
             if message.finishReason == .stop {
@@ -122,7 +122,7 @@ extension OllamaService: ToolService {
         return decode(tool: request.tool, result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let payload = ChatRequest(model: request.model, messages: messages + tools, stream: true, format: "json")
@@ -130,7 +130,7 @@ extension OllamaService: ToolService {
         for try await result in client.chatStream(payload) {
             var message = decode(tool: request.tool, result: result)
             message.id = messageID
-            await delta(message)
+            await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
             if message.finishReason == .stop {

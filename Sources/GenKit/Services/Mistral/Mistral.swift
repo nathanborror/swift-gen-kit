@@ -27,7 +27,7 @@ extension MistralService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
         let payload = ChatRequest(
             model: request.model,
             messages: encode(messages: request.messages),
@@ -38,7 +38,7 @@ extension MistralService: ChatService {
         for try await result in client.chatStream(payload) {
             var message = decode(result: result)
             message.id = result.id
-            await delta(message)
+            await update(message)
         }
     }
 }
@@ -75,7 +75,7 @@ extension MistralService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let payload = ChatRequest(
@@ -88,7 +88,7 @@ extension MistralService: ToolService {
         for try await result in client.chatStream(payload) {
             var message = decode(result: result)
             message.id = result.id
-            await delta(message)
+            await update(message)
         }
     }
 }

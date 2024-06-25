@@ -23,13 +23,13 @@ extension GoogleService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
         let payload = GenerateContentRequest(contents: encode(messages: request.messages))
         let messageID = String.id
         for try await result in client.chatStream(payload, model: request.model) {
             var message = decode(result: result)
             message.id = messageID
-            await delta(message)
+            await update(message)
         }
     }
 }

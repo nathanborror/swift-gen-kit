@@ -36,22 +36,60 @@ extension AnthropicService {
         return message
     }
     
-    func decode(result: ChatStreamResponse) -> Message {
-        if let delta = result.delta {
-            return .init(
-                role: decode(role: result.message?.role ?? .assistant),
-                content: result.message?.content?.first?.text ?? delta.text,
-                finishReason: decode(finishReason: result.message?.stopReason)
-            )
+    func decode(result: ChatStreamResponse, into message: Message) -> Message {
+        var message = message
+        switch result.type {
+        case .ping:
+            break
+        case .error:
+            break // nothing to do here
+        case .message_start:
+            if let msg = result.message {
+                message.id = msg.id ?? message.id
+                message.finishReason = decode(finishReason: msg.stopReason)
+            }
+        case .message_delta:
+            break // nothing to do here
+        case .message_stop:
+            if message.toolCalls != nil {
+                message.finishReason = .toolCalls
+            } else {
+                message.finishReason = .stop
+            }
+        case .content_block_start:
+            if let contentBlock = result.contentBlock {
+                switch contentBlock.type {
+                case .text:
+                    message.content = contentBlock.text
+                case .tool_use:
+                    var toolCall = ToolCall(function: .init(name: contentBlock.name ?? "", arguments: ""))
+                    toolCall.id = contentBlock.id ?? toolCall.id
+                    if message.toolCalls == nil {
+                        message.toolCalls = []
+                    }
+                    message.toolCalls?.append(toolCall)
+                default:
+                    break
+                }
+            }
+        case .content_block_delta:
+            if let delta = result.delta {
+                switch delta.type {
+                case .text_delta:
+                    message.content = message.content?.apply(with: delta.text)
+                case .input_json_delta:
+                    if var existing = message.toolCalls?.last {
+                        existing.function.arguments = existing.function.arguments.apply(with: delta.partialJSON)
+                        message.toolCalls![message.toolCalls!.count-1] = existing
+                    }
+                default:
+                    break
+                }
+            }
+        case .content_block_stop:
+            break // nothing to do here
         }
-        if let message = result.message {
-            return .init(
-                role: decode(role: message.role),
-                content: message.content?.first?.text,
-                finishReason: decode(finishReason: message.stopReason)
-            )
-        }
-        return .init(role: .assistant)
+        return message
     }
 
     func decode(role: Anthropic.Role?) -> Message.Role {

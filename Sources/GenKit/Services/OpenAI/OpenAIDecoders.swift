@@ -3,15 +3,28 @@ import OpenAI
 
 extension OpenAIService {
     
-    func decode(result: ChatStreamResult) -> Message {
+    func decode(result: ChatStreamResult, into message: Message) -> Message {
+        var message = message
         let choice = result.choices.first
-        return .init(
-            id: result.id,
-            role: .assistant,
-            content: choice?.delta.content,
-            toolCalls: choice?.delta.toolCalls?.map { decode(toolCall: $0) },
-            finishReason: decode(finishReason: choice?.finishReason)
-        )
+        
+        message.content = message.content?.apply(with: choice?.delta.content)
+        message.finishReason = decode(finishReason: choice?.finishReason)
+        
+        for toolCall in choice?.delta.toolCalls ?? [] {
+            if let index = message.toolCalls?.firstIndex(where: { $0.id == toolCall.id }) {
+                var existing = message.toolCalls![index]
+                existing.function.arguments = existing.function.arguments.apply(with: toolCall.function.arguments)
+                message.toolCalls![index] = existing
+            } else {
+                if message.toolCalls == nil {
+                    message.toolCalls = []
+                }
+                let newToolCall = decode(toolCall: toolCall)
+                message.toolCalls?.append(newToolCall)
+            }
+        }
+        
+        return message
     }
 
     func decode(result: ChatResult) -> Message {

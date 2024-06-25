@@ -12,32 +12,32 @@ public final class OpenAIService {
         self.client = OpenAIClient(configuration: configuration)
         logger.info("OpenAI Service: \(self.client.configuration.host.absoluteString)")
     }
+    
+    private func makeRequest(model: String, messages: [Message], tools: Set<Tool> = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatQuery {
+        return .init(
+            model: model,
+            messages: encode(messages: messages),
+            tools: encode(tools: tools),
+            toolChoice: encode(toolChoice: toolChoice),
+            stream: stream
+        )
+    }
 }
 
 extension OpenAIService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let query = ChatQuery(
-            model: request.model,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
-            toolChoice: encode(toolChoice: request.toolChoice)
-        )
-        let result = try await client.chats(query: query)
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        let result = try await client.chats(query: payload)
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
-        let query = ChatQuery(
-            model: request.model,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
-            toolChoice: encode(toolChoice: request.toolChoice)
-        )
-        let stream: AsyncThrowingStream<ChatStreamResult, Error> = client.chatsStream(query: query)
-        for try await result in stream {
-            let message = decode(result: result)
-            await delta(message)
+    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        var message = Message(role: .assistant)
+        for try await result in client.chatsStream(query: payload) {
+            message = decode(result: result, into: message)
+            await update(message)
         }
     }
 }
@@ -114,16 +114,16 @@ extension OpenAIService: VisionService {
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: VisionServiceRequest, update: (Message) async -> Void) async throws {
         let query = ChatVisionQuery(
             model: request.model,
             messages: encode(visionMessages: request.messages),
             maxTokens: request.maxTokens
         )
-        let stream: AsyncThrowingStream<ChatStreamResult, Error> = client.chatsVisionStream(query: query)
-        for try await result in stream {
-            let message = decode(result: result)
-            await delta(message)
+        var message = Message(role: .assistant)
+        for try await result in client.chatsVisionStream(query: query) {
+            message = decode(result: result, into: message)
+            await update(message)
         }
     }
 }
@@ -156,17 +156,17 @@ extension OpenAIService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
         let query = ChatQuery(
             model: request.model,
             messages: encode(messages: request.messages),
             tools: [encode(tool: request.tool)],
             toolChoice: encode(toolChoice: request.tool)
         )
-        let stream: AsyncThrowingStream<ChatStreamResult, Error> = client.chatsStream(query: query)
-        for try await result in stream {
-            let message = decode(result: result)
-            await delta(message)
+        var message = Message(role: .assistant)
+        for try await result in client.chatsStream(query: query) {
+            message = decode(result: result, into: message)
+            await update(message)
         }
     }
 }

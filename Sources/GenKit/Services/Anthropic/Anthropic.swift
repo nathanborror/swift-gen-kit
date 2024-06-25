@@ -12,38 +12,36 @@ public final class AnthropicService {
         self.client = AnthropicClient(configuration: configuration)
         logger.info("Anthropic Service: \(self.client.configuration.host.absoluteString)")
     }
+    
+    private func makeRequest(model: String, messages: [Message], tools: Set<Tool> = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
+        let (system, messages) = encode(messages: messages)
+        return .init(
+            model: model,
+            messages: messages,
+            system: system,
+            tools: encode(tools: tools),
+            toolChoice: (toolChoice != nil) ? .init(type: .tool, name: toolChoice!.function.name) : nil,
+            stream: stream
+        )
+    }
 }
 
 extension AnthropicService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let (system, messages) = encode(messages: request.messages)
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            system: system,
-            tools: encode(tools: request.tools)
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
         let result = try await client.chat(payload)
         if let error = result.error { throw error }
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
-        let (system, messages) = encode(messages: request.messages)
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            system: system,
-            tools: encode(tools: request.tools),
-            stream: true
-        )
-        let messageID = String.id
+    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, stream: true)
+        var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             if let error = result.error { throw error }
-            var message = decode(result: result)
-            message.id = messageID
-            await delta(message)
+            message = decode(result: result, into: message)
+            await update(message)
         }
     }
 }
@@ -59,60 +57,37 @@ extension AnthropicService: ModelService {
 extension AnthropicService: VisionService {
     
     public func completion(request: VisionServiceRequest) async throws -> Message {
-        let (system, messages) = encode(messages: request.messages)
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            system: system
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, delta: (Message) async -> Void) async throws {
-        let (system, messages) = encode(messages: request.messages)
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            system: system,
-            stream: true
-        )
-        let messageID = String.id
+    public func completionStream(request: VisionServiceRequest, update: (Message) async -> Void) async throws {
+        let payload = makeRequest(model: request.model, messages: request.messages, stream: true)
+        var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
-            var message = decode(result: result)
-            message.id = messageID
-            await delta(message)
+            if let error = result.error { throw error }
+            message = decode(result: result, into: message)
+            await update(message)
         }
     }
 }
 
 extension AnthropicService: ToolService {
     
-    /// To encourage explicit tool use add instructions to the user message, like: What's the weather like in London? Use the get_weather tool in your response.
-    /// https://docs.anthropic.com/claude/docs/tool-use#forcing-tool-use
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let (system, messages) = encode(messages: request.messages)
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            system: system,
-            tools: encode(tools: [request.tool])
-        )
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
-    /// Anthropic doesn't support streaming tool use at this time so we're faking it.
-    public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
-        let (system, messages) = encode(messages: request.messages)
-        let payload = ChatRequest(
-            model: request.model,
-            messages: messages,
-            system: system,
-            tools: encode(tools: [request.tool])
-        )
-        let result = try await client.chat(payload)
-        let message = decode(result: result)
-        await delta(message)
+    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
+        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
+        var message = Message(role: .assistant)
+        for try await result in client.chatStream(payload) {
+            if let error = result.error { throw error }
+            message = decode(result: result, into: message)
+            await update(message)
+        }
     }
 }

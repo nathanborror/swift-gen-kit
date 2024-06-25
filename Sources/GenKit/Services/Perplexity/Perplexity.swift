@@ -22,12 +22,12 @@ extension PerplexityService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
         for try await result in client.chatStream(payload) {
             var message = decode(result: result)
             message.id = result.id
-            await delta(message)
+            await update(message)
         }
     }
 }
@@ -50,14 +50,14 @@ extension PerplexityService: ToolService {
         return decode(tool: request.tool, result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, delta: (Message) async -> Void) async throws {
+    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let payload = ChatRequest(model: request.model, messages: messages + tools, stream: true)
         for try await result in client.chatStream(payload) {
             var message = decode(tool: request.tool, result: result)
             message.id = result.id
-            await delta(message)
+            await update(message)
         }
     }
 }
