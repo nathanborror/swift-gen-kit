@@ -1,8 +1,6 @@
 import Foundation
-import OSLog
 import Anthropic
-
-private let logger = Logger(subsystem: "AnthropicService", category: "GenKit")
+import SharedKit
 
 extension AnthropicService {
     

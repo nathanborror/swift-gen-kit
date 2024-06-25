@@ -1,5 +1,6 @@
 import Foundation
 import OpenAI
+import SharedKit
 
 extension OpenAIService {
     
