@@ -24,6 +24,7 @@ extension OpenAIService {
         
         message.content = patch(string: message.content, with: choice?.delta.content)
         message.finishReason = decode(finishReason: choice?.finishReason)
+        message.modified = .now
         
         // Convoluted way to add new tool calls and patch the last tool call being streamed in.
         if let toolCalls = choice?.delta.toolCalls {
@@ -42,8 +43,6 @@ extension OpenAIService {
                 }
             }
         }
-        
-        message.modified = .now
         return message
     }
 

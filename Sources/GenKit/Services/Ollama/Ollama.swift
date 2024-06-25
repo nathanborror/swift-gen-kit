@@ -34,14 +34,10 @@ public final class OllamaService {
 extension OllamaService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        
-        // Prepare messages with tool choice if present
         var messages = encode(messages: request.messages)
         if let toolMessage = prepareToolMessage(request.toolChoice) {
             messages.append(toolMessage)
         }
-        
-        // Prepare payload
         var payload = ChatRequest(model: request.model, messages: messages)
         
         // Encourage JSON output if tool choice is present
@@ -56,10 +52,9 @@ extension OllamaService: ChatService {
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
-        let messageID = String.id
+        var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
-            var message = decode(result: result)
-            message.id = messageID
+            message = decode(result: result, into: message)
             await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
@@ -98,10 +93,9 @@ extension OllamaService: VisionService {
     
     public func completionStream(request: VisionServiceRequest, update: (Message) async -> Void) async throws {
         let payload = ChatRequest(model: request.model, messages: encode(messages: request.messages), stream: true)
-        let messageID = String.id
+        var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
-            var message = decode(result: result)
-            message.id = messageID
+            message = decode(result: result, into: message)
             await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
@@ -126,10 +120,9 @@ extension OllamaService: ToolService {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let payload = ChatRequest(model: request.model, messages: messages + tools, stream: true, format: "json")
-        let messageID = String.id
+        var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
-            var message = decode(tool: request.tool, result: result)
-            message.id = messageID
+            message = decode(tool: request.tool, result: result, into: message)
             await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
