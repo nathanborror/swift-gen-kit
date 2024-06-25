@@ -74,10 +74,10 @@ extension AnthropicService {
             if let delta = result.delta {
                 switch delta.type {
                 case .text_delta:
-                    message.content = message.content?.apply(with: delta.text)
+                    message.content = patch(string: message.content, with: delta.text)
                 case .input_json_delta:
                     if var existing = message.toolCalls?.last {
-                        existing.function.arguments = existing.function.arguments.apply(with: delta.partialJSON)
+                        existing.function.arguments = patch(string: existing.function.arguments, with: delta.partialJSON) ?? ""
                         message.toolCalls![message.toolCalls!.count-1] = existing
                     }
                 default:
