@@ -10,7 +10,9 @@ extension MistralService {
     func encode(message: Message) -> Mistral.Message {
         .init(
             role: encode(role: message.role),
-            content: message.content ?? ""
+            content: message.content ?? "",
+            toolCalls: encode(toolCalls: message.toolCalls),
+            toolCallID: message.toolCallID
         )
     }
     
@@ -34,6 +36,21 @@ extension MistralService {
                 name: tool.function.name,
                 description: tool.function.description,
                 parameters: tool.function.parameters
+            )
+        )
+    }
+    
+    func encode(toolCalls: [ToolCall]?) -> [Mistral.Message.ToolCall]? {
+        guard let toolCalls else { return nil }
+        return toolCalls.map { encode(toolCall: $0) }
+    }
+    
+    func encode(toolCall: ToolCall) -> Mistral.Message.ToolCall {
+        .init(
+            id: toolCall.id,
+            function: .init(
+                name: toolCall.function.name,
+                arguments: toolCall.function.arguments
             )
         )
     }
