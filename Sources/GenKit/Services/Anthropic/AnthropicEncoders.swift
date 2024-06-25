@@ -7,7 +7,7 @@ extension AnthropicService {
     // Extract all system messages and combine into one because Anthropic accepts a single system prompt as part of the
     // chat request instead of system messages. Combine multiple user messages so we always have alternating user and
     // assistant messages.
-    func encode(messages: [Message]) -> (String?, [Anthropic.ChatRequestMessage]) {
+    func encode(messages: [Message]) -> (String?, [Anthropic.ChatRequest.Message]) {
         let system = messages
             .filter { $0.role == .system }
             .map { $0.content }
@@ -18,7 +18,7 @@ extension AnthropicService {
             .filter { $0.role != .system }
             .map { encode(message: $0) }
         
-        let messagesCleaned = messagesFiltered.reduce(into: [Anthropic.ChatRequestMessage]()) { result, message in
+        let messagesCleaned = messagesFiltered.reduce(into: [Anthropic.ChatRequest.Message]()) { result, message in
             if let lastMessage = result.last {
                 if lastMessage.role == .user && message.role == .user {
                     result[result.count - 1].content += message.content
@@ -32,12 +32,12 @@ extension AnthropicService {
         return (system, messagesCleaned)
     }
     
-    func encode(message: Message) -> Anthropic.ChatRequestMessage {
-        var out = Anthropic.ChatRequestMessage(role: encode(role: message.role), content: [])
+    func encode(message: Message) -> Anthropic.ChatRequest.Message {
+        var out = Anthropic.ChatRequest.Message(role: encode(role: message.role), content: [])
         
         // Prepare all the image assets attached to the message
         let assets: [Asset] = message.visionImages
-        out.content += assets.map { (asset) -> Anthropic.ChatRequestMessage.Content? in
+        out.content += assets.map { (asset) -> Anthropic.ChatRequest.Message.Content? in
             switch asset.location {
             case .none:
                 guard let data = asset.data else { return nil }
@@ -51,7 +51,7 @@ extension AnthropicService {
         if let toolCalls = message.toolCalls {
             for toolCall in toolCalls {
                 if let data = toolCall.function.arguments.data(using: .utf8), let input = try? JSONDecoder().decode([String: AnyValue].self, from: data) {
-                    let content = Anthropic.ChatRequestMessage.Content(
+                    let content = Anthropic.ChatRequest.Message.Content(
                         type: .tool_use,
                         id: toolCall.id,
                         name: toolCall.function.name,
