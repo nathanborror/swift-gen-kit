@@ -33,7 +33,10 @@ extension AnthropicService {
     }
     
     func encode(message: Message) -> Anthropic.ChatRequest.Message {
-        var out = Anthropic.ChatRequest.Message(role: encode(role: message.role), content: [])
+        var out = Anthropic.ChatRequest.Message(
+            role: encode(role: message.role),
+            content: []
+        )
         
         // Prepare all the image assets attached to the message
         let assets: [Asset] = message.visionImages
@@ -62,9 +65,46 @@ extension AnthropicService {
             }
         }
         
+        // Append attachments
+        let fileContents = message.attachments.filter {
+            if case .file = $0 {
+                return true
+            }
+            return false
+        }.compactMap {
+            if case let .file(_, content) = $0 {
+                return content
+            }
+            return nil
+        }
+        
+        if !fileContents.isEmpty {
+            out.content.append(
+                .init(
+                    type: .text,
+                    text: """
+                    <file_attachment_content>
+                        \(fileContents.joined(separator: "\n\n --- \n\n"))
+                    </file_attachment_content>
+                    """
+                )
+            )
+        }
+        
         // Handle tool responses or append message content
         if message.role == .tool {
-            out.content.append(.init(type: .tool_result, content: [.init(type: .text, text: message.content)], toolUseID: message.toolCallID))
+            out.content.append(
+                .init(
+                    type: .tool_result,
+                    content: [
+                        .init(
+                            type: .text,
+                            text: message.content
+                        )
+                    ],
+                    toolUseID: message.toolCallID
+                )
+            )
         } else {
             if let text = message.content {
                 out.content.append(.init(type: .text, text: text))
