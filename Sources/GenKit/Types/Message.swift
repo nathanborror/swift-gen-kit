@@ -40,6 +40,7 @@ public struct Message: Codable, Identifiable {
         case agent(String)
         case automation(String)
         case component(Component)
+        case file(String, String)
     }
     
     public struct Component: Codable {
