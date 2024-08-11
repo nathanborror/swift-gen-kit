@@ -1,0 +1,95 @@
+{
+  "pins" : [
+    {
+      "identity" : "swift-anthropic",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-anthropic",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ae711d9817376e534a9e2b279bc17b78dc1d9f09"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser",
+      "state" : {
+        "branch" : "main",
+        "revision" : "e3d8a3dd42079ac0d3429246a59602c6f6bf9a21"
+      }
+    },
+    {
+      "identity" : "swift-elevenlabs",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-elevenlabs",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fe859b3fa58aa7eb47e8218bebe68132340940ec"
+      }
+    },
+    {
+      "identity" : "swift-fal",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-fal",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9134dced8100584463d7c427773708eae7289889"
+      }
+    },
+    {
+      "identity" : "swift-google-gen",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-google-gen",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d0a04a228ccd46b097220085cf33c4adcefe7a8d"
+      }
+    },
+    {
+      "identity" : "swift-mistral",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-mistral",
+      "state" : {
+        "branch" : "main",
+        "revision" : "b6f5aa9c310f50cd054d884bd4aa47115a72ba12"
+      }
+    },
+    {
+      "identity" : "swift-ollama",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-ollama",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8c4b8110333dcfc05ee6a234923f3df577feaa28"
+      }
+    },
+    {
+      "identity" : "swift-openai",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-openai",
+      "state" : {
+        "branch" : "main",
+        "revision" : "07f3a376d202a25167a2c92a69e56968d9e21c9b"
+      }
+    },
+    {
+      "identity" : "swift-perplexity",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-perplexity",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c9df8111f9f77e7821a40a2dd91a32d1d667acbe"
+      }
+    },
+    {
+      "identity" : "swift-shared-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nathanborror/swift-shared-kit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "2422d3c4c0717f0ee1fea8a67abbc3584d67f779"
+      }
+    }
+  ],
+  "version" : 2
+}
