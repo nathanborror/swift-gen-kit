@@ -21,12 +21,13 @@ public struct Service: Codable, Identifiable {
     public enum ServiceID: String, Codable {
         case anthropic
         case elevenLabs
+        case fal
         case google
+        case groq
         case mistral
         case ollama
         case openAI
         case perplexity
-        case fal
     }
     
     public enum Credentials: Codable {
@@ -81,6 +82,9 @@ extension Service {
         case .google:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return GoogleService(configuration: .init(token: token))
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
         case .mistral:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return MistralService(configuration: .init(token: token))
@@ -115,6 +119,9 @@ extension Service {
         case .google:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return GoogleService(configuration: .init(token: token))
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
         case .mistral:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return MistralService(configuration: .init(token: token))
@@ -146,6 +153,8 @@ extension Service {
             throw ServiceError.unsupportedService
         case .google:
             throw ServiceError.unsupportedService
+        case .groq:
+            throw ServiceError.unsupportedService
         case .mistral:
             throw ServiceError.unsupportedService
         case .ollama:
@@ -175,6 +184,9 @@ extension Service {
             throw ServiceError.unsupportedService
         case .google:
             throw ServiceError.unsupportedService
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
         case .mistral:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return MistralService(configuration: .init(token: token))
@@ -205,6 +217,8 @@ extension Service {
             throw ServiceError.unsupportedService
         case .google:
             throw ServiceError.unsupportedService
+        case .groq:
+            throw ServiceError.unsupportedService
         case .mistral:
             throw ServiceError.unsupportedService
         case .ollama:
@@ -234,6 +248,9 @@ extension Service {
             throw ServiceError.unsupportedService
         case .google:
             throw ServiceError.unsupportedService
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
         case .mistral:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return MistralService(configuration: .init(token: token))
@@ -266,6 +283,8 @@ extension Service {
             throw ServiceError.unsupportedService
         case .google:
             throw ServiceError.unsupportedService
+        case .groq:
+            throw ServiceError.unsupportedService
         case .mistral:
             throw ServiceError.unsupportedService
         case .ollama:
@@ -295,6 +314,8 @@ extension Service {
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return ElevenLabsService(configuration: .init(token: token))
         case .google:
+            throw ServiceError.unsupportedService
+        case .groq:
             throw ServiceError.unsupportedService
         case .mistral:
             throw ServiceError.unsupportedService
@@ -326,6 +347,9 @@ extension Service {
         case .google:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return GoogleService(configuration: .init(token: token))
+        case .groq:
+            guard let token = credentials.token else { throw ServiceError.missingCredentials }
+            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
         case .mistral:
             guard let token = credentials.token else { throw ServiceError.missingCredentials }
             return MistralService(configuration: .init(token: token))
