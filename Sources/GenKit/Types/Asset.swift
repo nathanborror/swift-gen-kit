@@ -1,7 +1,7 @@
 import Foundation
 import SharedKit
 
-public struct Asset: Codable, Equatable, Hashable {
+public struct Asset: Codable, Equatable, Hashable, Sendable {
     public let name: String
     public let data: Data?
     public let kind: Kind
@@ -14,7 +14,7 @@ public struct Asset: Codable, Equatable, Hashable {
     /// Set to false when you want the asset to be included in the message history. Typically used for multimodal requests.
     public let noop: Bool
     
-    public enum Location: Codable {
+    public enum Location: Codable, Sendable {
         case filesystem
         case bundle
         case cache
@@ -22,7 +22,7 @@ public struct Asset: Codable, Equatable, Hashable {
         case none
     }
     
-    public enum Kind: Codable {
+    public enum Kind: Codable, Sendable {
         case image
         case video
         case audio

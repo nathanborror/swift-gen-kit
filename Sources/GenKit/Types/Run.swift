@@ -1,13 +1,13 @@
 import Foundation
 import SharedKit
 
-public struct Run: Codable, Identifiable {
+public struct Run: Codable, Identifiable, Hashable, Sendable {
     public var id: String
     public var status: Status
     public var started: Date
     public var ended: Date?
     
-    public enum Status: Codable {
+    public enum Status: Codable, Sendable {
         case paused
         case generating
         case cancelled

@@ -1,7 +1,7 @@
 import Foundation
 import SharedKit
 
-public struct Message: Codable, Identifiable {
+public struct Message: Codable, Identifiable, Hashable, Sendable {
     public var id: String
     public var kind: Kind
     public var role: Role
@@ -16,7 +16,7 @@ public struct Message: Codable, Identifiable {
     public var created: Date
     public var modified: Date
     
-    public enum Kind: String, Codable {
+    public enum Kind: String, Codable, Sendable {
         /// Instructions are sent to APIs but not shown in the UI (unless in a debug mode).
         case instruction
         /// Local messages are never sent to an API but always displayed in the UI.
@@ -27,15 +27,15 @@ public struct Message: Codable, Identifiable {
         case none
     }
     
-    public enum Role: String, Codable {
+    public enum Role: String, Codable, Sendable {
         case system, assistant, user, tool
     }
     
-    public enum FinishReason: Codable {
+    public enum FinishReason: Codable, Sendable {
         case stop, length, toolCalls, contentFilter, cancelled
     }
     
-    public enum Attachment: Codable {
+    public enum Attachment: Codable, Hashable, Sendable {
         case asset(Asset)
         case agent(String)
         case automation(String)
@@ -43,7 +43,7 @@ public struct Message: Codable, Identifiable {
         case file(String, String)
     }
     
-    public struct Component: Codable {
+    public struct Component: Codable, Hashable, Sendable {
         public var name: String
         public var json: String
         
@@ -70,18 +70,6 @@ public struct Message: Codable, Identifiable {
         self.metadata = .init(metadata)
         self.created = .now
         self.modified = .now
-    }
-}
-
-extension Message: Hashable, Equatable {
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(modified)
-    }
-    
-    public static func == (lhs: Message, rhs: Message) -> Bool {
-        lhs.hashValue == rhs.hashValue
     }
 }
 

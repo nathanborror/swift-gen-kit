@@ -1,15 +1,15 @@
 import Foundation
 import SharedKit
 
-public struct Tool: Codable {
+public struct Tool: Codable, Hashable, Sendable {
     public var type: ToolType
     public var function: Function
     
-    public enum ToolType: String, Codable {
+    public enum ToolType: String, Codable, Sendable {
         case function
     }
     
-    public struct Function: Codable {
+    public struct Function: Codable, Hashable, Sendable {
         public var name: String
         public var description: String
         public var parameters: JSONSchema
@@ -27,24 +27,12 @@ public struct Tool: Codable {
     }
 }
 
-extension Tool: Hashable, Equatable {
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(type)
-        hasher.combine(function.name)
-    }
-    
-    public static func == (lhs: Tool, rhs: Tool) -> Bool {
-        lhs.hashValue == rhs.hashValue
-    }
-}
-
-public struct ToolCall: Codable {
+public struct ToolCall: Codable, Identifiable, Hashable, Sendable {
     public var id: String
     public var type: String
     public var function: FunctionCall
     
-    public struct FunctionCall: Codable {
+    public struct FunctionCall: Codable, Hashable, Sendable {
         public var name: String
         public var arguments: String
         

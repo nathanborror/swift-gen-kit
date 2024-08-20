@@ -1,7 +1,7 @@
 import Foundation
 
 @dynamicMemberLookup
-public struct Metadata: Codable, Hashable {
+public struct Metadata: Codable, Hashable, Sendable {
     public var properties: [String: String]
     
     public subscript(dynamicMember member: String) -> String {
