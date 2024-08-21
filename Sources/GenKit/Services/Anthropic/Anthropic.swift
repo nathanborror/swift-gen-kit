@@ -35,13 +35,13 @@ extension AnthropicService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }
@@ -62,13 +62,13 @@ extension AnthropicService: VisionService {
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = makeRequest(model: request.model, messages: request.messages, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }
@@ -81,13 +81,13 @@ extension AnthropicService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }

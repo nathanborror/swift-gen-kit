@@ -32,12 +32,12 @@ extension OpenAIService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         var message = Message(role: .assistant)
         for try await result in client.chatsStream(query: payload) {
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }
@@ -114,7 +114,7 @@ extension OpenAIService: VisionService {
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
         let query = ChatVisionQuery(
             model: request.model,
             messages: encode(visionMessages: request.messages),
@@ -123,7 +123,7 @@ extension OpenAIService: VisionService {
         var message = Message(role: .assistant)
         for try await result in client.chatsVisionStream(query: query) {
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }
@@ -151,12 +151,12 @@ extension OpenAIService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatsStream(query: payload) {
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }

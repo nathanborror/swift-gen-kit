@@ -2,7 +2,7 @@ import Foundation
 
 public protocol ToolService {
     func completion(request: ToolServiceRequest) async throws -> Message
-    func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws
+    func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws
 }
 
 public struct ToolServiceRequest {

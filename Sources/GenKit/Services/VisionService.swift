@@ -2,7 +2,7 @@ import Foundation
 
 public protocol VisionService {
     func completion(request: VisionServiceRequest) async throws -> Message
-    func completionStream(request: VisionServiceRequest, update: (Message) async -> Void) async throws
+    func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws
 }
 
 public struct VisionServiceRequest {

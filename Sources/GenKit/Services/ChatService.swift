@@ -2,7 +2,7 @@ import Foundation
 
 public protocol ChatService {
     func completion(request: ChatServiceRequest) async throws -> Message
-    func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws
+    func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws
 }
 
 public struct ChatServiceRequest {

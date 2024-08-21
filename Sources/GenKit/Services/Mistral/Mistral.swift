@@ -32,12 +32,12 @@ extension MistralService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }
@@ -67,12 +67,12 @@ extension MistralService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async -> Void) async throws {
+    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             message = decode(result: result, into: message)
-            await update(message)
+            try await update(message)
         }
     }
 }
