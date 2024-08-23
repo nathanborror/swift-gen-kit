@@ -1,14 +1,16 @@
 import Foundation
 import SharedKit
 
+// Tools
+
 public struct Tool: Codable, Hashable, Sendable {
-    public var type: ToolType
+    public var type: Kind
     public var function: Function
     
-    public enum ToolType: String, Codable, Sendable {
+    public enum Kind: String, Codable, Sendable {
         case function
     }
-    
+
     public struct Function: Codable, Hashable, Sendable {
         public var name: String
         public var description: String
@@ -21,11 +23,13 @@ public struct Tool: Codable, Hashable, Sendable {
         }
     }
     
-    public init(type: ToolType = .function, function: Function) {
+    public init(type: Kind = .function, function: Function) {
         self.type = type
         self.function = function
     }
 }
+
+// Tool Calls
 
 public struct ToolCall: Codable, Identifiable, Hashable, Sendable {
     public var id: String
@@ -47,9 +51,6 @@ public struct ToolCall: Codable, Identifiable, Hashable, Sendable {
         self.type = type
         self.function = function
     }
-}
-
-extension ToolCall {
     
     public func apply(_ toolCall: ToolCall) -> ToolCall {
         var existing = self
@@ -61,5 +62,15 @@ extension ToolCall {
         
         existing.function.arguments = existing.function.arguments.apply(with: toolCall.function.arguments)
         return existing
+    }
+}
+
+public struct ToolCallResponse: Codable, Hashable, Sendable {
+    public var messages: [Message]
+    public var shouldContinue: Bool
+    
+    public init(messages: [Message], shouldContinue: Bool) {
+        self.messages = messages
+        self.shouldContinue = shouldContinue
     }
 }
