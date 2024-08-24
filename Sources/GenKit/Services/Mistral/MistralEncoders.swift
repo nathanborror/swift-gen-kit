@@ -25,7 +25,7 @@ extension MistralService {
         }
     }
     
-    func encode(tools: Set<Tool>) -> [Mistral.Tool] {
+    func encode(tools: [Tool]) -> [Mistral.Tool] {
         tools.map { encode(tool: $0) }
     }
 

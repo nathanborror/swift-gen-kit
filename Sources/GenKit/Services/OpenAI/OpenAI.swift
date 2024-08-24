@@ -13,7 +13,7 @@ public final class OpenAIService {
         logger.info("OpenAI Service: \(self.client.configuration.host.absoluteString)")
     }
     
-    private func makeRequest(model: String, messages: [Message], tools: Set<Tool> = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatQuery {
+    private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatQuery {
         return .init(
             model: model,
             messages: encode(messages: messages),

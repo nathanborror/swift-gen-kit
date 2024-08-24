@@ -1,7 +1,7 @@
 import Foundation
 import SharedKit
 
-public struct Asset: Codable, Equatable, Hashable, Sendable {
+public struct Asset: Codable, Sendable {
     public let name: String
     public let data: Data?
     public let kind: Kind

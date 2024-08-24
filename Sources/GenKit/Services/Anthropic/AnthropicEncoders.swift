@@ -120,7 +120,7 @@ extension AnthropicService {
         }
     }
     
-    func encode(tools: Set<Tool>) -> [Anthropic.ChatRequest.Tool]? {
+    func encode(tools: [Tool]) -> [Anthropic.ChatRequest.Tool]? {
         guard !tools.isEmpty else { return nil }
         return tools.map { encode(tool: $0) }
     }

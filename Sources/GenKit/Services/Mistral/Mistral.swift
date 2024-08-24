@@ -13,7 +13,7 @@ public final class MistralService {
         logger.info("Mistral Service: \(self.client.configuration.host.absoluteString)")
     }
     
-    private func makeRequest(model: String, messages: [Message], tools: Set<Tool> = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
+    private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
         return .init(
             model: model,
             messages: encode(messages: messages),

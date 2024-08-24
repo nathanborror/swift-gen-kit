@@ -13,7 +13,7 @@ public final class AnthropicService {
         logger.info("Anthropic Service: \(self.client.configuration.host.absoluteString)")
     }
     
-    private func makeRequest(model: String, messages: [Message], tools: Set<Tool> = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
+    private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
         let (system, messages) = encode(messages: messages)
         return .init(
             model: model,

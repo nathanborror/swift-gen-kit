@@ -157,7 +157,7 @@ public struct ChatSessionRequest {
     public let toolCallback: ToolCallback?
     
     public private(set) var messages: [Message] = []
-    public private(set) var tools: Set<Tool> = []
+    public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
     public private(set) var memories: [String] = []
     
@@ -171,14 +171,14 @@ public struct ChatSessionRequest {
         self.messages = messages
     }
     
-    public mutating func with(tools: Set<Tool>) {
+    public mutating func with(tools: [Tool]) {
         self.tools = tools
     }
     
     public mutating func with(tool: Tool?) {
         if let tool {
             self.tool = tool
-            self.tools.insert(tool)
+            self.tools.append(tool)
         } else {
             self.tool = nil
         }

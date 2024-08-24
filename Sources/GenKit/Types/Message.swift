@@ -1,7 +1,7 @@
 import Foundation
 import SharedKit
 
-public struct Message: Codable, Identifiable, Hashable, Sendable {
+public struct Message: Codable, Identifiable, Sendable {
     public var id: String
     public var parent: String?
     public var kind: Kind
@@ -36,7 +36,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         case stop, length, toolCalls, contentFilter, cancelled
     }
     
-    public enum Attachment: Codable, Hashable, Sendable {
+    public enum Attachment: Codable, Sendable {
         case asset(Asset)
         case agent(String)
         case automation(String)
@@ -44,7 +44,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         case file(String, String)
     }
     
-    public struct Component: Codable, Hashable, Sendable {
+    public struct Component: Codable, Sendable {
         public var name: String
         public var json: String
         

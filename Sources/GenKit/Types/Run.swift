@@ -1,7 +1,7 @@
 import Foundation
 import SharedKit
 
-public struct Run: Codable, Identifiable, Hashable, Sendable {
+public struct Run: Codable, Identifiable, Sendable {
     public var id: String
     public var status: Status
     public var started: Date
