@@ -3,6 +3,7 @@ import SharedKit
 
 public struct Message: Codable, Identifiable, Hashable, Sendable {
     public var id: String
+    public var parent: String?
     public var kind: Kind
     public var role: Role
     public var content: String?
@@ -53,11 +54,12 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         }
     }
     
-    public init(id: String = .id, kind: Kind = .none, role: Role, content: String? = nil,
+    public init(id: String = .id, parent: String? = nil, kind: Kind = .none, role: Role, content: String? = nil,
                 attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
                 runID: String? = nil, name: String? = nil, finishReason: FinishReason? = .stop,
                 metadata: [String: String] = [:]) {
         self.id = id
+        self.parent = parent
         self.kind = kind
         self.role = role
         self.content = content
