@@ -66,8 +66,9 @@ public struct VisionSessionRequest {
     public let model: String
     public let toolCallback: ToolCallback?
     
-    public private(set) var messages: [Message] = []
-    public private(set) var memories: [String] = []
+    public private(set) var system: String? = nil
+    public private(set) var history: [Message] = []
+    public private(set) var context: [String] = []
     
     public init(service: VisionService, model: String, toolCallback: ToolCallback? = nil) {
         self.service = service
@@ -75,12 +76,41 @@ public struct VisionSessionRequest {
         self.toolCallback = toolCallback
     }
     
-    public mutating func with(messages: [Message]) {
-        self.messages = messages
+    public mutating func with(system: String?) {
+        self.system = system
     }
     
-    public mutating func with(memories: [String]) {
-        self.memories = memories
+    public mutating func with(history: [Message]) {
+        self.history = history
+    }
+    
+    public mutating func with(context: [String]) {
+        self.context = context
+    }
+    
+    var messages: [Message] {
+        var messages: [Message] = []
+        
+        // Apply user context
+        var systemContext = ""
+        if !context.isEmpty {
+            systemContext = """
+            The following is context about the current user:
+            <user_context>
+            \(context.joined(separator: "\n"))
+            </user_context>
+            """
+        }
+        
+        // Apply system prompt
+        if let system {
+            messages.append(.init(kind: .instruction, role: .system, content: [system, systemContext].joined(separator: "\n\n")))
+        }
+        
+        // Apply history
+        messages += history
+        
+        return messages
     }
 }
 
