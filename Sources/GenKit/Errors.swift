@@ -2,7 +2,9 @@ import Foundation
 
 enum ServiceError: Error {
     case missingService
-    case missingCredentials
+    case missingServiceHost
+    case missingServiceToken
+    case missingServiceHostAndToken
     case missingImageData
     case missingUserMessage
     case unsupportedResponseFormat

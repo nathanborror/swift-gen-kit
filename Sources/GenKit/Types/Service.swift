@@ -6,7 +6,7 @@ import Foundation
 public struct Service: Codable, Identifiable, Sendable {
     public var id: ServiceID
     public var name: String
-    public var credentials: Credentials?
+    public var credentials: Credentials
     public var models: [Model]
     
     public var preferredChatModel: String?
@@ -31,21 +31,24 @@ public struct Service: Codable, Identifiable, Sendable {
     }
     
     public enum Credentials: Codable, Sendable {
-        case host(URL)
-        case token(String)
+        case host(URL?)
+        case token(String?)
+        case hostAndToken(URL?, String?)
         
         var host: URL? {
-            guard case .host(let url) = self else { return nil }
-            return url
+            if case .host(let host) = self { return host }
+            if case .hostAndToken(let host, _) = self { return host }
+            return nil
         }
         
         var token: String? {
-            guard case .token(let str) = self else { return nil }
-            return str
+            if case .token(let token) = self { return token }
+            if case .hostAndToken(_, let token) = self { return token }
+            return nil
         }
     }
     
-    public init(id: ServiceID, name: String, credentials: Credentials? = nil, models: [Model] = [],
+    public init(id: ServiceID, name: String, credentials: Credentials = .hostAndToken(nil, nil), models: [Model] = [],
                 preferredChatModel: String? = nil, preferredImageModel: String? = nil,
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
                 preferredToolModel: String? = nil, preferredVisionModel: String? = nil,
@@ -68,38 +71,91 @@ public struct Service: Codable, Identifiable, Sendable {
 
 extension Service {
     
-    public func modelService() throws -> ModelService {
-        guard let credentials else {
-            throw ServiceError.missingCredentials
+    public func hasValidCredentials() throws -> (URL?, String?){
+        switch credentials {
+        case let .host(url):
+            if url == nil {
+                throw ServiceError.missingServiceHost
+            }
+            return (url, nil)
+        case let .token(token):
+            if token == nil {
+                throw ServiceError.missingServiceToken
+            }
+            return (nil, token)
+        case let .hostAndToken(url, token):
+            if token == nil {
+                throw ServiceError.missingServiceToken
+            }
+            return (url, token)
         }
+    }
+    
+    public func anthropic() throws -> AnthropicService {
+        let (host, token) = try hasValidCredentials()
+        return AnthropicService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func openAI() throws -> OpenAIService {
+        let (host, token) = try hasValidCredentials()
+        return OpenAIService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func google() throws -> GoogleService {
+        let (host, token) = try hasValidCredentials()
+        return GoogleService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func mistral() throws -> MistralService {
+        let (host, token) = try hasValidCredentials()
+        return MistralService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func groq() throws -> OpenAIService {
+        let (host, token) = try hasValidCredentials()
+        return OpenAIService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func elevenLabs() throws -> ElevenLabsService {
+        let (host, token) = try hasValidCredentials()
+        return ElevenLabsService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func ollama() throws -> OllamaService {
+        let (host, _) = try hasValidCredentials()
+        return OllamaService(configuration: .init(host: host))
+    }
+    
+    public func perplexity() throws -> PerplexityService {
+        let (host, token) = try hasValidCredentials()
+        return PerplexityService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func fal() throws -> FalService {
+        let (host, token) = try hasValidCredentials()
+        return FalService(configuration: .init(host: host, token: token!))
+    }
+    
+    public func modelService() throws -> ModelService {
         switch id {
         case .anthropic:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return AnthropicService(configuration: .init(token: token))
+            return try anthropic()
         case .elevenLabs:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return ElevenLabsService(configuration: .init(token: token))
+            return try elevenLabs()
         case .google:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return GoogleService(configuration: .init(token: token))
+            return try google()
         case .groq:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
+            return try groq()
         case .mistral:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return MistralService(configuration: .init(token: token))
+            return try mistral()
         case .ollama:
-            guard let host = credentials.host else { throw ServiceError.missingCredentials }
-            return OllamaService(configuration: .init(host: host))
+            return try ollama()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
+            return try openAI()
         case .perplexity:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return PerplexityService(configuration: .init(token: token))
+            return try perplexity()
         case .fal:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return FalService(configuration: .init(token: token))
+            return try fal()
         }
     }
     
@@ -107,34 +163,22 @@ extension Service {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
         case .anthropic:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return AnthropicService(configuration: .init(token: token))
-        case .elevenLabs:
-            throw ServiceError.unsupportedService
+            return try anthropic()
         case .google:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return GoogleService(configuration: .init(token: token))
+            return try google()
         case .groq:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
+            return try groq()
         case .mistral:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return MistralService(configuration: .init(token: token))
+            return try mistral()
         case .ollama:
-            guard let host = credentials.host else { throw ServiceError.missingCredentials }
-            return OllamaService(configuration: .init(host: host))
+            return try ollama()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
+            return try openAI()
         case .perplexity:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return PerplexityService(configuration: .init(token: token))
-        case .fal:
+            return try perplexity()
+        case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
     }
@@ -143,30 +187,13 @@ extension Service {
         guard preferredImageModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
-        case .anthropic:
-            throw ServiceError.unsupportedService
-        case .elevenLabs:
-            throw ServiceError.unsupportedService
-        case .google:
-            throw ServiceError.unsupportedService
-        case .groq:
-            throw ServiceError.unsupportedService
-        case .mistral:
-            throw ServiceError.unsupportedService
-        case .ollama:
-            throw ServiceError.unsupportedService
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
-        case .perplexity:
-            throw ServiceError.unsupportedService
+            return try openAI()
         case .fal:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return FalService(configuration: .init(token: token))
+            return try fal()
+        case .anthropic, .elevenLabs, .google, .groq, .mistral, .ollama, .perplexity:
+            throw ServiceError.unsupportedService
         }
     }
     
@@ -174,31 +201,16 @@ extension Service {
         guard preferredEmbeddingModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
-        case .anthropic:
-            throw ServiceError.unsupportedService
-        case .elevenLabs:
-            throw ServiceError.unsupportedService
-        case .google:
-            throw ServiceError.unsupportedService
         case .groq:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
+            return try groq()
         case .mistral:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return MistralService(configuration: .init(token: token))
+            return try mistral()
         case .ollama:
-            guard let host = credentials.host else { throw ServiceError.missingCredentials }
-            return OllamaService(configuration: .init(host: host))
+            return try ollama()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
-        case .perplexity:
-            throw ServiceError.unsupportedService
-        case .fal:
+            return try openAI()
+        case .anthropic, .elevenLabs, .google, .perplexity, .fal:
             throw ServiceError.unsupportedService
         }
     }
@@ -207,28 +219,12 @@ extension Service {
         guard preferredTranscriptionModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
-        case .anthropic:
-            throw ServiceError.unsupportedService
-        case .elevenLabs:
-            throw ServiceError.unsupportedService
-        case .google:
-            throw ServiceError.unsupportedService
         case .groq:
-            throw ServiceError.unsupportedService
-        case .mistral:
-            throw ServiceError.unsupportedService
-        case .ollama:
-            throw ServiceError.unsupportedService
+            return try groq()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
-        case .perplexity:
-            throw ServiceError.unsupportedService
-        case .fal:
+            return try openAI()
+        case .anthropic, .elevenLabs, .google, .mistral, .ollama, .perplexity, .fal:
             throw ServiceError.unsupportedService
         }
     }
@@ -237,33 +233,20 @@ extension Service {
         guard preferredToolModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
         case .anthropic:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return AnthropicService(configuration: .init(token: token))
-        case .elevenLabs:
-            throw ServiceError.unsupportedService
-        case .google:
-            throw ServiceError.unsupportedService
+            return try anthropic()
         case .groq:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
+            return try groq()
         case .mistral:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return MistralService(configuration: .init(token: token))
+            return try mistral()
         case .ollama:
-            guard let host = credentials.host else { throw ServiceError.missingCredentials }
-            return OllamaService(configuration: .init(host: host))
+            return try ollama()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
+            return try openAI()
         case .perplexity:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return PerplexityService(configuration: .init(token: token))
-        case .fal:
+            return try perplexity()
+        case .elevenLabs, .google, .fal:
             throw ServiceError.unsupportedService
         }
     }
@@ -272,30 +255,16 @@ extension Service {
         guard preferredVisionModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
         case .anthropic:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return AnthropicService(configuration: .init(token: token))
-        case .elevenLabs:
-            throw ServiceError.unsupportedService
-        case .google:
-            throw ServiceError.unsupportedService
+            return try anthropic()
         case .groq:
-            throw ServiceError.unsupportedService
-        case .mistral:
-            throw ServiceError.unsupportedService
+            return try groq()
         case .ollama:
-            guard let host = credentials.host else { throw ServiceError.missingCredentials }
-            return OllamaService(configuration: .init(host: host))
+            return try ollama()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
-        case .perplexity:
-            throw ServiceError.unsupportedService
-        case .fal:
+            return try openAI()
+        case .elevenLabs, .google, .mistral, .perplexity, .fal:
             throw ServiceError.unsupportedService
         }
     }
@@ -304,29 +273,14 @@ extension Service {
         guard preferredSpeechModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
-        case .anthropic:
-            throw ServiceError.unsupportedService
         case .elevenLabs:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return ElevenLabsService(configuration: .init(token: token))
-        case .google:
-            throw ServiceError.unsupportedService
+            return try elevenLabs()
         case .groq:
-            throw ServiceError.unsupportedService
-        case .mistral:
-            throw ServiceError.unsupportedService
-        case .ollama:
-            throw ServiceError.unsupportedService
+            return try groq()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
-        case .perplexity:
-            throw ServiceError.unsupportedService
-        case .fal:
+            return try openAI()
+        case .anthropic, .google, .mistral, .ollama, .perplexity, .fal:
             throw ServiceError.unsupportedService
         }
     }
@@ -335,34 +289,22 @@ extension Service {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
-        guard let credentials else {
-            throw ServiceError.missingCredentials
-        }
         switch id {
         case .anthropic:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return AnthropicService(configuration: .init(token: token))
-        case .elevenLabs:
-            throw ServiceError.unsupportedService
+            return try anthropic()
         case .google:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return GoogleService(configuration: .init(token: token))
+            return try google()
         case .groq:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token, host: .init(string: "https://api.groq.com/openai/v1")!))
+            return try groq()
         case .mistral:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return MistralService(configuration: .init(token: token))
+            return try mistral()
         case .ollama:
-            guard let host = credentials.host else { throw ServiceError.missingCredentials }
-            return OllamaService(configuration: .init(host: host))
+            return try ollama()
         case .openAI:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return OpenAIService(configuration: .init(token: token))
+            return try openAI()
         case .perplexity:
-            guard let token = credentials.token else { throw ServiceError.missingCredentials }
-            return PerplexityService(configuration: .init(token: token))
-        case .fal:
+            return try perplexity()
+        case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
     }
