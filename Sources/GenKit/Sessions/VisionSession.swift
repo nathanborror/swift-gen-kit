@@ -114,7 +114,7 @@ public struct VisionSessionRequest {
     }
 }
 
-public struct VisionSessionResponse {
+public struct VisionSessionResponse: Sendable {
     public var messages: [Message]
 }
 

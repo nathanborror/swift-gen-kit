@@ -219,7 +219,7 @@ public struct ChatSessionRequest {
     }
 }
 
-public struct ChatSessionResponse {
+public struct ChatSessionResponse: Sendable {
     public var messages: [Message]
     
     public func extractTool<T: Codable>(name: String, type: T.Type) throws -> T {
