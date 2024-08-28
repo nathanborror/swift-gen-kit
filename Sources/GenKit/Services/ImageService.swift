@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol ImageService {
+public protocol ImageService: Sendable {
     func imagine(request: ImagineServiceRequest) async throws -> [Data]
 }
 

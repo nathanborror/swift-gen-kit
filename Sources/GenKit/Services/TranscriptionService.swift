@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol TranscriptionService {
+public protocol TranscriptionService: Sendable {
     func transcribe(request: TranscriptionServiceRequest) async throws -> String
 }
 

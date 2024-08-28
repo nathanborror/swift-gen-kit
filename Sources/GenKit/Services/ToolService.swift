@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol ToolService {
+public protocol ToolService: Sendable {
     func completion(request: ToolServiceRequest) async throws -> Message
     func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws
 }

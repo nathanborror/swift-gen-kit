@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol SpeechService {
+public protocol SpeechService: Sendable {
     func speak(request: SpeechServiceRequest) async throws -> Data
 }
 

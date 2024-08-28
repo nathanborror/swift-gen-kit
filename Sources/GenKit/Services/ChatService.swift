@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol ChatService {
+public protocol ChatService: Sendable {
     func completion(request: ChatServiceRequest) async throws -> Message
     func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws
 }

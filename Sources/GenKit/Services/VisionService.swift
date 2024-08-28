@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol VisionService {
+public protocol VisionService: Sendable {
     func completion(request: VisionServiceRequest) async throws -> Message
     func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws
 }
