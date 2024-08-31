@@ -2,55 +2,74 @@ import Foundation
 
 public final class ContentParser {
     public static let shared = ContentParser()
+
+    public struct Result: Sendable {
+        public var contents: [Content]
+        
+        public enum Content: Sendable {
+            case text(String)
+            case tag(Tag)
+        }
+        
+        public struct Tag: Sendable {
+            public let name: String
+            public let content: String?
+            public let params: [String: String]
+        }
+        
+        public func first(tag name: String) -> Tag? {
+            for content in contents {
+                if case .tag(let tag) = content {
+                    if tag.name == name { return tag }
+                }
+            }
+            return nil
+        }
+    }
     
     private let tagPattern = #/<(?<name>[^>\s]+)(?<params>\s+[^>]+)?>(?<content>.*?)(?:<\/\k<name>>|$)/#
     private let tagParamsPattern = #/(?<name>\w+)="(?<value>[^"]*)"/#
     
     private init() {}
     
-    public func parse(input: String, tags: [String] = []) throws -> ContentParserResult {
-        if tags.isEmpty {
-            return try parseAll(input: input)
-        }
-        
-        var parsedTags: [ContentParserResult.Tag] = []
-        
-        let output = try input.replacing(tagPattern.dotMatchesNewlines()) { match in
-            guard tags.contains(String(match.output.name)) else {
-                return match.output.0
+    public func parse(input: String, tags: [String] = []) throws -> Result {
+        let matches = input.ranges(of: tagPattern.dotMatchesNewlines())
+        var contents: [Result.Content] = []
+        var positionIndex = input.startIndex
+
+        for range in matches {
+            
+            // Add text before the tag if there's any
+            if positionIndex < range.lowerBound {
+                let textRange = positionIndex..<range.lowerBound
+                let text = String(input[textRange])
+                contents.append(.text(text))
             }
-            
-            let name = String(match.output.name)
-            let content = String(match.output.content)
-            
-            parsedTags.append(
-                .init(
-                    name: name,
-                    content: content,
-                    params: try parseTagParams(match.output.params)
-                )
-            )
-            return "<\(name) />"
+
+            // Extract tag information
+            let match = input[range]
+            if let output = try? tagPattern.dotMatchesNewlines().wholeMatch(in: match)?.output {
+                let name = String(output.name)
+                let content = String(output.content)
+                let params = try parseTagParams(output.params)
+                
+                if tags.isEmpty || tags.contains(name) {
+                    contents.append(.tag(.init(name: name, content: content, params: params)))
+                } else {
+                    contents.append(.text(String(match)))
+                }
+            }
+
+            // Update position index
+            positionIndex = range.upperBound
         }
-        return .init(tags: parsedTags, text: output)
-    }
-    
-    public func parseAll(input: String) throws -> ContentParserResult {
-        var parsedTags: [ContentParserResult.Tag] = []
-        let output = try input.replacing(tagPattern.dotMatchesNewlines()) { match in
-            let name = String(match.output.name)
-            let content = String(match.output.content)
-            
-            parsedTags.append(
-                .init(
-                    name: name,
-                    content: content,
-                    params: try parseTagParams(match.output.params)
-                )
-            )
-            return "<\(name) />"
+
+        // Add any remaining text after the last tag
+        if positionIndex < input.endIndex {
+            let text = String(input[positionIndex...])
+            contents.append(.text(text))
         }
-        return .init(tags: parsedTags, text: output)
+        return .init(contents: contents)
     }
 
     private func parseTagParams(_ input: Substring?) throws -> [String: String] {
@@ -62,20 +81,5 @@ public final class ContentParser {
             out[String(name)] = String(value)
         }
         return out
-    }
-}
-
-public struct ContentParserResult: Codable, Sendable {
-    public var tags: [Tag] = []
-    public var text: String = ""
-    
-    public struct Tag: Codable, Sendable {
-        public var name: String
-        public var content: String? = nil
-        public var params: [String: String] = [:]
-    }
-    
-    public func get(tag name: String) -> Tag? {
-        tags.first(where: { $0.name == name})
     }
 }
