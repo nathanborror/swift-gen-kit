@@ -4,7 +4,13 @@ import Ollama
 extension OllamaService {
     
     func encode(messages: [Message]) -> [Ollama.Message] {
-        messages.map { encode(message: $0) }
+        // When there's just one message it has to be from the user.
+        if messages.count == 1 {
+            var message = messages[0]
+            message.role = .user // force this to be a user message
+            return [encode(message: message)]
+        }
+        return messages.map { encode(message: $0) }
     }
     
     func encode(message: Message) -> Ollama.Message {
