@@ -8,6 +8,15 @@ extension AnthropicService {
     // chat request instead of system messages. Combine multiple user messages so we always have alternating user and
     // assistant messages.
     func encode(messages: [Message]) -> (String?, [Anthropic.ChatRequest.Message]) {
+        
+        // When there's just one message it has to be from the user.
+        if messages.count == 1 {
+            var message = messages[0]
+            message.role = .user // force this to be a user message
+            return (nil, [encode(message: message)])
+        }
+        
+        // Proceed as normal
         let system = messages
             .filter { $0.role == .system }
             .map { $0.content }
