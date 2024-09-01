@@ -71,12 +71,11 @@ public struct Service: Codable, Identifiable, Sendable {
 
 extension Service {
     
+    /// Returns valid credentials used to connect to a Service. If the host is nil then the Service uses the
+    /// default host located in the service package.
     public func hasValidCredentials() throws -> (URL?, String?){
         switch credentials {
         case let .host(url):
-            if url == nil {
-                throw ServiceError.missingServiceHost
-            }
             return (url, nil)
         case let .token(token):
             if token == nil {
