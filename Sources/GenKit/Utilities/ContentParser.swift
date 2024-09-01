@@ -15,6 +15,16 @@ public final class ContentParser {
             public let name: String
             public let content: String?
             public let params: [String: String]
+            
+            public init(name: String, content: String? = nil, params: [String : String] = [:]) {
+                self.name = name
+                self.content = content
+                self.params = params
+            }
+        }
+        
+        public init(contents: [Content]) {
+            self.contents = contents
         }
         
         public func first(tag name: String) -> Tag? {
