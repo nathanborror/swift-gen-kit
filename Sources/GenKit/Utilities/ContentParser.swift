@@ -37,7 +37,7 @@ public final class ContentParser {
         }
     }
     
-    private let tagPattern = #/(?:^|\n)\s*(?:\n\s*)*<(?<name>[^>\s]+)(?<params>\s+[^>]+)?>(?<content>.*?)(?:<\/\k<name>>|$)/#
+    private let tagPattern = #/^\s*<(?<name>[^>\s]+)(?<params>\s+[^>]+)?>(?<content>.*?)(?:<\/\k<name>>|$)/#
     private let tagParamsPattern = #/(?<name>\w+)="(?<value>[^"]*)"/#
     
     private init() {}
