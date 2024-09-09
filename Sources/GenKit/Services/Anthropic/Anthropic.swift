@@ -19,6 +19,7 @@ public final class AnthropicService {
             model: model.id,
             messages: messages,
             system: system,
+            maxTokens: model.maxOutput ?? 8192,
             tools: encode(tools: tools),
             toolChoice: (toolChoice != nil) ? .init(type: .tool, name: toolChoice!.function.name) : nil,
             stream: stream
