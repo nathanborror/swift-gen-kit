@@ -22,12 +22,10 @@ public class ChatSession {
                         tools: request.tools,
                         toolChoice: (runLoopCount > 0) ? nil : request.tool // FIRST REQUEST ONLY
                     )
-                    try await request.service.completionStream(request: req) { update in
-                        var message = update
-                        message.runID = runID
-                        
+                    try await request.service.completionStream(request: req) { message in
+                        let message = apply(runID: runID, message: message)
                         messages = apply(message: message, messages: messages)
-                        continuation.yield(update)
+                        continuation.yield(message)
                     }
                     
                     // Determine if there were any tool calls on the last message, process them by calling their
@@ -38,6 +36,7 @@ public class ChatSession {
                     let lastMessage = messages.last!
                     let (toolMessages, shouldContinue) = try await processToolCalls(in: lastMessage, callback: request.toolCallback)
                     for message in toolMessages {
+                        let message = apply(runID: runID, message: message)
                         messages = apply(message: message, messages: messages)
                         continuation.yield(message)
                     }
@@ -69,7 +68,7 @@ public class ChatSession {
                 toolChoice: (runLoopCount > 0) ? nil : request.tool // FIRST REQUEST ONLY
             )
             var message = try await request.service.completion(request: req)
-            message.runID = runID
+            message = apply(runID: runID, message: message)
             
             response.messages = apply(message: message, messages: response.messages)
             messages = apply(message: message, messages: messages)
@@ -81,6 +80,7 @@ public class ChatSession {
             }
             let (toolMessages, shouldContinue) = try await processToolCalls(in: message, callback: request.toolCallback)
             for message in toolMessages {
+                let message = apply(runID: runID, message: message)
                 response.messages = apply(message: message, messages: response.messages)
                 messages = apply(message: message, messages: messages)
             }
@@ -144,6 +144,12 @@ public class ChatSession {
             messages.append(message)
             return messages
         }
+    }
+    
+    func apply(runID: String?, message: Message) -> Message {
+        var message = message
+        message.runID = runID
+        return message
     }
 }
 
