@@ -27,13 +27,13 @@ public final class OpenAIService {
 extension OpenAIService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         let result = try await client.chats(query: payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         var message = Message(role: .assistant)
         for try await result in client.chatsStream(query: payload) {
             message = decode(result: result, into: message)
@@ -44,8 +44,8 @@ extension OpenAIService: ChatService {
 
 extension OpenAIService: EmbeddingService {
     
-    public func embeddings(model: String, input: String) async throws -> [Double] {
-        let query = EmbeddingsQuery(model: model, input: input)
+    public func embeddings(model: Model, input: String) async throws -> [Double] {
+        let query = EmbeddingsQuery(model: model.id, input: input)
         let result = try await client.embeddings(query: query)
         return result.data.first?.embedding ?? []
     }
@@ -64,7 +64,7 @@ extension OpenAIService: ImageService {
     public func imagine(request: ImagineServiceRequest) async throws -> [Data] {
         let query = ImagesQuery(
             prompt: request.prompt,
-            model: request.model,
+            model: request.model.id,
             n: request.n,
             size: request.size
         )
@@ -91,7 +91,7 @@ extension OpenAIService: TranscriptionService {
     public func transcribe(request: TranscriptionServiceRequest) async throws -> String {
         let query = AudioTranscriptionQuery(
             file: request.data,
-            model: request.model,
+            model: request.model.id,
             prompt: request.prompt,
             temperature: request.temperature,
             language: request.language,
@@ -106,7 +106,7 @@ extension OpenAIService: VisionService {
     
     public func completion(request: VisionServiceRequest) async throws -> Message {
         let query = ChatVisionQuery(
-            model: request.model,
+            model: request.model.id,
             messages: encode(visionMessages: request.messages),
             maxTokens: request.maxTokens
         )
@@ -116,7 +116,7 @@ extension OpenAIService: VisionService {
     
     public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
         let query = ChatVisionQuery(
-            model: request.model,
+            model: request.model.id,
             messages: encode(visionMessages: request.messages),
             maxTokens: request.maxTokens
         )
@@ -132,7 +132,7 @@ extension OpenAIService: SpeechService {
     
     public func speak(request: SpeechServiceRequest) async throws -> Data {
         let query = AudioSpeechQuery(
-            model: request.model,
+            model: request.model.id,
             input: request.input,
             voice: .init(rawValue: request.voice) ?? .alloy,
             responseFormat: try encode(responseFormat: request.responseFormat),
@@ -146,13 +146,13 @@ extension OpenAIService: SpeechService {
 extension OpenAIService: ToolService {
     
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         let result = try await client.chats(query: payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatsStream(query: payload) {
             message = decode(result: result, into: message)

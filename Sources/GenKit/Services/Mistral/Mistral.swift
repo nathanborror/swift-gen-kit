@@ -27,13 +27,13 @@ public final class MistralService {
 extension MistralService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice, stream: true)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             message = decode(result: result, into: message)
@@ -44,8 +44,8 @@ extension MistralService: ChatService {
 
 extension MistralService: EmbeddingService {
     
-    public func embeddings(model: String, input: String) async throws -> [Double] {
-        let payload = EmbeddingRequest(model: model, input: [input])
+    public func embeddings(model: Model, input: String) async throws -> [Double] {
+        let payload = EmbeddingRequest(model: model.id, input: [input])
         let result = try await client.embeddings(payload)
         return result.data.first?.embedding ?? []
     }
@@ -62,13 +62,13 @@ extension MistralService: ModelService {
 extension MistralService: ToolService {
     
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
+        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             message = decode(result: result, into: message)

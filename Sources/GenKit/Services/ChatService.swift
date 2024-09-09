@@ -6,12 +6,12 @@ public protocol ChatService: Sendable {
 }
 
 public struct ChatServiceRequest {
-    public var model: String
+    public var model: Model
     public var messages: [Message]
     public var tools: [Tool]
     public var toolChoice: Tool?
     
-    public init(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) {
+    public init(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) {
         self.model = model
         self.messages = messages
         self.tools = tools

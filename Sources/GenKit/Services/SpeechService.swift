@@ -6,7 +6,7 @@ public protocol SpeechService: Sendable {
 
 public struct SpeechServiceRequest {
     public var voice: String
-    public var model: String
+    public var model: Model
     public var input: String
     public var responseFormat: ResponseFormat?
     public var speed: Double?
@@ -19,7 +19,7 @@ public struct SpeechServiceRequest {
         case custom(String)
     }
     
-    public init(voice: String, model: String, input: String, responseFormat: ResponseFormat? = nil, speed: Double? = nil) {
+    public init(voice: String, model: Model, input: String, responseFormat: ResponseFormat? = nil, speed: Double? = nil) {
         self.voice = voice
         self.model = model
         self.input = input

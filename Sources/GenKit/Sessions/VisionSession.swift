@@ -63,14 +63,14 @@ public struct VisionSessionRequest {
     public typealias ToolCallback = @Sendable (ToolCall) async throws -> ToolCallResponse
     
     public let service: VisionService
-    public let model: String
+    public let model: Model
     public let toolCallback: ToolCallback?
     
     public private(set) var system: String? = nil
     public private(set) var history: [Message] = []
     public private(set) var context: [String] = []
     
-    public init(service: VisionService, model: String, toolCallback: ToolCallback? = nil) {
+    public init(service: VisionService, model: Model, toolCallback: ToolCallback? = nil) {
         self.service = service
         self.model = model
         self.toolCallback = toolCallback

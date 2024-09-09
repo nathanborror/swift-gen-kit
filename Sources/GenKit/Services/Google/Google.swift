@@ -19,14 +19,14 @@ extension GoogleService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
         let payload = GenerateContentRequest(contents: encode(messages: request.messages))
-        let result = try await client.chat(payload, model: request.model)
+        let result = try await client.chat(payload, model: request.model.id)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = GenerateContentRequest(contents: encode(messages: request.messages))
         let messageID = String.id
-        for try await result in client.chatStream(payload, model: request.model) {
+        for try await result in client.chatStream(payload, model: request.model.id) {
             var message = decode(result: result)
             message.id = messageID
             try await update(message)

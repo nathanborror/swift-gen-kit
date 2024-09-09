@@ -5,7 +5,7 @@ public protocol ImageService: Sendable {
 }
 
 public struct ImagineServiceRequest {
-    public var model: String
+    public var model: Model
     public var prompt: String
     public var n: Int?
     public var quality: String?
@@ -14,7 +14,7 @@ public struct ImagineServiceRequest {
     public var style: String?
     public var user: String?
         
-    public init(model: String, prompt: String, n: Int? = nil, quality: String? = nil, responseFormat: String? = nil, 
+    public init(model: Model, prompt: String, n: Int? = nil, quality: String? = nil, responseFormat: String? = nil,
                 size: String? = nil, style: String? = nil, user: String? = nil) {
         self.model = model
         self.prompt = prompt

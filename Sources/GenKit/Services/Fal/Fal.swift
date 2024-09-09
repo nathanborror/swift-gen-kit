@@ -21,7 +21,7 @@ extension FalService: ImageService {
             prompt: request.prompt,
             numImages: request.n
         )
-        let result = try await client.textToImage(query, model: request.model)
+        let result = try await client.textToImage(query, model: request.model.id)
         return try result.images.map {
             guard let url = URL(string: $0.url) else { return nil }
             return try Data(contentsOf: url)

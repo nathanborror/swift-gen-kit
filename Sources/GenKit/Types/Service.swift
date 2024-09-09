@@ -6,7 +6,8 @@ import Foundation
 public struct Service: Codable, Identifiable, Sendable {
     public var id: ServiceID
     public var name: String
-    public var credentials: Credentials
+    public var host: String?
+    public var token: String?
     public var models: [Model]
     
     public var preferredChatModel: String?
@@ -30,32 +31,15 @@ public struct Service: Codable, Identifiable, Sendable {
         case perplexity
     }
     
-    public enum Credentials: Codable, Sendable {
-        case host(URL?)
-        case token(String?)
-        case hostAndToken(URL?, String?)
-        
-        var host: URL? {
-            if case .host(let host) = self { return host }
-            if case .hostAndToken(let host, _) = self { return host }
-            return nil
-        }
-        
-        var token: String? {
-            if case .token(let token) = self { return token }
-            if case .hostAndToken(_, let token) = self { return token }
-            return nil
-        }
-    }
-    
-    public init(id: ServiceID, name: String, credentials: Credentials = .hostAndToken(nil, nil), models: [Model] = [],
+    public init(id: ServiceID, name: String, host: String? = nil, token: String? = nil, models: [Model] = [],
                 preferredChatModel: String? = nil, preferredImageModel: String? = nil,
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
                 preferredToolModel: String? = nil, preferredVisionModel: String? = nil,
                 preferredSpeechModel: String? = nil, preferredSummarizationModel: String? = nil) {
         self.id = id
         self.name = name
-        self.credentials = credentials
+        self.host = host
+        self.token = token
         self.models = models
         
         self.preferredChatModel = preferredChatModel
@@ -67,94 +51,71 @@ public struct Service: Codable, Identifiable, Sendable {
         self.preferredSpeechModel = preferredSpeechModel
         self.preferredSummarizationModel = preferredSummarizationModel
     }
+    
+    var hostURL: URL? {
+        guard let host else { return nil }
+        return URL(string: host)
+    }
 }
 
 extension Service {
     
-    /// Returns valid credentials used to connect to a Service. If the host is nil then the Service uses the
-    /// default host located in the service package.
-    public func hasValidCredentials() throws -> (URL?, String?){
-        switch credentials {
-        case let .host(url):
-            return (url, nil)
-        case let .token(token):
-            if token == nil {
-                throw ServiceError.missingServiceToken
-            }
-            return (nil, token)
-        case let .hostAndToken(url, token):
-            if token == nil {
-                throw ServiceError.missingServiceToken
-            }
-            return (url, token)
-        }
+    public func anthropic() -> AnthropicService {
+        AnthropicService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func anthropic() throws -> AnthropicService {
-        let (host, token) = try hasValidCredentials()
-        return AnthropicService(configuration: .init(host: host, token: token!))
+    public func elevenLabs() -> ElevenLabsService {
+        ElevenLabsService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func openAI() throws -> OpenAIService {
-        let (host, token) = try hasValidCredentials()
-        return OpenAIService(configuration: .init(host: host, token: token!))
+    public func fal() -> FalService {
+        FalService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func google() throws -> GoogleService {
-        let (host, token) = try hasValidCredentials()
-        return GoogleService(configuration: .init(host: host, token: token!))
+    public func google() -> GoogleService {
+        GoogleService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func mistral() throws -> MistralService {
-        let (host, token) = try hasValidCredentials()
-        return MistralService(configuration: .init(host: host, token: token!))
+    public func groq() -> OpenAIService {
+        OpenAIService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func groq() throws -> OpenAIService {
-        let (host, token) = try hasValidCredentials()
-        return OpenAIService(configuration: .init(host: host, token: token!))
+    public func mistral() -> MistralService {
+        MistralService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func elevenLabs() throws -> ElevenLabsService {
-        let (host, token) = try hasValidCredentials()
-        return ElevenLabsService(configuration: .init(host: host, token: token!))
+    public func ollama() -> OllamaService {
+        OllamaService(configuration: .init(host: hostURL))
     }
     
-    public func ollama() throws -> OllamaService {
-        let (host, _) = try hasValidCredentials()
-        return OllamaService(configuration: .init(host: host))
+    public func openAI() -> OpenAIService {
+        OpenAIService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func perplexity() throws -> PerplexityService {
-        let (host, token) = try hasValidCredentials()
-        return PerplexityService(configuration: .init(host: host, token: token!))
+    public func perplexity() -> PerplexityService {
+        PerplexityService(configuration: .init(host: hostURL, token: token!))
     }
     
-    public func fal() throws -> FalService {
-        let (host, token) = try hasValidCredentials()
-        return FalService(configuration: .init(host: host, token: token!))
-    }
-    
-    public func modelService() throws -> ModelService {
+    public func modelService() -> ModelService {
         switch id {
         case .anthropic:
-            return try anthropic()
+            anthropic()
         case .elevenLabs:
-            return try elevenLabs()
-        case .google:
-            return try google()
-        case .groq:
-            return try groq()
-        case .mistral:
-            return try mistral()
-        case .ollama:
-            return try ollama()
-        case .openAI:
-            return try openAI()
-        case .perplexity:
-            return try perplexity()
+            elevenLabs()
         case .fal:
-            return try fal()
+            fal()
+        case .google:
+            google()
+        case .groq:
+            groq()
+        case .mistral:
+            mistral()
+        case .ollama:
+            ollama()
+        case .openAI:
+            openAI()
+        case .perplexity:
+            perplexity()
         }
     }
     
@@ -164,19 +125,19 @@ extension Service {
         }
         switch id {
         case .anthropic:
-            return try anthropic()
+            return anthropic()
         case .google:
-            return try google()
+            return google()
         case .groq:
-            return try groq()
+            return groq()
         case .mistral:
-            return try mistral()
+            return mistral()
         case .ollama:
-            return try ollama()
+            return ollama()
         case .openAI:
-            return try openAI()
+            return openAI()
         case .perplexity:
-            return try perplexity()
+            return perplexity()
         case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
@@ -187,10 +148,10 @@ extension Service {
             throw ServiceError.missingService
         }
         switch id {
-        case .openAI:
-            return try openAI()
         case .fal:
-            return try fal()
+            return fal()
+        case .openAI:
+            return openAI()
         case .anthropic, .elevenLabs, .google, .groq, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
@@ -202,14 +163,14 @@ extension Service {
         }
         switch id {
         case .groq:
-            return try groq()
+            return groq()
         case .mistral:
-            return try mistral()
+            return mistral()
         case .ollama:
-            return try ollama()
+            return ollama()
         case .openAI:
-            return try openAI()
-        case .anthropic, .elevenLabs, .google, .perplexity, .fal:
+            return openAI()
+        case .anthropic, .elevenLabs, .fal, .google, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -220,10 +181,10 @@ extension Service {
         }
         switch id {
         case .groq:
-            return try groq()
+            return groq()
         case .openAI:
-            return try openAI()
-        case .anthropic, .elevenLabs, .google, .mistral, .ollama, .perplexity, .fal:
+            return openAI()
+        case .anthropic, .elevenLabs, .fal, .google, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -234,18 +195,18 @@ extension Service {
         }
         switch id {
         case .anthropic:
-            return try anthropic()
+            return anthropic()
         case .groq:
-            return try groq()
+            return groq()
         case .mistral:
-            return try mistral()
+            return mistral()
         case .ollama:
-            return try ollama()
+            return ollama()
         case .openAI:
-            return try openAI()
+            return openAI()
         case .perplexity:
-            return try perplexity()
-        case .elevenLabs, .google, .fal:
+            return perplexity()
+        case .elevenLabs, .fal, .google:
             throw ServiceError.unsupportedService
         }
     }
@@ -256,14 +217,14 @@ extension Service {
         }
         switch id {
         case .anthropic:
-            return try anthropic()
+            return anthropic()
         case .groq:
-            return try groq()
+            return groq()
         case .ollama:
-            return try ollama()
+            return ollama()
         case .openAI:
-            return try openAI()
-        case .elevenLabs, .google, .mistral, .perplexity, .fal:
+            return openAI()
+        case .elevenLabs, .fal, .google, .mistral, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -274,12 +235,12 @@ extension Service {
         }
         switch id {
         case .elevenLabs:
-            return try elevenLabs()
+            return elevenLabs()
         case .groq:
-            return try groq()
+            return groq()
         case .openAI:
-            return try openAI()
-        case .anthropic, .google, .mistral, .ollama, .perplexity, .fal:
+            return openAI()
+        case .anthropic, .google, .fal, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -290,19 +251,19 @@ extension Service {
         }
         switch id {
         case .anthropic:
-            return try anthropic()
+            return anthropic()
         case .google:
-            return try google()
+            return google()
         case .groq:
-            return try groq()
+            return groq()
         case .mistral:
-            return try mistral()
+            return mistral()
         case .ollama:
-            return try ollama()
+            return ollama()
         case .openAI:
-            return try openAI()
+            return openAI()
         case .perplexity:
-            return try perplexity()
+            return perplexity()
         case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
