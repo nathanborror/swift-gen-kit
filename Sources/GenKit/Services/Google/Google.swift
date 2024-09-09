@@ -5,13 +5,12 @@ import GoogleGen
 
 private let logger = Logger(subsystem: "GoogleService", category: "GenKit")
 
-public final class GoogleService {
+public actor GoogleService {
     
     private var client: GoogleGenClient
     
     public init(configuration: GoogleGenClient.Configuration) {
         self.client = GoogleGenClient(configuration: configuration)
-        logger.info("GoogleGen Service: \(self.client.configuration.host.absoluteString)")
     }
 }
 

@@ -4,13 +4,12 @@ import Anthropic
 
 private let logger = Logger(subsystem: "AnthropicService", category: "GenKit")
 
-public final class AnthropicService {
+public actor AnthropicService {
     
     let client: AnthropicClient
     
     public init(configuration: AnthropicClient.Configuration) {
         self.client = AnthropicClient(configuration: configuration)
-        logger.info("Anthropic Service: \(self.client.configuration.host.absoluteString)")
     }
     
     private func makeRequest(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {

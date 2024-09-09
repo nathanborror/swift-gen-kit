@@ -4,13 +4,12 @@ import Ollama
 
 private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 
-public final class OllamaService {
+public actor OllamaService {
     
     private var client: OllamaClient
     
     public init(configuration: OllamaClient.Configuration) {
         self.client = OllamaClient(configuration: configuration)
-        logger.info("Ollama Service: \(self.client.configuration.host.absoluteString)")
     }
     
     private func prepareToolMessage(_ tool: Tool?) -> Ollama.Message? {

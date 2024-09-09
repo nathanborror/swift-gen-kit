@@ -4,13 +4,12 @@ import OpenAI
 
 private let logger = Logger(subsystem: "OpenAIService", category: "GenKit")
 
-public final class OpenAIService {
+public actor OpenAIService {
     
     private var client: OpenAIClient
     
     public init(configuration: OpenAIClient.Configuration) {
         self.client = OpenAIClient(configuration: configuration)
-        logger.info("OpenAI Service: \(self.client.configuration.host.absoluteString)")
     }
     
     private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatQuery {

@@ -4,13 +4,12 @@ import Perplexity
 
 private let logger = Logger(subsystem: "PerplexityService", category: "GenKit")
 
-public final class PerplexityService {
+public actor PerplexityService {
     
     let client: PerplexityClient
     
     public init(configuration: PerplexityClient.Configuration) {
         self.client = PerplexityClient(configuration: configuration)
-        logger.info("Perplexity Service: \(self.client.configuration.host.absoluteString)")
     }
 }
 

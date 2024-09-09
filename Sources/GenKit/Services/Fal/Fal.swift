@@ -4,13 +4,12 @@ import Fal
 
 private let logger = Logger(subsystem: "FalService", category: "GenKit")
 
-public final class FalService {
+public actor FalService {
     
     private var client: FalClient
     
     public init(configuration: FalClient.Configuration) {
         self.client = FalClient(configuration: configuration)
-        logger.info("Fal Service: \(self.client.configuration.host.absoluteString)")
     }
 }
 

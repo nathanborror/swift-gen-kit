@@ -4,13 +4,12 @@ import ElevenLabs
 
 private let logger = Logger(subsystem: "ElevenLabsService", category: "GenKit")
 
-public final class ElevenLabsService {
+public actor ElevenLabsService {
     
     private var client: ElevenLabsClient
     
     public init(configuration: ElevenLabsClient.Configuration) {
         self.client = ElevenLabsClient(configuration: configuration)
-        logger.info("ElevenLabs Service: \(self.client.configuration.host.absoluteString)")
     }
 }
 

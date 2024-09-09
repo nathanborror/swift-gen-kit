@@ -4,13 +4,12 @@ import Mistral
 
 private let logger = Logger(subsystem: "MistralService", category: "GenKit")
 
-public final class MistralService {
+public actor MistralService {
     
     let client: MistralClient
     
     public init(configuration: MistralClient.Configuration) {
         self.client = MistralClient(configuration: configuration)
-        logger.info("Mistral Service: \(self.client.configuration.host.absoluteString)")
     }
     
     private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
