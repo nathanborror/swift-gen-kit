@@ -50,7 +50,15 @@ extension AnthropicService: ModelService {
     
     public func models() async throws -> [Model] {
         let result = try await client.models()
-        return result.models.map { Model(id: $0, owner: "anthropic") }
+        return result.models.map {
+            Model(
+                id: $0.id,
+                name: $0.name,
+                owner: $0.owner,
+                contextWindow: $0.contextWindow,
+                maxOutput: $0.maxOutput
+            )
+        }
     }
 }
 
