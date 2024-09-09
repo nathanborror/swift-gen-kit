@@ -6,8 +6,8 @@ import Foundation
 public struct Service: Codable, Identifiable, Sendable {
     public var id: ServiceID
     public var name: String
-    public var host: String?
-    public var token: String?
+    public var host: String
+    public var token: String
     public var models: [Model]
     
     public var preferredChatModel: String?
@@ -31,7 +31,7 @@ public struct Service: Codable, Identifiable, Sendable {
         case perplexity
     }
     
-    public init(id: ServiceID, name: String, host: String? = nil, token: String? = nil, models: [Model] = [],
+    public init(id: ServiceID, name: String, host: String = "", token: String = "", models: [Model] = [],
                 preferredChatModel: String? = nil, preferredImageModel: String? = nil,
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
                 preferredToolModel: String? = nil, preferredVisionModel: String? = nil,
@@ -53,35 +53,34 @@ public struct Service: Codable, Identifiable, Sendable {
     }
     
     var hostURL: URL? {
-        guard let host else { return nil }
-        return URL(string: host)
+        URL(string: host)
     }
 }
 
 extension Service {
     
     public func anthropic() -> AnthropicService {
-        AnthropicService(configuration: .init(host: hostURL, token: token!))
+        AnthropicService(configuration: .init(host: hostURL, token: token))
     }
     
     public func elevenLabs() -> ElevenLabsService {
-        ElevenLabsService(configuration: .init(host: hostURL, token: token!))
+        ElevenLabsService(configuration: .init(host: hostURL, token: token))
     }
     
     public func fal() -> FalService {
-        FalService(configuration: .init(host: hostURL, token: token!))
+        FalService(configuration: .init(host: hostURL, token: token))
     }
     
     public func google() -> GoogleService {
-        GoogleService(configuration: .init(host: hostURL, token: token!))
+        GoogleService(configuration: .init(host: hostURL, token: token))
     }
     
     public func groq() -> OpenAIService {
-        OpenAIService(configuration: .init(host: hostURL, token: token!))
+        OpenAIService(configuration: .init(host: hostURL, token: token))
     }
     
     public func mistral() -> MistralService {
-        MistralService(configuration: .init(host: hostURL, token: token!))
+        MistralService(configuration: .init(host: hostURL, token: token))
     }
     
     public func ollama() -> OllamaService {
@@ -89,11 +88,11 @@ extension Service {
     }
     
     public func openAI() -> OpenAIService {
-        OpenAIService(configuration: .init(host: hostURL, token: token!))
+        OpenAIService(configuration: .init(host: hostURL, token: token))
     }
     
     public func perplexity() -> PerplexityService {
-        PerplexityService(configuration: .init(host: hostURL, token: token!))
+        PerplexityService(configuration: .init(host: hostURL, token: token))
     }
     
     public func modelService() -> ModelService {
