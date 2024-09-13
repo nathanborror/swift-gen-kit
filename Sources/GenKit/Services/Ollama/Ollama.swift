@@ -37,22 +37,23 @@ extension OllamaService: ChatService {
         if let toolMessage = prepareToolMessage(request.toolChoice) {
             messages.append(toolMessage)
         }
-        var payload = ChatRequest(model: request.model.id, messages: messages)
-        
-        // Encourage JSON output if tool choice is present
-        if request.toolChoice != nil {
-            payload.format = "json"
-        }
-        
-        // Result
-        let result = try await client.chat(payload)
+        let req = ChatRequest(
+            model: request.model.id,
+            messages: messages,
+            format: (request.toolChoice != nil) ? "json" : nil // Encourage JSON output if tool choice is present
+        )
+        let result = try await client.chat(req)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = ChatRequest(model: request.model.id, messages: encode(messages: request.messages), stream: true)
+        let req = ChatRequest(
+            model: request.model.id,
+            messages: encode(messages: request.messages),
+            stream: true
+        )
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
+        for try await result in client.chatStream(req) {
             message = decode(result: result, into: message)
             try await update(message)
             

@@ -9,7 +9,7 @@ public struct SpeechServiceRequest {
     public var model: Model
     public var input: String
     public var responseFormat: ResponseFormat?
-    public var speed: Double?
+    public var speed: Float?
     
     public enum ResponseFormat {
         case mp3
@@ -19,7 +19,7 @@ public struct SpeechServiceRequest {
         case custom(String)
     }
     
-    public init(voice: String, model: Model, input: String, responseFormat: ResponseFormat? = nil, speed: Double? = nil) {
+    public init(voice: String, model: Model, input: String, responseFormat: ResponseFormat? = nil, speed: Float? = nil) {
         self.voice = voice
         self.model = model
         self.input = input

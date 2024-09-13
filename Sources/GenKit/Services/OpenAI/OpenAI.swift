@@ -11,30 +11,32 @@ public actor OpenAIService {
     public init(configuration: OpenAIClient.Configuration) {
         self.client = OpenAIClient(configuration: configuration)
     }
-    
-    private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatQuery {
-        return .init(
-            model: model,
-            messages: encode(messages: messages),
-            tools: encode(tools: tools),
-            toolChoice: encode(toolChoice: toolChoice),
-            stream: stream
-        )
-    }
 }
 
 extension OpenAIService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
-        let result = try await client.chats(query: payload)
+        let req = ChatQuery(
+            model: request.model.id,
+            messages: encode(messages: request.messages),
+            tools: encode(tools: request.tools),
+            toolChoice: encode(toolChoice: request.toolChoice),
+            temperature: request.temperature
+        )
+        let result = try await client.chats(query: req)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        let req = ChatQuery(
+            model: request.model.id,
+            messages: encode(messages: request.messages),
+            tools: encode(tools: request.tools),
+            toolChoice: encode(toolChoice: request.toolChoice),
+            temperature: request.temperature
+        )
         var message = Message(role: .assistant)
-        for try await result in client.chatsStream(query: payload) {
+        for try await result in client.chatsStream(query: req) {
             message = decode(result: result, into: message)
             try await update(message)
         }
@@ -44,8 +46,8 @@ extension OpenAIService: ChatService {
 extension OpenAIService: EmbeddingService {
     
     public func embeddings(model: Model, input: String) async throws -> [Double] {
-        let query = EmbeddingsQuery(model: model.id, input: input)
-        let result = try await client.embeddings(query: query)
+        let req = EmbeddingsQuery(model: model.id, input: input)
+        let result = try await client.embeddings(query: req)
         return result.data.first?.embedding ?? []
     }
 }
@@ -61,13 +63,13 @@ extension OpenAIService: ModelService {
 extension OpenAIService: ImageService {
     
     public func imagine(request: ImagineServiceRequest) async throws -> [Data] {
-        let query = ImagesQuery(
+        let req = ImagesQuery(
             prompt: request.prompt,
             model: request.model.id,
             n: request.n,
             size: request.size
         )
-        let result = try await client.images(query: query)
+        let result = try await client.images(query: req)
         
         // HACK: Wait for a second for the images to be available on OpenAI's CDN. Without this the URLs in the
         // result may fail.
@@ -88,7 +90,7 @@ extension OpenAIService: ImageService {
 extension OpenAIService: TranscriptionService {
     
     public func transcribe(request: TranscriptionServiceRequest) async throws -> String {
-        let query = AudioTranscriptionQuery(
+        let req = AudioTranscriptionQuery(
             file: request.data,
             model: request.model.id,
             prompt: request.prompt,
@@ -96,7 +98,7 @@ extension OpenAIService: TranscriptionService {
             language: request.language,
             responseFormat: encode(responseFormat: request.responseFormat)
         )
-        let result = try await client.audioTranscriptions(query: query)
+        let result = try await client.audioTranscriptions(query: req)
         return result.text
     }
 }
@@ -104,23 +106,25 @@ extension OpenAIService: TranscriptionService {
 extension OpenAIService: VisionService {
     
     public func completion(request: VisionServiceRequest) async throws -> Message {
-        let query = ChatVisionQuery(
+        let req = ChatVisionQuery(
             model: request.model.id,
             messages: encode(visionMessages: request.messages),
+            temperature: request.temperature,
             maxTokens: request.maxTokens
         )
-        let result = try await client.chatsVision(query: query)
+        let result = try await client.chatsVision(query: req)
         return decode(result: result)
     }
     
     public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
-        let query = ChatVisionQuery(
+        let req = ChatVisionQuery(
             model: request.model.id,
             messages: encode(visionMessages: request.messages),
+            temperature: request.temperature,
             maxTokens: request.maxTokens
         )
         var message = Message(role: .assistant)
-        for try await result in client.chatsVisionStream(query: query) {
+        for try await result in client.chatsVisionStream(query: req) {
             message = decode(result: result, into: message)
             try await update(message)
         }
@@ -130,14 +134,14 @@ extension OpenAIService: VisionService {
 extension OpenAIService: SpeechService {
     
     public func speak(request: SpeechServiceRequest) async throws -> Data {
-        let query = AudioSpeechQuery(
+        let req = AudioSpeechQuery(
             model: request.model.id,
             input: request.input,
             voice: .init(rawValue: request.voice) ?? .alloy,
             responseFormat: try encode(responseFormat: request.responseFormat),
             speed: request.speed
         )
-        let result = try await client.audioSpeech(query: query)
+        let result = try await client.audioSpeech(query: req)
         return result
     }
 }
@@ -145,15 +149,27 @@ extension OpenAIService: SpeechService {
 extension OpenAIService: ToolService {
     
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
-        let result = try await client.chats(query: payload)
+        let req = ChatQuery(
+            model: request.model.id,
+            messages: encode(messages: request.messages),
+            tools: encode(tools: [request.tool]),
+            toolChoice: encode(toolChoice: request.tool),
+            temperature: request.temperature
+        )
+        let result = try await client.chats(query: req)
         return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
+        let req = ChatQuery(
+            model: request.model.id,
+            messages: encode(messages: request.messages),
+            tools: encode(tools: [request.tool]),
+            toolChoice: encode(toolChoice: request.tool),
+            temperature: request.temperature
+        )
         var message = Message(role: .assistant)
-        for try await result in client.chatsStream(query: payload) {
+        for try await result in client.chatsStream(query: req) {
             message = decode(result: result, into: message)
             try await update(message)
         }

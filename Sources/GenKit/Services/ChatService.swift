@@ -10,11 +10,13 @@ public struct ChatServiceRequest {
     public var messages: [Message]
     public var tools: [Tool]
     public var toolChoice: Tool?
+    public var temperature: Float?
     
-    public init(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) {
+    public init(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, temperature: Float? = nil) {
         self.model = model
         self.messages = messages
         self.tools = tools
         self.toolChoice = toolChoice
+        self.temperature = temperature
     }
 }

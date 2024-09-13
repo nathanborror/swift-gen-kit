@@ -12,13 +12,12 @@ public actor MistralService {
         self.client = MistralClient(configuration: configuration)
     }
     
-    private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
+    private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> ChatRequest {
         return .init(
             model: model,
             messages: encode(messages: messages),
             tools: encode(tools: tools),
-            toolChoice: encode(toolChoice: toolChoice),
-            stream: stream
+            toolChoice: encode(toolChoice: toolChoice)
         )
     }
 }
@@ -26,15 +25,20 @@ public actor MistralService {
 extension MistralService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
-        let result = try await client.chat(payload)
+        var req = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        req.temperature = request.temperature
+        
+        let result = try await client.chat(req)
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice, stream: true)
+        var req = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
+        req.temperature = request.temperature
+        req.stream = true
+        
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
+        for try await result in client.chatStream(req) {
             message = decode(result: result, into: message)
             try await update(message)
         }
@@ -44,8 +48,8 @@ extension MistralService: ChatService {
 extension MistralService: EmbeddingService {
     
     public func embeddings(model: Model, input: String) async throws -> [Double] {
-        let payload = EmbeddingRequest(model: model.id, input: [input])
-        let result = try await client.embeddings(payload)
+        let req = EmbeddingRequest(model: model.id, input: [input])
+        let result = try await client.embeddings(req)
         return result.data.first?.embedding ?? []
     }
 }
@@ -61,15 +65,20 @@ extension MistralService: ModelService {
 extension MistralService: ToolService {
     
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
-        let result = try await client.chat(payload)
+        var req = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
+        req.temperature = request.temperature
+        
+        let result = try await client.chat(req)
         return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
+        var req = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
+        req.temperature = request.temperature
+        req.stream = true
+        
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
+        for try await result in client.chatStream(req) {
             message = decode(result: result, into: message)
             try await update(message)
         }

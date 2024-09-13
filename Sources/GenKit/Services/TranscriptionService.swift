@@ -10,10 +10,10 @@ public struct TranscriptionServiceRequest {
     public var prompt: String?
     public var language: String?
     public var responseFormat: String?
-    public var temperature: Double?
+    public var temperature: Float?
     
     public init(model: Model, data: Data, prompt: String? = nil, language: String? = nil,
-                responseFormat: String? = nil, temperature: Double? = nil) {
+                responseFormat: String? = nil, temperature: Float? = nil) {
         self.model = model
         self.data = data
         self.prompt = prompt

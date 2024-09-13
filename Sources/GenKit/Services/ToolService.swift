@@ -9,10 +9,12 @@ public struct ToolServiceRequest {
     public var model: Model
     public var messages: [Message]
     public var tool: Tool
+    public var temperature: Float?
     
-    public init(model: Model, messages: [Message], tool: Tool) {
+    public init(model: Model, messages: [Message], tool: Tool, temperature: Float? = nil) {
         self.model = model
         self.messages = messages
         self.tool = tool
+        self.temperature = temperature
     }
 }

@@ -12,7 +12,7 @@ public actor AnthropicService {
         self.client = AnthropicClient(configuration: configuration)
     }
     
-    private func makeRequest(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, stream: Bool = false) -> ChatRequest {
+    private func makeRequest(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> ChatRequest {
         let (system, messages) = encode(messages: messages)
         return .init(
             model: model.id,
@@ -20,8 +20,7 @@ public actor AnthropicService {
             system: system,
             maxTokens: model.maxOutput ?? 8192,
             tools: encode(tools: tools),
-            toolChoice: (toolChoice != nil) ? .init(type: .tool, name: toolChoice!.function.name) : nil,
-            stream: stream
+            toolChoice: (toolChoice != nil) ? .init(type: .tool, name: toolChoice!.function.name) : nil
         )
     }
 }
@@ -29,16 +28,21 @@ public actor AnthropicService {
 extension AnthropicService: ChatService {
     
     public func completion(request: ChatServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
-        let result = try await client.chat(payload)
+        var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
+        req.temperature = request.temperature
+        
+        let result = try await client.chat(req)
         if let error = result.error { throw error }
         return decode(result: result)
     }
     
     public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: request.tools, stream: true)
+        var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
+        req.temperature = request.temperature
+        req.stream = true
+        
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
+        for try await result in client.chatStream(req) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
             try await update(message)
@@ -65,15 +69,20 @@ extension AnthropicService: ModelService {
 extension AnthropicService: VisionService {
     
     public func completion(request: VisionServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model, messages: request.messages)
-        let result = try await client.chat(payload)
+        var req = makeRequest(model: request.model, messages: request.messages)
+        req.temperature = request.temperature
+        
+        let result = try await client.chat(req)
         return decode(result: result)
     }
     
     public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model, messages: request.messages, stream: true)
+        var req = makeRequest(model: request.model, messages: request.messages)
+        req.temperature = request.temperature
+        req.stream = true
+        
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
+        for try await result in client.chatStream(req) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
             try await update(message)
@@ -84,15 +93,20 @@ extension AnthropicService: VisionService {
 extension AnthropicService: ToolService {
     
     public func completion(request: ToolServiceRequest) async throws -> Message {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
-        let result = try await client.chat(payload)
+        var req = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
+        req.temperature = request.temperature
+        
+        let result = try await client.chat(req)
         return decode(result: result)
     }
     
     public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool, stream: true)
+        var req = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
+        req.temperature = request.temperature
+        req.stream = true
+        
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
+        for try await result in client.chatStream(req) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
             try await update(message)

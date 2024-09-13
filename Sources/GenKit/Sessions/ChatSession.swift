@@ -20,7 +20,8 @@ public class ChatSession {
                         model: request.model,
                         messages: messages,
                         tools: request.tools,
-                        toolChoice: (runLoopCount > 0) ? nil : request.tool // FIRST REQUEST ONLY
+                        toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
+                        temperature: request.temperature
                     )
                     try await request.service.completionStream(request: req) { message in
                         let message = apply(runID: runID, message: message)
@@ -65,7 +66,8 @@ public class ChatSession {
                 model: request.model,
                 messages: messages,
                 tools: request.tools,
-                toolChoice: (runLoopCount > 0) ? nil : request.tool // FIRST REQUEST ONLY
+                toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
+                temperature: request.temperature
             )
             var message = try await request.service.completion(request: req)
             message = apply(runID: runID, message: message)
@@ -167,6 +169,7 @@ public struct ChatSessionRequest {
     public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
     public private(set) var context: [String] = []
+    public private(set) var temperature: Float? = nil
     
     public init(service: ChatService, model: Model, toolCallback: ToolCallback? = nil) {
         self.service = service
@@ -197,6 +200,10 @@ public struct ChatSessionRequest {
     
     public mutating func with(context: [String]) {
         self.context = context
+    }
+    
+    public mutating func with(temperature: Float) {
+        self.temperature = temperature
     }
     
     var messages: [Message] {

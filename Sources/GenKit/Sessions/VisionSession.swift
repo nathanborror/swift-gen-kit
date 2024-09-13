@@ -12,7 +12,8 @@ public class VisionSession {
                 
                 let req = VisionServiceRequest(
                     model: request.model,
-                    messages: messages
+                    messages: messages,
+                    temperature: request.temperature
                 )
                 try await request.service.completionStream(request: req) { update in
                     var message = update
@@ -34,7 +35,8 @@ public class VisionSession {
         
         let req = VisionServiceRequest(
             model: request.model,
-            messages: messages
+            messages: messages,
+            temperature: request.temperature
         )
         var message = try await request.service.completion(request: req)
         message.runID = runID
@@ -69,6 +71,7 @@ public struct VisionSessionRequest {
     public private(set) var system: String? = nil
     public private(set) var history: [Message] = []
     public private(set) var context: [String] = []
+    public private(set) var temperature: Float? = nil
     
     public init(service: VisionService, model: Model, toolCallback: ToolCallback? = nil) {
         self.service = service
@@ -86,6 +89,10 @@ public struct VisionSessionRequest {
     
     public mutating func with(context: [String]) {
         self.context = context
+    }
+    
+    public mutating func with(temperature: Float) {
+        self.temperature = temperature
     }
     
     var messages: [Message] {
