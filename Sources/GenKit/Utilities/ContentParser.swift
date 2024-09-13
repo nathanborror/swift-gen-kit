@@ -77,7 +77,13 @@ public final class ContentParser {
         // Add any remaining text after the last tag
         if positionIndex < input.endIndex {
             let text = String(input[positionIndex...])
-            contents.append(.text(text))
+            
+            // If the last content item is already a text element, append to it
+            if case .text(let lastText) = contents.last {
+                contents[contents.count - 1] = .text(lastText + text)
+            } else {
+                contents.append(.text(text))
+            }
         }
         return .init(contents: contents)
     }
