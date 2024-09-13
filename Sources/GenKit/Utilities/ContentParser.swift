@@ -47,6 +47,16 @@ public final class ContentParser {
         var contents: [Result.Content] = []
         var positionIndex = input.startIndex
 
+        // Append text to contents by checking if the last item in the contents array is already a
+        // text element. When it is, the text gets appended rather than creating a new text element.
+        let appendToContent: (String) -> Void = { text in
+            if case .text(let lastText) = contents.last {
+                contents[contents.count - 1] = .text(lastText + text)
+            } else {
+                contents.append(.text(text))
+            }
+        }
+        
         for range in matches {
             
             // Add text before the tag if there's any
@@ -66,7 +76,8 @@ public final class ContentParser {
                 if tags.isEmpty || tags.contains(name) {
                     contents.append(.tag(.init(name: name, content: content, params: params)))
                 } else {
-                    contents.append(.text(String(match)))
+                    let text = String(match)
+                    appendToContent(text)
                 }
             }
 
@@ -77,13 +88,7 @@ public final class ContentParser {
         // Add any remaining text after the last tag
         if positionIndex < input.endIndex {
             let text = String(input[positionIndex...])
-            
-            // If the last content item is already a text element, append to it
-            if case .text(let lastText) = contents.last {
-                contents[contents.count - 1] = .text(lastText + text)
-            } else {
-                contents.append(.text(text))
-            }
+            appendToContent(text)
         }
         return .init(contents: contents)
     }
