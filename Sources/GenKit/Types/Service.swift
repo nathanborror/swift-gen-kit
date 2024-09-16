@@ -9,6 +9,7 @@ public struct Service: Codable, Identifiable, Sendable {
     public var host: String
     public var token: String
     public var models: [Model]
+    public var status: Status
     
     public var preferredChatModel: String?
     public var preferredImageModel: String?
@@ -31,6 +32,13 @@ public struct Service: Codable, Identifiable, Sendable {
         case perplexity
     }
     
+    public enum Status: String, Codable, Sendable {
+        case ready
+        case missingHost
+        case missingToken
+        case unknown
+    }
+    
     public init(id: ServiceID, name: String, host: String = "", token: String = "", models: [Model] = [],
                 preferredChatModel: String? = nil, preferredImageModel: String? = nil,
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
@@ -41,6 +49,7 @@ public struct Service: Codable, Identifiable, Sendable {
         self.host = host
         self.token = token
         self.models = models
+        self.status = .unknown
         
         self.preferredChatModel = preferredChatModel
         self.preferredImageModel = preferredImageModel
