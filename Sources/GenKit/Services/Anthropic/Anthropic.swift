@@ -42,7 +42,7 @@ extension AnthropicService: ChatService {
         req.stream = true
         
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(req) {
+        for try await result in try client.chatStream(req) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
             try await update(message)
@@ -82,7 +82,7 @@ extension AnthropicService: VisionService {
         req.stream = true
         
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(req) {
+        for try await result in try client.chatStream(req) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
             try await update(message)
@@ -106,7 +106,7 @@ extension AnthropicService: ToolService {
         req.stream = true
         
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(req) {
+        for try await result in try client.chatStream(req) {
             if let error = result.error { throw error }
             message = decode(result: result, into: message)
             try await update(message)
