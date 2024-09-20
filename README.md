@@ -2,7 +2,15 @@
 
 GenKit is a library that abstracts away all the differences across generative AI platforms. It's sort of like a lightweight [LangChain](https://www.langchain.com) for Swift. The goal is to make native Swift development with generative AI fast, easy and fun!
 
+## Features
+
+### Sessions
+
+Sessions are the highest level of abstraction and the easiest to use. They run in a loop and call out to tools as needed and send tool responses back to the model until it completes its work.
+
 ### Services
+
+Services are a common interface for working across many platforms. They allow you to seamlessly switch out the underlying platform without changing any code.
 
 - [Chat Service](Sources/GenKit/Services/ChatService.swift)
 - [Embedding Service](Sources/GenKit/Services/EmbeddingService.swift)
@@ -13,7 +21,9 @@ GenKit is a library that abstracts away all the differences across generative AI
 - [Vision Service](Sources/GenKit/Services/VisionService.swift)
 - [Speech Service](Sources/GenKit/Services/SpeechService.swift)
 
-### Platform Packages
+### Supported Providers
+
+Provider packages are swift interfaces that talk directly to model provider REST APIs. You can use these directly but their APIs vary slightly.
 
 - [Mistral](https://github.com/nathanborror/swift-mistral) (chats, embeddings, models)
 - [Ollama](https://github.com/nathanborror/swift-ollama) (chats, embeddings, models, vision)
