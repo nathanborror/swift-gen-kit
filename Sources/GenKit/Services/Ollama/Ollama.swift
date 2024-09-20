@@ -78,7 +78,7 @@ extension OllamaService: ModelService {
     
     public func models() async throws -> [Model] {
         let result = try await client.models()
-        return result.models.map { Model(id: $0.name, owner: "ollama") }
+        return result.models.map { decode(model: $0) }
     }
 }
 

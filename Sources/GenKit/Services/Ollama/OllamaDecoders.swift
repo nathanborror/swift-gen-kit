@@ -54,4 +54,16 @@ extension OllamaService {
         guard let done else { return nil }
         return done ? .stop : nil
     }
+    
+    func decode(model: Ollama.ModelResponse) -> Model {
+        .init(
+            id: model.model,
+            family: model.details?.family,
+            name: model.name,
+            owner: "ollama",
+            contextWindow: nil,
+            maxOutput: nil,
+            trainingCutoff: nil
+        )
+    }
 }

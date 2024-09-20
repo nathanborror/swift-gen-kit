@@ -56,7 +56,7 @@ extension OpenAIService: ModelService {
     
     public func models() async throws -> [Model] {
         let result = try await client.models()
-        return result.data.map { Model(id: $0.id, owner: $0.ownedBy) }
+        return result.data.map { decode(model: $0) }
     }
 }
 
