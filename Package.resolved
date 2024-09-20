@@ -33,7 +33,7 @@
       "location" : "git@github.com:nathanborror/swift-fal",
       "state" : {
         "branch" : "main",
-        "revision" : "a504e5f199153123e71675a80923f4e273e805dd"
+        "revision" : "27ab706414436febca52a8d2ffc995fa4ff0b430"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "git@github.com:nathanborror/swift-google-gen",
       "state" : {
         "branch" : "main",
-        "revision" : "0845fbb77004c9c80f97e91e13aacd7090f44b1f"
+        "revision" : "05daf8ef37a713f5b941f503f786c9efffcaa0cf"
       }
     },
     {
@@ -78,7 +78,7 @@
       "location" : "git@github.com:nathanborror/swift-perplexity",
       "state" : {
         "branch" : "main",
-        "revision" : "9776db2f5d097817c34f547bf2e11160ebaad2c7"
+        "revision" : "9bf4b475f8ea7a1cb284e6de17bb879930c29f94"
       }
     },
     {

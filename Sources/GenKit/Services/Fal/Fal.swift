@@ -31,11 +31,9 @@ extension FalService: ImageService {
 extension FalService: ModelService {
     
     public func models() async throws -> [Model] {
-        [
-            .init(id: "fast-sdxl", owner: "fal"),
-            .init(id: "stable-cascade", owner: "fal"),
-            .init(id: "lora", owner: "fal"),
-            .init(id: "fast-turbo-diffusion", owner: "fal"),
-        ]
+        let result = try await client.models()
+        return result.models.map {
+            Model(id: $0.id, name: $0.name, owner: $0.owner)
+        }
     }
 }
