@@ -32,9 +32,9 @@ extension PerplexityService: ChatService {
             temperature: request.temperature,
             stream: true
         )
+        var message = Message(role: .assistant)
         for try await result in try client.chatStream(req) {
-            var message = decode(result: result)
-            message.id = result.id
+            message = decode(result: result, into: message)
             try await update(message)
         }
     }
@@ -73,10 +73,16 @@ extension PerplexityService: ToolService {
             temperature: request.temperature,
             stream: true
         )
+        var message = Message(role: .assistant)
         for try await result in try client.chatStream(req) {
-            var message = decode(tool: request.tool, result: result)
-            message.id = result.id
+            message = decode(result: result, into: message)
             try await update(message)
         }
+        
+//        for try await result in try client.chatStream(req) {
+//            var message = decode(tool: request.tool, result: result)
+//            message.id = result.id
+//            try await update(message)
+//        }
     }
 }

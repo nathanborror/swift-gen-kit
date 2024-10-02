@@ -26,12 +26,10 @@ extension MistralService {
             logger.warning("failed to decode choice")
             return .init(role: .assistant)
         }
-        
         message.content = patch(string: message.content, with: choice.delta.content)
         message.finishReason = decode(finishReason: choice.finishReason)
         message.modified = .now
         message.toolCalls = decode(toolCalls: choice.delta.toolCalls)
-        
         return message
     }
     

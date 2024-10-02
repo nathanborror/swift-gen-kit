@@ -18,16 +18,16 @@ extension PerplexityService {
         )
     }
     
-    func decode(result: ChatStreamResponse) -> Message {
+    func decode(result: ChatStreamResponse, into message: Message) -> Message {
+        var message = message
         guard let choice = result.choices.first else {
             logger.warning("failed to decode choice")
             return .init(role: .assistant)
         }
-        return .init(
-            role: decode(role: choice.delta.role),
-            content: choice.delta.content,
-            finishReason: decode(finishReason: choice.finishReason)
-        )
+        message.content = patch(string: message.content, with: choice.delta.content)
+        message.finishReason = decode(finishReason: choice.finishReason)
+        message.modified = .now
+        return message
     }
     
     func decode(tool: Tool, result: ChatResponse) -> Message {
