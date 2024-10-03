@@ -27,7 +27,7 @@ public actor AnthropicService {
 
 extension AnthropicService: ChatService {
     
-    public func completion(request: ChatServiceRequest) async throws -> Message {
+    public func completion(_ request: ChatServiceRequest) async throws -> Message {
         var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
         req.temperature = request.temperature
         
@@ -36,7 +36,7 @@ extension AnthropicService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
         req.temperature = request.temperature
         req.stream = true
@@ -68,7 +68,7 @@ extension AnthropicService: ModelService {
 
 extension AnthropicService: VisionService {
     
-    public func completion(request: VisionServiceRequest) async throws -> Message {
+    public func completion(_ request: VisionServiceRequest) async throws -> Message {
         var req = makeRequest(model: request.model, messages: request.messages)
         req.temperature = request.temperature
         
@@ -76,7 +76,7 @@ extension AnthropicService: VisionService {
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
         var req = makeRequest(model: request.model, messages: request.messages)
         req.temperature = request.temperature
         req.stream = true
@@ -92,7 +92,7 @@ extension AnthropicService: VisionService {
 
 extension AnthropicService: ToolService {
     
-    public func completion(request: ToolServiceRequest) async throws -> Message {
+    public func completion(_ request: ToolServiceRequest) async throws -> Message {
         var req = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         req.temperature = request.temperature
         
@@ -100,7 +100,7 @@ extension AnthropicService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         var req = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         req.temperature = request.temperature
         req.stream = true

@@ -1,8 +1,8 @@
 import Foundation
 
 public protocol ToolService: Sendable {
-    func completion(request: ToolServiceRequest) async throws -> Message
-    func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws
+    func completion(_ request: ToolServiceRequest) async throws -> Message
+    func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws
 }
 
 public struct ToolServiceRequest {

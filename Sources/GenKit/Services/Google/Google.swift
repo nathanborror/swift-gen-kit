@@ -16,13 +16,13 @@ public actor GoogleService {
 
 extension GoogleService: ChatService {
     
-    public func completion(request: ChatServiceRequest) async throws -> Message {
+    public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = GenerateContentRequest(contents: encode(messages: request.messages))
         let result = try await client.chat(req, model: request.model.id)
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = GenerateContentRequest(contents: encode(messages: request.messages))
         let messageID = String.id
         for try await result in try client.chatStream(req, model: request.model.id) {

@@ -15,7 +15,7 @@ public actor FalService {
 
 extension FalService: ImageService {
     
-    public func imagine(request: ImagineServiceRequest) async throws -> [Data] {
+    public func imagine(_ request: ImagineServiceRequest) async throws -> [Data] {
         let query = Fal.TextToImageRequest(
             prompt: request.prompt,
             numImages: request.n

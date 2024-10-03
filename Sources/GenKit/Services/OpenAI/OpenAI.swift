@@ -15,7 +15,7 @@ public actor OpenAIService {
 
 extension OpenAIService: ChatService {
     
-    public func completion(request: ChatServiceRequest) async throws -> Message {
+    public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatQuery(
             model: request.model.id,
             messages: encode(messages: request.messages),
@@ -27,7 +27,7 @@ extension OpenAIService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatQuery(
             model: request.model.id,
             messages: encode(messages: request.messages),
@@ -62,7 +62,7 @@ extension OpenAIService: ModelService {
 
 extension OpenAIService: ImageService {
     
-    public func imagine(request: ImagineServiceRequest) async throws -> [Data] {
+    public func imagine(_ request: ImagineServiceRequest) async throws -> [Data] {
         let req = ImagesQuery(
             prompt: request.prompt,
             model: request.model.id,
@@ -89,7 +89,7 @@ extension OpenAIService: ImageService {
 
 extension OpenAIService: TranscriptionService {
     
-    public func transcribe(request: TranscriptionServiceRequest) async throws -> String {
+    public func transcribe(_ request: TranscriptionServiceRequest) async throws -> String {
         let req = AudioTranscriptionQuery(
             file: request.data,
             model: request.model.id,
@@ -105,7 +105,7 @@ extension OpenAIService: TranscriptionService {
 
 extension OpenAIService: VisionService {
     
-    public func completion(request: VisionServiceRequest) async throws -> Message {
+    public func completion(_ request: VisionServiceRequest) async throws -> Message {
         let req = ChatVisionQuery(
             model: request.model.id,
             messages: encode(visionMessages: request.messages),
@@ -116,7 +116,7 @@ extension OpenAIService: VisionService {
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatVisionQuery(
             model: request.model.id,
             messages: encode(visionMessages: request.messages),
@@ -133,7 +133,7 @@ extension OpenAIService: VisionService {
 
 extension OpenAIService: SpeechService {
     
-    public func speak(request: SpeechServiceRequest) async throws -> Data {
+    public func speak(_ request: SpeechServiceRequest) async throws -> Data {
         let req = AudioSpeechQuery(
             model: request.model.id,
             input: request.input,
@@ -148,7 +148,7 @@ extension OpenAIService: SpeechService {
 
 extension OpenAIService: ToolService {
     
-    public func completion(request: ToolServiceRequest) async throws -> Message {
+    public func completion(_ request: ToolServiceRequest) async throws -> Message {
         let req = ChatQuery(
             model: request.model.id,
             messages: encode(messages: request.messages),
@@ -160,7 +160,7 @@ extension OpenAIService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatQuery(
             model: request.model.id,
             messages: encode(messages: request.messages),

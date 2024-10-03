@@ -32,7 +32,7 @@ public actor OllamaService {
 
 extension OllamaService: ChatService {
     
-    public func completion(request: ChatServiceRequest) async throws -> Message {
+    public func completion(_ request: ChatServiceRequest) async throws -> Message {
         var messages = encode(messages: request.messages)
         if let toolMessage = prepareToolMessage(request.toolChoice) {
             messages.append(toolMessage)
@@ -46,7 +46,7 @@ extension OllamaService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatRequest(
             model: request.model.id,
             messages: encode(messages: request.messages),
@@ -84,14 +84,14 @@ extension OllamaService: ModelService {
 
 extension OllamaService: VisionService {
 
-    public func completion(request: VisionServiceRequest) async throws -> Message {
+    public func completion(_ request: VisionServiceRequest) async throws -> Message {
         let messages = encode(messages: request.messages)
         let payload = ChatRequest(model: request.model.id, messages: messages)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
-    public func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
         let payload = ChatRequest(model: request.model.id, messages: encode(messages: request.messages), stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
@@ -108,7 +108,7 @@ extension OllamaService: VisionService {
 
 extension OllamaService: ToolService {
     
-    public func completion(request: ToolServiceRequest) async throws -> Message {
+    public func completion(_ request: ToolServiceRequest) async throws -> Message {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let payload = ChatRequest(model: request.model.id, messages: messages + tools, format: "json")
@@ -116,7 +116,7 @@ extension OllamaService: ToolService {
         return decode(tool: request.tool, result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let payload = ChatRequest(model: request.model.id, messages: messages + tools, stream: true, format: "json")

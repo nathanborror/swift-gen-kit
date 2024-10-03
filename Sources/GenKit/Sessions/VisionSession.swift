@@ -15,7 +15,7 @@ public class VisionSession {
                     messages: messages,
                     temperature: request.temperature
                 )
-                try await request.service.completionStream(request: req) { update in
+                try await request.service.completionStream(req) { update in
                     var message = update
                     message.runID = runID
                     
@@ -38,7 +38,7 @@ public class VisionSession {
             messages: messages,
             temperature: request.temperature
         )
-        var message = try await request.service.completion(request: req)
+        var message = try await request.service.completion(req)
         message.runID = runID
         
         response.messages = apply(message: message, messages: response.messages)

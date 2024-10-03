@@ -73,6 +73,35 @@ public struct Message: Codable, Identifiable, Sendable {
         self.created = .now
         self.modified = .now
     }
+
+    
+    public static func system(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
+        self.init(parent: parent, kind: kind, role: .system, content: content, attachments: attachments, toolCalls: toolCalls,
+              toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)
+    }
+    
+    public static func assistant(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
+        self.init(parent: parent, kind: kind, role: .assistant, content: content, attachments: attachments, toolCalls: toolCalls,
+              toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)
+    }
+    
+    public static func user(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
+        self.init(parent: parent, kind: kind, role: .user, content: content, attachments: attachments, toolCalls: toolCalls,
+              toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)
+    }
+    
+    public static func tool(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
+        self.init(parent: parent, kind: kind, role: .tool, content: content, attachments: attachments, toolCalls: toolCalls,
+              toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)
+    }
 }
 
 extension Message {

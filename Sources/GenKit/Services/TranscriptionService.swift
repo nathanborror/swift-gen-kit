@@ -1,7 +1,7 @@
 import Foundation
 
 public protocol TranscriptionService: Sendable {
-    func transcribe(request: TranscriptionServiceRequest) async throws -> String
+    func transcribe(_ request: TranscriptionServiceRequest) async throws -> String
 }
 
 public struct TranscriptionServiceRequest {

@@ -15,7 +15,7 @@ public actor PerplexityService {
 
 extension PerplexityService: ChatService {
     
-    public func completion(request: ChatServiceRequest) async throws -> Message {
+    public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatRequest(
             model: request.model.id,
             messages: encode(messages: request.messages),
@@ -25,7 +25,7 @@ extension PerplexityService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatRequest(
             model: request.model.id,
             messages: encode(messages: request.messages),
@@ -52,7 +52,7 @@ extension PerplexityService: ModelService {
 
 extension PerplexityService: ToolService {
     
-    public func completion(request: ToolServiceRequest) async throws -> Message {
+    public func completion(_ request: ToolServiceRequest) async throws -> Message {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let req = ChatRequest(
@@ -64,7 +64,7 @@ extension PerplexityService: ToolService {
         return decode(tool: request.tool, result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         let messages = encode(messages: request.messages)
         let tools = encode(tools: [request.tool])
         let req = ChatRequest(
@@ -78,11 +78,5 @@ extension PerplexityService: ToolService {
             message = decode(result: result, into: message)
             try await update(message)
         }
-        
-//        for try await result in try client.chatStream(req) {
-//            var message = decode(tool: request.tool, result: result)
-//            message.id = result.id
-//            try await update(message)
-//        }
     }
 }

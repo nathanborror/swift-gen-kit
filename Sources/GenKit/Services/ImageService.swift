@@ -1,7 +1,7 @@
 import Foundation
 
 public protocol ImageService: Sendable {
-    func imagine(request: ImagineServiceRequest) async throws -> [Data]
+    func imagine(_ request: ImagineServiceRequest) async throws -> [Data]
 }
 
 public struct ImagineServiceRequest {

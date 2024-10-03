@@ -24,7 +24,7 @@ public actor MistralService {
 
 extension MistralService: ChatService {
     
-    public func completion(request: ChatServiceRequest) async throws -> Message {
+    public func completion(_ request: ChatServiceRequest) async throws -> Message {
         var req = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         req.temperature = request.temperature
         
@@ -32,7 +32,7 @@ extension MistralService: ChatService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         var req = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         req.temperature = request.temperature
         req.stream = true
@@ -64,7 +64,7 @@ extension MistralService: ModelService {
 
 extension MistralService: ToolService {
     
-    public func completion(request: ToolServiceRequest) async throws -> Message {
+    public func completion(_ request: ToolServiceRequest) async throws -> Message {
         var req = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         req.temperature = request.temperature
         
@@ -72,7 +72,7 @@ extension MistralService: ToolService {
         return decode(result: result)
     }
     
-    public func completionStream(request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
+    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
         var req = makeRequest(model: request.model.id, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
         req.temperature = request.temperature
         req.stream = true

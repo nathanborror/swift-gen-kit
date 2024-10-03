@@ -35,11 +35,11 @@ An example chat completion that just generates a single response:
 let request = ChatServiceRequest(
     model: model,
     messages: [
-        .init(role: .system, content: "You are a helpful assistant."),
-        .init(role: .user, content: "Hello!"),
+        .system(content: "You are a helpful assistant."),
+        .user(content: "Hello!"),
     ]
 )
-let message = try await service.completion(request: request)
+let message = try await service.completion(request)
 print(message)
 ```
 
@@ -48,7 +48,7 @@ An streaming session example that may perform multiple generations in a loop if 
 ```swift
 var request = ChatSessionRequest(service: service, model: model)
 request.with(system: "You are a helpful assistant.")
-request.with(history: [.init(role: .user, content: "Hello!")])
+request.with(history: [.user(content: "Hello!")])
 
 let stream = ChatSession.shared.stream(request)
 for try await message in stream {
@@ -90,3 +90,9 @@ Provider packages are swift interfaces that talk directly to model provider REST
 - [Anthropic](https://github.com/nathanborror/swift-anthropic) (chats, models)
 - [ElevenLabs](https://github.com/nathanborror/swift-elevenlabs) (speech, models)
 - [Google](https://github.com/nathanborror/swift-google-gen) (chat, models)
+
+## Todos
+
+- [ ] Consolodate the VisionService and ToolService into the ChatService
+- [ ] Consolodate ChatServiceRequest and ChatSessionRequest
+- [ ] Add workflows or chaining

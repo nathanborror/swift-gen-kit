@@ -1,8 +1,8 @@
 import Foundation
 
 public protocol VisionService: Sendable {
-    func completion(request: VisionServiceRequest) async throws -> Message
-    func completionStream(request: VisionServiceRequest, update: (Message) async throws -> Void) async throws
+    func completion(_ request: VisionServiceRequest) async throws -> Message
+    func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws
 }
 
 public struct VisionServiceRequest {

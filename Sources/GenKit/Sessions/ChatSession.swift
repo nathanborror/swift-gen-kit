@@ -23,7 +23,7 @@ public class ChatSession {
                         toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
                         temperature: request.temperature
                     )
-                    try await request.service.completionStream(request: req) { message in
+                    try await request.service.completionStream(req) { message in
                         let message = apply(runID: runID, message: message)
                         messages = apply(message: message, messages: messages)
                         continuation.yield(message)
@@ -69,7 +69,7 @@ public class ChatSession {
                 toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
                 temperature: request.temperature
             )
-            var message = try await request.service.completion(request: req)
+            var message = try await request.service.completion(req)
             message = apply(runID: runID, message: message)
             
             response.messages = apply(message: message, messages: response.messages)
