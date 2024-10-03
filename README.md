@@ -2,6 +2,64 @@
 
 GenKit is a library that abstracts away all the differences across generative AI platforms. It's sort of like a lightweight [LangChain](https://www.langchain.com) for Swift. The goal is to make native Swift development with generative AI fast, easy and fun!
 
+## Swift Package Manager
+
+```swift
+...
+dependencies: [
+    .package(url: "https://github.com/nathanborror/swift-gen-kit", branch: "main"),
+],
+targets: [
+    .target(
+        name: "YOUR_TARGET",
+        dependencies: [
+            .product(name: "GenKit", package: "swift-gen-kit"),
+        ]
+    ),
+],
+...
+```
+
+## Usage
+
+Establish the service and model you want to use:
+
+```swift
+let service = AnthropicService(configuration: .init(token: "ANTHROPIC_API_TOKEN"))
+let model = Model(id: "claude-3-5-sonnet-20240620")
+```
+
+An example chat completion that just generates a single response:
+
+```swift
+let request = ChatServiceRequest(
+    model: model,
+    messages: [
+        .init(role: .system, content: "You are a helpful assistant."),
+        .init(role: .user, content: "Hello!"),
+    ]
+)
+let message = try await service.completion(request: request)
+print(message)
+```
+
+An streaming session example that may perform multiple generations in a loop if tools are present:
+
+```swift
+var request = ChatSessionRequest(service: service, model: model)
+request.with(system: "You are a helpful assistant.")
+request.with(history: [.init(role: .user, content: "Hello!")])
+
+let stream = ChatSession.shared.stream(request)
+for try await message in stream {
+    print(message.content)
+}
+```
+
+## Demo App
+
+[Heat](https://github.com/nathanborror/Heat) is a good example of how GenKit can be used.
+
 ## Features
 
 ### Sessions
@@ -32,7 +90,3 @@ Provider packages are swift interfaces that talk directly to model provider REST
 - [Anthropic](https://github.com/nathanborror/swift-anthropic) (chats, models)
 - [ElevenLabs](https://github.com/nathanborror/swift-elevenlabs) (speech, models)
 - [Google](https://github.com/nathanborror/swift-google-gen) (chat, models)
-
-### Example Usage
-
-[Heat](https://github.com/nathanborror/Heat) is a good example of how GenKit can be used.
