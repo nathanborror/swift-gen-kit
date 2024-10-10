@@ -92,8 +92,8 @@ extension Service {
         MistralService(configuration: .init(host: hostURL, token: token))
     }
     
-    public func ollama() -> OllamaService {
-        OllamaService(configuration: .init(host: hostURL))
+    public func ollama() -> OpenAIService {
+        OpenAIService(configuration: .init(host: hostURL, token: token))
     }
     
     public func openAI() -> OpenAIService {
