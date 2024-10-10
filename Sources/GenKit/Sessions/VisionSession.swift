@@ -70,7 +70,7 @@ public struct VisionSessionRequest {
     
     public private(set) var system: String? = nil
     public private(set) var history: [Message] = []
-    public private(set) var context: [String] = []
+    public private(set) var context: [String: String] = [:]
     public private(set) var temperature: Float? = nil
     
     public init(service: VisionService, model: Model, toolCallback: ToolCallback? = nil) {
@@ -87,7 +87,7 @@ public struct VisionSessionRequest {
         self.history = history
     }
     
-    public mutating func with(context: [String]) {
+    public mutating func with(context: [String: String]) {
         self.context = context
     }
     
@@ -100,11 +100,11 @@ public struct VisionSessionRequest {
         
         // Apply user context
         var systemContext = ""
-        if !context.isEmpty {
+        if let memories = context["MEMORIES"] {
             systemContext = """
             The following is context about the current user:
             <user_context>
-            \(context.joined(separator: "\n"))
+            \(memories)
             </user_context>
             """
         }

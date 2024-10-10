@@ -168,7 +168,7 @@ public struct ChatSessionRequest {
     public private(set) var history: [Message] = []
     public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
-    public private(set) var context: [String] = []
+    public private(set) var context: [String: String] = [:]
     public private(set) var temperature: Float? = nil
     
     public init(service: ChatService, model: Model, toolCallback: ToolCallback? = nil) {
@@ -198,7 +198,7 @@ public struct ChatSessionRequest {
         }
     }
     
-    public mutating func with(context: [String]) {
+    public mutating func with(context: [String: String]) {
         self.context = context
     }
     
@@ -211,11 +211,11 @@ public struct ChatSessionRequest {
         
         // Apply user context
         var systemContext = ""
-        if !context.isEmpty {
+        if let memories = context["MEMORIES"] {
             systemContext = """
             The following is context about the current user:
             <user_context>
-            \(context.joined(separator: "\n"))
+            \(memories)
             </user_context>
             """
         }
