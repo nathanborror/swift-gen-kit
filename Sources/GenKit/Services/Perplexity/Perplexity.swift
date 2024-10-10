@@ -49,34 +49,3 @@ extension PerplexityService: ModelService {
         }
     }
 }
-
-extension PerplexityService: ToolService {
-    
-    public func completion(_ request: ToolServiceRequest) async throws -> Message {
-        let messages = encode(messages: request.messages)
-        let tools = encode(tools: [request.tool])
-        let req = ChatRequest(
-            model: request.model.id,
-            messages: messages + tools,
-            temperature: request.temperature
-        )
-        let result = try await client.chat(req)
-        return decode(tool: request.tool, result: result)
-    }
-    
-    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        let messages = encode(messages: request.messages)
-        let tools = encode(tools: [request.tool])
-        let req = ChatRequest(
-            model: request.model.id,
-            messages: messages + tools,
-            temperature: request.temperature,
-            stream: true
-        )
-        var message = Message(role: .assistant)
-        for try await result in try client.chatStream(req) {
-            message = decode(result: result, into: message)
-            try await update(message)
-        }
-    }
-}

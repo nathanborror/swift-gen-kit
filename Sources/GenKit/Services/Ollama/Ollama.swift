@@ -11,46 +11,35 @@ public actor OllamaService {
     public init(configuration: OllamaClient.Configuration) {
         self.client = OllamaClient(configuration: configuration)
     }
-    
-    private func prepareToolMessage(_ tool: Tool?) -> Ollama.Message? {
-        guard let tool else { return nil }
-        guard let paramData = try? JSONEncoder().encode(tool.function.parameters) else { return nil }
-        
-        let parameters = String(data: paramData, encoding: .utf8) ?? ""
-        return Ollama.Message(
-            role: .user,
-            content: """
-                \(tool.function.description)
-                Respond using JSON
-                
-                JSON schema:
-                \(parameters)
-                """
-        )
-    }
 }
 
 extension OllamaService: ChatService {
     
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
-        var messages = encode(messages: request.messages)
-        if let toolMessage = prepareToolMessage(request.toolChoice) {
-            messages.append(toolMessage)
-        }
         let req = ChatRequest(
             model: request.model.id,
-            messages: messages,
-            format: (request.toolChoice != nil) ? "json" : nil // Encourage JSON output if tool choice is present
+            messages: encode(messages: request.messages),
+            tools: encode(tools: request.tools),
+            stream: false
         )
         let result = try await client.chat(req)
         return decode(result: result)
     }
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
+        
+        // Ollama doesn't yet support streaming when tools are present.
+        guard request.tools.isEmpty else {
+            let message = try await completion(request)
+            try await update(message)
+            return
+        }
+        
         let req = ChatRequest(
             model: request.model.id,
             messages: encode(messages: request.messages),
-            stream: true
+            tools: encode(tools: request.tools),
+            stream: request.tools.isEmpty
         )
         var message = Message(role: .assistant)
         for try await result in client.chatStream(req) {
@@ -67,9 +56,9 @@ extension OllamaService: ChatService {
 
 extension OllamaService: EmbeddingService {
     
-    public func embeddings(model: Model, input: String) async throws -> [Double] {
-        let payload = EmbeddingRequest(model: model.id, prompt: input, options: [:])
-        let result = try await client.embeddings(payload)
+    public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
+        let req = EmbeddingRequest(model: request.model.id, input: request.input)
+        let result = try await client.embeddings(req)
         return result.embedding
     }
 }
@@ -106,29 +95,3 @@ extension OllamaService: VisionService {
     }
 }
 
-extension OllamaService: ToolService {
-    
-    public func completion(_ request: ToolServiceRequest) async throws -> Message {
-        let messages = encode(messages: request.messages)
-        let tools = encode(tools: [request.tool])
-        let payload = ChatRequest(model: request.model.id, messages: messages + tools, format: "json")
-        let result = try await client.chat(payload)
-        return decode(tool: request.tool, result: result)
-    }
-    
-    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        let messages = encode(messages: request.messages)
-        let tools = encode(tools: [request.tool])
-        let payload = ChatRequest(model: request.model.id, messages: messages + tools, stream: true, format: "json")
-        var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
-            message = decode(tool: request.tool, result: result, into: message)
-            try await update(message)
-            
-            // The connection hangs if we don't explicitly return when the stream has stopped.
-            if message.finishReason == .stop {
-                return
-            }
-        }
-    }
-}

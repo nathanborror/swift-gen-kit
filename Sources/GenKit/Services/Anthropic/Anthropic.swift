@@ -89,27 +89,3 @@ extension AnthropicService: VisionService {
         }
     }
 }
-
-extension AnthropicService: ToolService {
-    
-    public func completion(_ request: ToolServiceRequest) async throws -> Message {
-        var req = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
-        req.temperature = request.temperature
-        
-        let result = try await client.chat(req)
-        return decode(result: result)
-    }
-    
-    public func completionStream(_ request: ToolServiceRequest, update: (Message) async throws -> Void) async throws {
-        var req = makeRequest(model: request.model, messages: request.messages, tools: [request.tool], toolChoice: request.tool)
-        req.temperature = request.temperature
-        req.stream = true
-        
-        var message = Message(role: .assistant)
-        for try await result in try client.chatStream(req) {
-            if let error = result.error { throw error }
-            message = decode(result: result, into: message)
-            try await update(message)
-        }
-    }
-}

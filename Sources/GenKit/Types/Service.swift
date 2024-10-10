@@ -197,28 +197,6 @@ extension Service {
         }
     }
     
-    public func toolService() throws -> ToolService {
-        guard preferredToolModel != nil else {
-            throw ServiceError.missingService
-        }
-        switch id {
-        case .anthropic:
-            return anthropic()
-        case .groq:
-            return groq()
-        case .mistral:
-            return mistral()
-        case .ollama:
-            return ollama()
-        case .openAI:
-            return openAI()
-        case .perplexity:
-            return perplexity()
-        case .elevenLabs, .fal, .google:
-            throw ServiceError.unsupportedService
-        }
-    }
-    
     public func visionService() throws -> VisionService {
         guard preferredVisionModel != nil else {
             throw ServiceError.missingService

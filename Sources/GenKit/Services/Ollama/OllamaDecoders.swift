@@ -14,39 +14,33 @@ extension OllamaService {
             return .init(
                 role: decode(role: result.message?.role),
                 content: result.message?.content,
+                toolCalls: decode(toolCalls: result.message?.toolCalls),
                 finishReason: decode(done: result.done)
             )
         }
     }
     
-    func decode(tool: Tool, result: ChatResponse, into message: Message? = nil) -> Message {
-        guard let arguments = result.message?.content else {
-            return decode(result: result, into: message)
-        }
-        if var message {
-            if message.toolCalls == nil {
-                message.toolCalls = []
-            }
-            message.toolCalls?.append(.init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: arguments)))
-            message.finishReason = decode(done: result.done)
-            message.modified = .now
-            return message
-        } else {
-            return .init(
-                role: decode(role: result.message?.role),
-                toolCalls: [
-                    .init(id: .id, type: "function", function: .init(name: tool.function.name, arguments: arguments))
-                ],
-                finishReason: decode(done: result.done)
+    func decode(toolCalls: [Ollama.ToolCall]?) -> [ToolCall]? {
+        guard let toolCalls else { return nil }
+        return toolCalls.map { decode(toolCall: $0) }
+    }
+    
+    func decode(toolCall: Ollama.ToolCall) -> ToolCall {
+        .init(
+            function: .init(
+                name: toolCall.function.name,
+                arguments: toolCall.function.arguments
             )
-        }
+        )
     }
 
     func decode(role: Ollama.Message.Role?) -> Message.Role {
         switch role {
         case .system: .system
         case .user: .user
-        case .assistant, .none: .assistant
+        case .assistant: .assistant
+        case .tool: .tool
+        case .none: .assistant
         }
     }
 

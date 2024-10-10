@@ -4,8 +4,7 @@ import Ollama
 extension OllamaService {
     
     func encode(messages: [Message]) -> [Ollama.Message] {
-        // When there's just one message it has to be from the user.
-        if messages.count == 1 {
+        if messages.count == 1 { // When there's just one message it has to be from the user.
             var message = messages[0]
             message.role = .user // force this to be a user message
             return [encode(message: message)]
@@ -21,29 +20,21 @@ extension OllamaService {
         )
     }
     
-    func encode(tools: [Tool]) -> [Ollama.Message] {
+    func encode(tools: [Tool]) -> [Ollama.Tool] {
         tools.map { encode(tool: $0) }
     }
     
-    func encode(tool: Tool) -> Ollama.Message {
+    func encode(tool: Tool) -> Ollama.Tool {
         let jsonData = try? JSONEncoder().encode(tool.function.parameters)
         let json = String(data: jsonData!, encoding: .utf8)!
         
         return .init(
-            role: .user,
-            content: """
-                Consider the following JSON Schema based on the 2020-12 specification:
-                
-                ```json
-                \(json)
-                ```
-                
-                This JSON Schema represents the format I want you to follow to generate your answer. You will only \
-                respond with a JSON object. Do not provide explanations. Generate a JSON object that will contain \
-                the following information:
-                
-                \(tool.function.description)
-                """
+            type: "function",
+            function: .init(
+                name: tool.function.name,
+                description: tool.function.description,
+                parameters: tool.function.parameters
+            )
         )
     }
     
@@ -52,7 +43,7 @@ extension OllamaService {
         case .system: .system
         case .assistant: .assistant
         case .user: .user
-        case .tool: .assistant
+        case .tool: .tool
         }
     }
     
