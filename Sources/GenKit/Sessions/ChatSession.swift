@@ -6,7 +6,7 @@ public class ChatSession {
     public func stream(_ request: ChatSessionRequest, runLoopLimit: Int = 10) -> AsyncThrowingStream<Message, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                let runID = String.id
+                let runID = Run.ID.id
                 
                 var messages = request.messages
                 
@@ -51,7 +51,7 @@ public class ChatSession {
     }
     
     public func completion(_ request: ChatSessionRequest, runLoopLimit: Int = 10) async throws -> ChatSessionResponse {
-        let runID = String.id
+        let runID = Run.ID.id
         
         var messages = request.messages
         var response = ChatSessionResponse(messages: [])
@@ -148,7 +148,7 @@ public class ChatSession {
         }
     }
     
-    func apply(runID: String?, message: Message) -> Message {
+    func apply(runID: Run.ID?, message: Message) -> Message {
         var message = message
         message.runID = runID
         return message

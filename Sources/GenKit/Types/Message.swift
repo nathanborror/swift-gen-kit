@@ -10,7 +10,7 @@ public struct Message: Codable, Identifiable, Sendable {
     public var attachments: [Attachment]
     public var toolCalls: [ToolCall]?
     public var toolCallID: String?
-    public var runID: String?
+    public var runID: Run.ID?
     public var name: String?
     public var finishReason: FinishReason?
     public var metadata: Metadata
@@ -56,7 +56,7 @@ public struct Message: Codable, Identifiable, Sendable {
     
     public init(id: Message.ID = .id, parent: String? = nil, kind: Kind = .none, role: Role, content: String? = nil,
                 attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
-                runID: String? = nil, name: String? = nil, finishReason: FinishReason? = .stop,
+                runID: Run.ID? = nil, name: String? = nil, finishReason: FinishReason? = .stop,
                 metadata: [String: String] = [:]) {
         self.id = id
         self.parent = parent
@@ -76,28 +76,28 @@ public struct Message: Codable, Identifiable, Sendable {
 
     
     public static func system(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
-                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: Run.ID? = nil, name: String? = nil,
                             finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
         self.init(parent: parent, kind: kind, role: .system, content: content, attachments: attachments, toolCalls: toolCalls,
               toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)
     }
     
     public static func assistant(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
-                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: Run.ID? = nil, name: String? = nil,
                             finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
         self.init(parent: parent, kind: kind, role: .assistant, content: content, attachments: attachments, toolCalls: toolCalls,
               toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)
     }
     
     public static func user(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
-                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: Run.ID? = nil, name: String? = nil,
                             finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
         self.init(parent: parent, kind: kind, role: .user, content: content, attachments: attachments, toolCalls: toolCalls,
               toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)
     }
     
     public static func tool(parent: String? = nil, kind: Kind = .none, content: String? = nil, attachments: [Attachment] = [],
-                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: String? = nil, name: String? = nil,
+                            toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, runID: Run.ID? = nil, name: String? = nil,
                             finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) -> Self {
         self.init(parent: parent, kind: kind, role: .tool, content: content, attachments: attachments, toolCalls: toolCalls,
               toolCallID: toolCallID, runID: runID, name: name, finishReason: finishReason, metadata: metadata)

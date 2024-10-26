@@ -6,7 +6,7 @@ public class VisionSession {
     public func stream(_ request: VisionSessionRequest) -> AsyncThrowingStream<Message, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                let runID = String.id
+                let runID = Run.ID.id
                 
                 var messages = request.messages
                 
@@ -28,7 +28,7 @@ public class VisionSession {
     }
     
     public func completion(_ request: VisionSessionRequest) async throws -> VisionSessionResponse {
-        let runID = String.id
+        let runID = Run.ID.id
         
         var messages = request.messages
         var response = VisionSessionResponse(messages: [])
