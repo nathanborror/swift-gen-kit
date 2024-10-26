@@ -17,7 +17,7 @@ extension OllamaService: ChatService {
     
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatRequest(
-            model: request.model.id,
+            model: request.model.id.rawValue,
             messages: encode(messages: request.messages),
             tools: encode(tools: request.tools),
             stream: false
@@ -36,7 +36,7 @@ extension OllamaService: ChatService {
         }
         
         let req = ChatRequest(
-            model: request.model.id,
+            model: request.model.id.rawValue,
             messages: encode(messages: request.messages),
             tools: encode(tools: request.tools),
             stream: request.tools.isEmpty
@@ -57,7 +57,7 @@ extension OllamaService: ChatService {
 extension OllamaService: EmbeddingService {
     
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
-        let req = EmbeddingRequest(model: request.model.id, input: request.input)
+        let req = EmbeddingRequest(model: request.model.id.rawValue, input: request.input)
         let result = try await client.embeddings(req)
         return result.embedding
     }
@@ -75,13 +75,13 @@ extension OllamaService: VisionService {
 
     public func completion(_ request: VisionServiceRequest) async throws -> Message {
         let messages = encode(messages: request.messages)
-        let payload = ChatRequest(model: request.model.id, messages: messages)
+        let payload = ChatRequest(model: request.model.id.rawValue, messages: messages)
         let result = try await client.chat(payload)
         return decode(result: result)
     }
     
     public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = ChatRequest(model: request.model.id, messages: encode(messages: request.messages), stream: true)
+        let payload = ChatRequest(model: request.model.id.rawValue, messages: encode(messages: request.messages), stream: true)
         var message = Message(role: .assistant)
         for try await result in client.chatStream(payload) {
             message = decode(result: result, into: message)

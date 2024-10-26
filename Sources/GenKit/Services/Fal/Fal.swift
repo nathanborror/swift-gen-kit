@@ -20,7 +20,7 @@ extension FalService: ImageService {
             prompt: request.prompt,
             numImages: request.n
         )
-        let result = try await client.textToImage(query, model: request.model.id)
+        let result = try await client.textToImage(query, model: request.model.id.rawValue)
         return try result.images.map {
             guard let url = URL(string: $0.url) else { return nil }
             return try Data(contentsOf: url)
@@ -33,7 +33,7 @@ extension FalService: ModelService {
     public func models() async throws -> [Model] {
         let result = try await client.models()
         return result.models.map {
-            Model(id: $0.id, name: $0.name, owner: $0.owner)
+            Model(id: Model.ID($0.id), name: $0.name, owner: $0.owner)
         }
     }
 }

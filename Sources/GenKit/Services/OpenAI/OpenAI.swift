@@ -17,7 +17,7 @@ extension OpenAIService: ChatService {
     
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatQuery(
-            model: request.model.id,
+            model: request.model.id.rawValue,
             messages: encode(messages: request.messages),
             tools: encode(tools: request.tools),
             toolChoice: encode(toolChoice: request.toolChoice),
@@ -29,7 +29,7 @@ extension OpenAIService: ChatService {
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatQuery(
-            model: request.model.id,
+            model: request.model.id.rawValue,
             messages: encode(messages: request.messages),
             tools: encode(tools: request.tools),
             toolChoice: encode(toolChoice: request.toolChoice),
@@ -46,7 +46,7 @@ extension OpenAIService: ChatService {
 extension OpenAIService: EmbeddingService {
     
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
-        let req = EmbeddingsQuery(model: request.model.id, input: request.input)
+        let req = EmbeddingsQuery(model: request.model.id.rawValue, input: request.input)
         let result = try await client.embeddings(query: req)
         return result.data.first?.embedding ?? []
     }
@@ -65,7 +65,7 @@ extension OpenAIService: ImageService {
     public func imagine(_ request: ImagineServiceRequest) async throws -> [Data] {
         let req = ImagesQuery(
             prompt: request.prompt,
-            model: request.model.id,
+            model: request.model.id.rawValue,
             n: request.n,
             size: request.size
         )
@@ -92,7 +92,7 @@ extension OpenAIService: TranscriptionService {
     public func transcribe(_ request: TranscriptionServiceRequest) async throws -> String {
         let req = AudioTranscriptionQuery(
             file: request.data,
-            model: request.model.id,
+            model: request.model.id.rawValue,
             prompt: request.prompt,
             temperature: request.temperature,
             language: request.language,
@@ -107,7 +107,7 @@ extension OpenAIService: VisionService {
     
     public func completion(_ request: VisionServiceRequest) async throws -> Message {
         let req = ChatVisionQuery(
-            model: request.model.id,
+            model: request.model.id.rawValue,
             messages: encode(visionMessages: request.messages),
             temperature: request.temperature,
             maxTokens: request.maxTokens
@@ -118,7 +118,7 @@ extension OpenAIService: VisionService {
     
     public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatVisionQuery(
-            model: request.model.id,
+            model: request.model.id.rawValue,
             messages: encode(visionMessages: request.messages),
             temperature: request.temperature,
             maxTokens: request.maxTokens
@@ -135,7 +135,7 @@ extension OpenAIService: SpeechService {
     
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {
         let req = AudioSpeechQuery(
-            model: request.model.id,
+            model: request.model.id.rawValue,
             input: request.input,
             voice: .init(rawValue: request.voice) ?? .alloy,
             responseFormat: try encode(responseFormat: request.responseFormat),

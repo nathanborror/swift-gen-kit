@@ -51,7 +51,7 @@ extension OllamaService {
     
     func decode(model: Ollama.ModelResponse) -> Model {
         .init(
-            id: model.model,
+            id: Model.ID(model.model),
             family: model.details?.family,
             name: model.name,
             owner: "ollama",

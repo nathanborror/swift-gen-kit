@@ -198,7 +198,7 @@ extension MistralService {
         }
         
         return Model(
-            id: model.id,
+            id: Model.ID(model.id),
             family: family,
             name: name,
             owner: model.ownedBy,

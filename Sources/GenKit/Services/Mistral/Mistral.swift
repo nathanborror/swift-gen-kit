@@ -12,9 +12,9 @@ public actor MistralService {
         self.client = MistralClient(configuration: configuration)
     }
     
-    private func makeRequest(model: String, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> ChatRequest {
+    private func makeRequest(model: Model.ID, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> ChatRequest {
         return .init(
-            model: model,
+            model: model.rawValue,
             messages: encode(messages: messages),
             tools: encode(tools: tools),
             toolChoice: encode(toolChoice: toolChoice)
@@ -48,7 +48,7 @@ extension MistralService: ChatService {
 extension MistralService: EmbeddingService {
     
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
-        let req = EmbeddingRequest(model: request.model.id, input: [request.input])
+        let req = EmbeddingRequest(model: request.model.id.rawValue, input: [request.input])
         let result = try await client.embeddings(req)
         return result.data.first?.embedding ?? []
     }

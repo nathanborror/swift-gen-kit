@@ -25,6 +25,6 @@ extension ElevenLabsService: ModelService {
     
     public func models() async throws -> [Model] {
         let results = try await client.models()
-        return results.map { Model(id: $0.modelID, owner: "") }
+        return results.map { Model(id: Model.ID($0.modelID), owner: "") }
     }
 }

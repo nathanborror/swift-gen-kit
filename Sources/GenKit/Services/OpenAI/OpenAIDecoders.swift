@@ -9,7 +9,7 @@ extension OpenAIService {
         let message = choice?.message
         
         return .init(
-            id: result.id,
+            id: Message.ID(result.id),
             role: decode(role: message?.role ?? .assistant),
             content: message?.content,
             toolCalls: message?.toolCalls?.map { decode(toolCall: $0) },
@@ -271,7 +271,7 @@ extension OpenAIService {
         }
         
         return Model(
-            id: model.id,
+            id: Model.ID(model.id),
             family: family,
             name: name,
             owner: model.ownedBy,

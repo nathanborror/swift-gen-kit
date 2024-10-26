@@ -43,7 +43,7 @@ extension AnthropicService {
             break // nothing to do here
         case .message_start:
             if let msg = result.message {
-                message.id = msg.id ?? message.id
+                message.id = (msg.id != nil) ? Message.ID(msg.id!) : message.id
                 message.finishReason = decode(finishReason: msg.stopReason)
             }
         case .message_delta:
