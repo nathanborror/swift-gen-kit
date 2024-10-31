@@ -2,17 +2,17 @@ import Foundation
 
 public class ChatSession {
     public static let shared = ChatSession()
-    
-    public func stream(_ request: ChatSessionRequest, runLoopLimit: Int = 10) -> AsyncThrowingStream<Message, Error> {
+
+    public func stream(_ request: ChatSessionRequest, runLoopLimit: Int = 10, maxConcurrentToolCalls: Int = 3) -> AsyncThrowingStream<Message, Error> {
         AsyncThrowingStream { continuation in
             Task {
                 let runID = Run.ID.id
-                
+
                 var messages = request.messages
-                
+
                 var runLoopCount = 0
                 var runShouldContinue = true
-                
+
                 while runShouldContinue && runLoopCount < runLoopLimit {
                     // Prepare service request, DO NOT include a tool choice on subsequent runs, this will
                     // cause an expensive infinite loop of tool calls.
@@ -28,14 +28,14 @@ public class ChatSession {
                         messages = apply(message: message, messages: messages)
                         continuation.yield(message)
                     }
-                    
+
                     // Determine if there were any tool calls on the last message, process them by calling their
                     // repsective functions to return tool responses, then decide whether the loop should continue.
                     guard request.toolCallback != nil else {
                         break
                     }
                     let lastMessage = messages.last!
-                    let (toolMessages, shouldContinue) = try await processToolCalls(in: lastMessage, callback: request.toolCallback)
+                    let (toolMessages, shouldContinue) = try await processToolCalls(in: lastMessage, callback: request.toolCallback, maxConcurrent: maxConcurrentToolCalls)
                     for message in toolMessages {
                         let message = apply(runID: runID, message: message)
                         messages = apply(message: message, messages: messages)
@@ -44,21 +44,21 @@ public class ChatSession {
                     runShouldContinue = shouldContinue
                     runLoopCount += 1
                 }
-                
+
                 continuation.finish()
             }
         }
     }
-    
-    public func completion(_ request: ChatSessionRequest, runLoopLimit: Int = 10) async throws -> ChatSessionResponse {
+
+    public func completion(_ request: ChatSessionRequest, runLoopLimit: Int = 10, maxConcurrentToolCalls: Int = 3) async throws -> ChatSessionResponse {
         let runID = Run.ID.id
-        
+
         var messages = request.messages
         var response = ChatSessionResponse(messages: [])
-        
+
         var runLoopCount = 0
         var runShouldContinue = true
-        
+
         while runShouldContinue && runLoopCount < runLoopLimit {
             // Prepare service request, DO NOT include a tool choice on subsequent runs, this will
             // cause an expensive infinite loop of tool calls.
@@ -71,16 +71,16 @@ public class ChatSession {
             )
             var message = try await request.service.completion(req)
             message = apply(runID: runID, message: message)
-            
+
             response.messages = apply(message: message, messages: response.messages)
             messages = apply(message: message, messages: messages)
-            
+
             // Determine if there were any tool calls on the last message, process them by calling their
             // repsective functions to return tool responses, then decide whether the loop should continue.
             guard request.toolCallback != nil else {
                 break
             }
-            let (toolMessages, shouldContinue) = try await processToolCalls(in: message, callback: request.toolCallback)
+            let (toolMessages, shouldContinue) = try await processToolCalls(in: message, callback: request.toolCallback, maxConcurrent: maxConcurrentToolCalls)
             for message in toolMessages {
                 let message = apply(runID: runID, message: message)
                 response.messages = apply(message: message, messages: response.messages)
@@ -89,19 +89,26 @@ public class ChatSession {
             runShouldContinue = shouldContinue
             runLoopCount += 1
         }
-        
+
         return response
     }
-    
-    func processToolCalls(in message: Message, callback: ChatSessionRequest.ToolCallback?) async throws -> ([Message], Bool) {
+
+    func processToolCalls(in message: Message, callback: ChatSessionRequest.ToolCallback?, maxConcurrent: Int) async throws -> ([Message], Bool) {
         guard let callback else { return ([], false) }
         guard let toolCalls = message.toolCalls else { return ([], false) }
         let runID = message.runID
-        
+
         // Parallelize tool calls.
         var responses: [ToolCallResponse] = []
         await withTaskGroup(of: ToolCallResponse.self) { group in
+            var activeTasks = 0
+            
             for toolCall in toolCalls {
+                if activeTasks >= maxConcurrent {
+                    _ = await group.next()
+                    activeTasks -= 1
+                }
+                
                 group.addTask {
                     do {
                         return try await callback(toolCall)
@@ -116,12 +123,13 @@ public class ChatSession {
                         return .init(messages: [message], shouldContinue: false)
                     }
                 }
+                activeTasks += 1
             }
             for await response in group {
                 responses.append(response)
             }
         }
-        
+
         // Flatten messages from task responses and annotate each message with a Run identifier.
         let messages = responses
             .flatMap { $0.messages }
@@ -130,13 +138,13 @@ public class ChatSession {
                 message.runID = runID
                 return message
             }
-        
+
         // If any task response suggests the Run should stop, stop it.
         let shouldContinue = !responses.contains(where: { $0.shouldContinue == false })
-        
+
         return (messages, shouldContinue)
     }
-    
+
     func apply(message: Message, messages: [Message]) -> [Message] {
         var messages = messages
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
@@ -147,7 +155,7 @@ public class ChatSession {
             return messages
         }
     }
-    
+
     func apply(runID: Run.ID?, message: Message) -> Message {
         var message = message
         message.runID = runID
@@ -159,36 +167,36 @@ public class ChatSession {
 
 public struct ChatSessionRequest {
     public typealias ToolCallback = @Sendable (ToolCall) async throws -> ToolCallResponse
-    
+
     public let service: ChatService
     public let model: Model
     public let toolCallback: ToolCallback?
-    
+
     public private(set) var system: String? = nil
     public private(set) var history: [Message] = []
     public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
     public private(set) var context: [String: String] = [:]
     public private(set) var temperature: Float? = nil
-    
+
     public init(service: ChatService, model: Model, toolCallback: ToolCallback? = nil) {
         self.service = service
         self.model = model
         self.toolCallback = toolCallback
     }
-    
+
     public mutating func with(system: String?) {
         self.system = system
     }
-    
+
     public mutating func with(history: [Message]) {
         self.history = history
     }
-    
+
     public mutating func with(tools: [Tool]) {
         self.tools = tools
     }
-    
+
     public mutating func with(tool: Tool?) {
         if let tool {
             self.tool = tool
@@ -197,18 +205,18 @@ public struct ChatSessionRequest {
             self.tool = nil
         }
     }
-    
+
     public mutating func with(context: [String: String]) {
         self.context = context
     }
-    
+
     public mutating func with(temperature: Float) {
         self.temperature = temperature
     }
-    
+
     var messages: [Message] {
         var messages: [Message] = []
-        
+
         // Apply user context
         var systemContext = ""
         if let memories = context["MEMORIES"] {
@@ -219,22 +227,22 @@ public struct ChatSessionRequest {
             </user_context>
             """
         }
-        
+
         // Apply system prompt
         if let system {
             messages.append(.init(kind: .instruction, role: .system, content: [system, systemContext].joined(separator: "\n\n")))
         }
-        
+
         // Apply history
         messages += history
-        
+
         return messages
     }
 }
 
 public struct ChatSessionResponse: Sendable {
     public var messages: [Message]
-    
+
     public func extractTool<T: Codable>(name: String, type: T.Type) throws -> T {
         guard let message = messages.last else {
             throw ChatSessionError.missingMessage
