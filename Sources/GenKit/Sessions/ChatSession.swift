@@ -101,14 +101,7 @@ public class ChatSession {
         // Parallelize tool calls.
         var responses: [ToolCallResponse] = []
         await withTaskGroup(of: ToolCallResponse.self) { group in
-            var activeTasks = 0
-            
             for toolCall in toolCalls {
-                if activeTasks >= maxConcurrent {
-                    _ = await group.next()
-                    activeTasks -= 1
-                }
-                
                 group.addTask {
                     do {
                         return try await callback(toolCall)
@@ -123,7 +116,6 @@ public class ChatSession {
                         return .init(messages: [message], shouldContinue: false)
                     }
                 }
-                activeTasks += 1
             }
             for await response in group {
                 responses.append(response)
