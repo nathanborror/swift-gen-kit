@@ -10,11 +10,13 @@ public struct VisionServiceRequest {
     public var messages: [Message]
     public var maxTokens: Int?
     public var temperature: Float?
-    
-    public init(model: Model, messages: [Message], maxTokens: Int? = nil, temperature: Float? = nil) {
+    public var customHeaders: [String: String]
+
+    public init(model: Model, messages: [Message], maxTokens: Int? = nil, temperature: Float? = nil, customHeaders: [String: String] = [:]) {
         self.model = model
         self.messages = messages
         self.maxTokens = maxTokens
         self.temperature = temperature
+        self.customHeaders = customHeaders
     }
 }

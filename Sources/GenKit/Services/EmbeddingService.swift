@@ -7,4 +7,5 @@ public protocol EmbeddingService: Sendable {
 public struct EmbeddingServiceRequest {
     public var model: Model
     public var input: String
+    public var customHeaders: [String: String]
 }

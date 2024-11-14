@@ -13,7 +13,8 @@ public class VisionSession {
                 let req = VisionServiceRequest(
                     model: request.model,
                     messages: messages,
-                    temperature: request.temperature
+                    temperature: request.temperature,
+                    customHeaders: request.customHeaders
                 )
                 try await request.service.completionStream(req) { update in
                     var message = update
@@ -36,7 +37,8 @@ public class VisionSession {
         let req = VisionServiceRequest(
             model: request.model,
             messages: messages,
-            temperature: request.temperature
+            temperature: request.temperature,
+            customHeaders: request.customHeaders
         )
         var message = try await request.service.completion(req)
         message.runID = runID
@@ -72,7 +74,8 @@ public struct VisionSessionRequest {
     public private(set) var history: [Message] = []
     public private(set) var context: [String: String] = [:]
     public private(set) var temperature: Float? = nil
-    
+    public private(set) var customHeaders: [String: String] = [:]
+
     public init(service: VisionService, model: Model, toolCallback: ToolCallback? = nil) {
         self.service = service
         self.model = model
@@ -94,7 +97,11 @@ public struct VisionSessionRequest {
     public mutating func with(temperature: Float) {
         self.temperature = temperature
     }
-    
+
+    public mutating func with(header: String, value: String) {
+        customHeaders[header] = value
+    }
+
     var messages: [Message] {
         var messages: [Message] = []
         

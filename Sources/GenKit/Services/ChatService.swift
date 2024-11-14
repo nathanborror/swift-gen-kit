@@ -11,12 +11,14 @@ public struct ChatServiceRequest {
     public var tools: [Tool]
     public var toolChoice: Tool?
     public var temperature: Float?
-    
-    public init(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, temperature: Float? = nil) {
+    public var customHeaders: [String: String]
+
+    public init(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, temperature: Float? = nil, customHeaders: [String: String] = [:]) {
         self.model = model
         self.messages = messages
         self.tools = tools
         self.toolChoice = toolChoice
         self.temperature = temperature
+        self.customHeaders = customHeaders
     }
 }

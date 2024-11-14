@@ -13,7 +13,7 @@ public struct ImagineServiceRequest {
     public var size: String?
     public var style: String?
     public var user: String?
-        
+
     public init(model: Model, prompt: String, n: Int? = nil, quality: String? = nil, responseFormat: String? = nil,
                 size: String? = nil, style: String? = nil, user: String? = nil) {
         self.model = model
