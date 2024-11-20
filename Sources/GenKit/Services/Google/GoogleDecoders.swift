@@ -16,9 +16,10 @@ extension GoogleService {
         return .init(rawValue: role) ?? .assistant
     }
     
-    func decode(content candidates: [Candidate]) -> String? {
-        candidates.map { candidate in
+    func decode(content candidates: [Candidate]) -> [Message.Content] {
+        let text = candidates.map { candidate in
             candidate.content.parts.map { $0.text }.joined()
         }.joined()
+        return [.text(text)]
     }
 }
