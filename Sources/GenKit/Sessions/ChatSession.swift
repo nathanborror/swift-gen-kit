@@ -6,45 +6,48 @@ public class ChatSession {
     public func stream(_ request: ChatSessionRequest, runLoopLimit: Int = 10, maxConcurrentToolCalls: Int = 3) -> AsyncThrowingStream<Message, Error> {
         AsyncThrowingStream { continuation in
             Task {
-                let runID = Run.ID.id
+                do {
+                    let runID = Run.ID.id
 
-                var messages = request.messages
+                    var messages = request.messages
 
-                var runLoopCount = 0
-                var runShouldContinue = true
+                    var runLoopCount = 0
+                    var runShouldContinue = true
 
-                while runShouldContinue && runLoopCount < runLoopLimit {
-                    // Prepare service request, DO NOT include a tool choice on subsequent runs, this will
-                    // cause an expensive infinite loop of tool calls.
-                    let req = ChatServiceRequest(
-                        model: request.model,
-                        messages: messages,
-                        tools: request.tools,
-                        toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
-                        temperature: request.temperature
-                    )
-                    try await request.service.completionStream(req) { message in
-                        let message = apply(runID: runID, message: message)
-                        messages = apply(message: message, messages: messages)
-                        continuation.yield(message)
+                    while runShouldContinue && runLoopCount < runLoopLimit {
+                        // Prepare service request, DO NOT include a tool choice on subsequent runs, this will
+                        // cause an expensive infinite loop of tool calls.
+                        let req = ChatServiceRequest(
+                            model: request.model,
+                            messages: messages,
+                            tools: request.tools,
+                            toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
+                            temperature: request.temperature
+                        )
+                        try await request.service.completionStream(req) { message in
+                            let message = apply(runID: runID, message: message)
+                            messages = apply(message: message, messages: messages)
+                            continuation.yield(message)
+                        }
+
+                        // Determine if there were any tool calls on the last message, process them by calling their
+                        // repsective functions to return tool responses, then decide whether the loop should continue.
+                        guard request.toolCallback != nil else {
+                            break
+                        }
+                        let lastMessage = messages.last!
+                        let (toolMessages, shouldContinue) = try await processToolCalls(in: lastMessage, callback: request.toolCallback, maxConcurrent: maxConcurrentToolCalls)
+                        for message in toolMessages {
+                            let message = apply(runID: runID, message: message)
+                            messages = apply(message: message, messages: messages)
+                            continuation.yield(message)
+                        }
+                        runShouldContinue = shouldContinue
+                        runLoopCount += 1
                     }
-
-                    // Determine if there were any tool calls on the last message, process them by calling their
-                    // repsective functions to return tool responses, then decide whether the loop should continue.
-                    guard request.toolCallback != nil else {
-                        break
-                    }
-                    let lastMessage = messages.last!
-                    let (toolMessages, shouldContinue) = try await processToolCalls(in: lastMessage, callback: request.toolCallback, maxConcurrent: maxConcurrentToolCalls)
-                    for message in toolMessages {
-                        let message = apply(runID: runID, message: message)
-                        messages = apply(message: message, messages: messages)
-                        continuation.yield(message)
-                    }
-                    runShouldContinue = shouldContinue
-                    runLoopCount += 1
+                } catch {
+                    continuation.finish(throwing: error)
                 }
-
                 continuation.finish()
             }
         }
