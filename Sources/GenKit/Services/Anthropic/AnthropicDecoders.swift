@@ -100,14 +100,12 @@ extension AnthropicService {
 
     func decode(finishReason: Anthropic.StopReason?) -> Message.FinishReason? {
         switch finishReason {
-        case .end_turn:
+        case .end_turn, .stop_sequence:
             return .stop
         case .max_tokens:
             return .length
-        case .stop_sequence:
-            return .cancelled
         case .tool_use:
-            return .toolCalls
+            return .tool_calls
         default:
             return .none
         }

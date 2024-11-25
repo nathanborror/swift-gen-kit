@@ -65,9 +65,9 @@ extension MistralService {
         case .length, .model_length:
             return .length
         case .tool_calls:
-            return .toolCalls
+            return .tool_calls
         case .error:
-            return .cancelled
+            return .error
         }
     }
     

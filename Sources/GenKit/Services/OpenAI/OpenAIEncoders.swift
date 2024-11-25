@@ -25,7 +25,9 @@ extension OpenAIService {
         case .tool: .tool
         }
     }
-    
+
+    func encode(content: Message.Content) -> 
+
     func encode(toolCalls: [ToolCall]?) -> [Chat.ToolCall]? {
         toolCalls?.map { encode(toolCall: $0) }
     }
@@ -75,42 +77,6 @@ extension OpenAIService {
     func encode(responseFormat: String?) -> AudioTranscriptionQuery.ResponseFormat? {
         guard let responseFormat else { return nil }
         return .init(rawValue: responseFormat)
-    }
-    
-    // Vision
-    
-    func encode(visionMessages messages: [Message]) -> [ChatVisionMessage] {
-        messages.map { encode(visionMessage: $0) }
-    }
-    
-    func encode(visionMessage message: Message) -> ChatVisionMessage {
-        if message.attachments.count > 0 {
-            return .vision(encode(message: message))
-        }
-        return .text(encode(message: message))
-    }
-    
-    func encode(message: Message) -> ChatVision {
-        let assets: [Asset] = message.visionImages
-        
-        // Prepare all the image assets attached to the message
-        var contents = assets.map { (asset) -> ChatVision.Content? in
-            switch asset.location {
-            case .url:
-                guard let url = asset.url?.absoluteString else { return nil }
-                return .init(type: "image_url", imageURL: .init(url: url))
-            case .none:
-                guard let base64 = asset.data?.base64EncodedString() else { return nil }
-                return .init(type: "image_url", imageURL: .init(url: "data:image/png;base64,\(base64)"))
-            default:
-                return nil
-            }
-        }.compactMap { $0 }
-        
-        if let content = message.content {
-            contents.append(.init(type: "text", text: content))
-        }
-        return .init(role: encode(role: message.role), content: contents)
     }
     
     // Speech

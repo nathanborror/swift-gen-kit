@@ -103,34 +103,6 @@ extension OpenAIService: TranscriptionService {
     }
 }
 
-extension OpenAIService: VisionService {
-    
-    public func completion(_ request: VisionServiceRequest) async throws -> Message {
-        let req = ChatVisionQuery(
-            model: request.model.id.rawValue,
-            messages: encode(visionMessages: request.messages),
-            temperature: request.temperature,
-            maxTokens: request.maxTokens
-        )
-        let result = try await client.chatsVision(query: req)
-        return decode(result: result)
-    }
-    
-    public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
-        let req = ChatVisionQuery(
-            model: request.model.id.rawValue,
-            messages: encode(visionMessages: request.messages),
-            temperature: request.temperature,
-            maxTokens: request.maxTokens
-        )
-        var message = Message(role: .assistant)
-        for try await result in client.chatsVisionStream(query: req) {
-            message = decode(result: result, into: message)
-            try await update(message)
-        }
-    }
-}
-
 extension OpenAIService: SpeechService {
     
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {

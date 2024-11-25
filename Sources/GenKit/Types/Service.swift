@@ -15,8 +15,6 @@ public struct Service: Codable, Identifiable, Sendable {
     public var preferredImageModel: Model.ID?
     public var preferredEmbeddingModel: Model.ID?
     public var preferredTranscriptionModel: Model.ID?
-    public var preferredToolModel: Model.ID?
-    public var preferredVisionModel: Model.ID?
     public var preferredSpeechModel: Model.ID?
     public var preferredSummarizationModel: Model.ID?
     
@@ -42,7 +40,6 @@ public struct Service: Codable, Identifiable, Sendable {
     public init(id: ServiceID, name: String, host: String = "", token: String = "", models: [Model] = [],
                 preferredChatModel: Model.ID? = nil, preferredImageModel: Model.ID? = nil,
                 preferredEmbeddingModel: Model.ID? = nil, preferredTranscriptionModel: Model.ID? = nil,
-                preferredToolModel: Model.ID? = nil, preferredVisionModel: Model.ID? = nil,
                 preferredSpeechModel: Model.ID? = nil, preferredSummarizationModel: Model.ID? = nil) {
         self.id = id
         self.name = name
@@ -55,8 +52,6 @@ public struct Service: Codable, Identifiable, Sendable {
         self.preferredImageModel = preferredImageModel
         self.preferredEmbeddingModel = preferredEmbeddingModel
         self.preferredTranscriptionModel = preferredTranscriptionModel
-        self.preferredToolModel = preferredToolModel
-        self.preferredVisionModel = preferredVisionModel
         self.preferredSpeechModel = preferredSpeechModel
         self.preferredSummarizationModel = preferredSummarizationModel
     }
@@ -197,24 +192,6 @@ extension Service {
         }
     }
     
-    public func visionService() throws -> VisionService {
-        guard preferredVisionModel != nil else {
-            throw ServiceError.missingService
-        }
-        switch id {
-        case .anthropic:
-            return anthropic()
-        case .groq:
-            return groq()
-        case .ollama:
-            return ollama()
-        case .openAI:
-            return openAI()
-        case .elevenLabs, .fal, .google, .mistral, .perplexity:
-            throw ServiceError.unsupportedService
-        }
-    }
-    
     public func speechService() throws -> SpeechService {
         guard preferredSpeechModel != nil else {
             throw ServiceError.missingService
@@ -274,14 +251,6 @@ extension Service {
         preferredTranscriptionModel != nil
     }
     
-    public var supportsTools: Bool {
-        preferredToolModel != nil
-    }
-    
-    public var supportsVision: Bool {
-        preferredVisionModel != nil
-    }
-    
     public var supportsSpeech: Bool {
         preferredSpeechModel != nil
     }
@@ -298,8 +267,6 @@ extension Service {
         self.preferredImageModel = service.preferredImageModel
         self.preferredEmbeddingModel = service.preferredEmbeddingModel
         self.preferredTranscriptionModel = service.preferredTranscriptionModel
-        self.preferredToolModel = service.preferredToolModel
-        self.preferredVisionModel = service.preferredVisionModel
         self.preferredSpeechModel = service.preferredSpeechModel
         self.preferredSummarizationModel = service.preferredSummarizationModel
     }

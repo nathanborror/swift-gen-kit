@@ -59,8 +59,8 @@ extension OpenAIService {
         switch finishReason {
         case "stop": .stop
         case "length": .length
-        case "tool_calls": .toolCalls
-        case "content_filter": .contentFilter
+        case "tool_calls": .tool_calls
+        case "content_filter": .content_filter
         default: nil
         }
     }

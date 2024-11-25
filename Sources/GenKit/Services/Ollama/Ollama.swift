@@ -70,28 +70,3 @@ extension OllamaService: ModelService {
         return result.models.map { decode(model: $0) }
     }
 }
-
-extension OllamaService: VisionService {
-
-    public func completion(_ request: VisionServiceRequest) async throws -> Message {
-        let messages = encode(messages: request.messages)
-        let payload = ChatRequest(model: request.model.id.rawValue, messages: messages)
-        let result = try await client.chat(payload)
-        return decode(result: result)
-    }
-    
-    public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = ChatRequest(model: request.model.id.rawValue, messages: encode(messages: request.messages), stream: true)
-        var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
-            message = decode(result: result, into: message)
-            try await update(message)
-            
-            // The connection hangs if we don't explicitly return when the stream has stopped.
-            if message.finishReason == .stop {
-                return
-            }
-        }
-    }
-}
-
