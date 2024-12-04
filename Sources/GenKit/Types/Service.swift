@@ -73,7 +73,7 @@ extension Service {
     }
     
     public func elevenLabs() -> ElevenLabsService {
-        ElevenLabsService(configuration: .init(host: hostURL, token: token))
+        ElevenLabsService(token)
     }
     
     public func fal() -> FalService {
