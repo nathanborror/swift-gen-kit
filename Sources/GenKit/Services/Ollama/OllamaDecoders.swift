@@ -6,18 +6,25 @@ extension OllamaService {
     
     func decode(result: ChatResponse, into message: Message? = nil) -> Message {
         if var message {
-            message.content = patch(string: message.content, with: result.message?.content)
+            if case .text(let text) = message.content?.last {
+                if let patched = patch(string: text, with: result.message?.content) {
+                    message.content = [.text(patched)]
+                }
+            }
             message.finishReason = decode(done: result.done)
             message.modified = .now
             return message
-        } else {
-            return .init(
-                role: decode(role: result.message?.role),
-                content: result.message?.content,
-                toolCalls: decode(toolCalls: result.message?.toolCalls),
-                finishReason: decode(done: result.done)
-            )
         }
+
+        var message = Message(
+            role: decode(role: result.message?.role),
+            toolCalls: decode(toolCalls: result.message?.toolCalls),
+            finishReason: decode(done: result.done)
+        )
+        if let content = result.message?.content {
+            message.content = [.text(content)]
+        }
+        return message
     }
     
     func decode(toolCalls: [Ollama.ToolCall]?) -> [ToolCall]? {

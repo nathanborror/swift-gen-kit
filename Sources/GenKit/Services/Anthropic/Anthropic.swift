@@ -6,12 +6,12 @@ private let logger = Logger(subsystem: "AnthropicService", category: "GenKit")
 
 public actor AnthropicService {
     
-    let client: AnthropicClient
-    
-    public init(configuration: AnthropicClient.Configuration) {
-        self.client = AnthropicClient(configuration: configuration)
+    let client: Anthropic.Client
+
+    public init(host: URL? = nil, apiKey: String) {
+        self.client = .init(host: host, apiKey: apiKey)
     }
-    
+
     private func makeRequest(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> ChatRequest {
         let (system, messages) = encode(messages: messages)
         return .init(
@@ -29,8 +29,8 @@ extension AnthropicService: ChatService {
     
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
-        req.temperature = request.temperature
-        
+        req.temperature = (request.temperature != nil) ? Float(request.temperature!) : nil
+
         let result = try await client.chat(req)
         if let error = result.error { throw error }
         return decode(result: result)
@@ -38,7 +38,7 @@ extension AnthropicService: ChatService {
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
-        req.temperature = request.temperature
+        req.temperature = (request.temperature != nil) ? Float(request.temperature!) : nil
         req.stream = true
         
         var message = Message(role: .assistant)

@@ -110,7 +110,7 @@ public class ChatSession {
                     } catch {
                         let message = Message(
                             role: .tool,
-                            content: "Unknown tool.",
+                            content: [.text("Unknown tool.")],
                             toolCallID: toolCall.id,
                             name: toolCall.function.name,
                             metadata: ["label": "Unknown tool"]
@@ -205,7 +205,7 @@ public struct ChatSessionRequest {
         self.context = context
     }
 
-    public mutating func with(temperature: Float) {
+    public mutating func with(temperature: Double) {
         self.temperature = temperature
     }
 
@@ -229,7 +229,8 @@ public struct ChatSessionRequest {
 
         // Apply system prompt
         if let system {
-            messages.append(.init(kind: .instruction, role: .system, content: [system, systemContext].joined(separator: "\n\n")))
+            let prompt = [system, systemContext].joined(separator: "\n\n")
+            messages.append(.init(kind: .instruction, role: .system, content: [.text(prompt)]))
         }
 
         // Apply history

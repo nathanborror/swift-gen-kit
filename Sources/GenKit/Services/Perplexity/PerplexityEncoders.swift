@@ -10,10 +10,21 @@ extension PerplexityService {
     func encode(message: Message) -> Perplexity.Message {
         .init(
             role: encode(role: message.role),
-            content: message.content ?? ""
+            content: encode(content: message.content) ?? ""
         )
     }
-    
+
+    func encode(content: [Message.Content]?) -> String? {
+        content?.compactMap {
+            switch $0 {
+            case .text(let text):
+                return text
+            default:
+                return nil
+            }
+        }.joined()
+    }
+
     func encode(tools: [Tool]) -> [Perplexity.Message] {
         tools.map { encode(tool: $0) }
     }

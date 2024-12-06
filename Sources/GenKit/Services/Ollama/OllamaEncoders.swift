@@ -15,11 +15,22 @@ extension OllamaService {
     func encode(message: Message) -> Ollama.Message {
         .init(
             role: encode(role: message.role),
-            content: message.content ?? "",
-            images: encode(attachments: message)
+            content: encode(content: message.content) ?? "",
+            images: encode(images: message.content)
         )
     }
-    
+
+    func encode(content: [Message.Content]?) -> String? {
+        content?.compactMap {
+            switch $0 {
+            case .text(let text):
+                return text
+            default:
+                return nil
+            }
+        }.joined()
+    }
+
     func encode(tools: [Tool]) -> [Ollama.Tool] {
         tools.map { encode(tool: $0) }
     }
@@ -47,14 +58,14 @@ extension OllamaService {
         }
     }
     
-    func encode(attachments message: Message) -> [Data]? {
-        let assets = message.visionImages
-        
-        // Prepare all the image assets attached to the message
-        let dataList = assets.map { (asset) -> Data? in
-            return asset.data
-        }.compactMap { $0 }
-        
-        return dataList.count > 0 ? dataList : nil
+    func encode(images content: [Message.Content]?) -> [Data]? {
+        content?.compactMap {
+            switch $0 {
+            case .image(let data):
+                return data
+            default:
+                return nil
+            }
+        }
     }
 }

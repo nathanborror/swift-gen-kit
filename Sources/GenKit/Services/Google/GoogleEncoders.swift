@@ -11,11 +11,18 @@ extension GoogleService {
     }
     
     func encode(message: Message) -> Content {
-        var parts = [Content.Part]()
-        if let content = message.content {
-            parts.append(.init(text: content))
+        let parts = message.content?.compactMap {
+            switch $0 {
+            case .text(let text):
+                return Content.Part(text: text)
+            default:
+                return nil
+            }
         }
-        return .init(role: encode(role: message.role), parts: parts)
+        return .init(
+            role: encode(role: message.role),
+            parts: parts ?? []
+        )
     }
     
     func encode(role: Message.Role) -> String? {

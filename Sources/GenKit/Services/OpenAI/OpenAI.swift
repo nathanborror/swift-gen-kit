@@ -6,37 +6,37 @@ private let logger = Logger(subsystem: "OpenAIService", category: "GenKit")
 
 public actor OpenAIService {
     
-    private var client: OpenAIClient
-    
-    public init(configuration: OpenAIClient.Configuration) {
-        self.client = OpenAIClient(configuration: configuration)
+    private var client: OpenAI.Client
+
+    public init(host: URL? = nil, apiKey: String) {
+        self.client = .init(host: host, apiKey: apiKey)
     }
 }
 
 extension OpenAIService: ChatService {
     
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
-        let req = ChatQuery(
-            model: request.model.id.rawValue,
+        let req = ChatRequest(
             messages: encode(messages: request.messages),
+            model: request.model.id.rawValue,
+            temperature: request.temperature,
             tools: encode(tools: request.tools),
-            toolChoice: encode(toolChoice: request.toolChoice),
-            temperature: request.temperature
+            tool_choice: encode(toolChoice: request.toolChoice)
         )
-        let result = try await client.chats(query: req)
+        let result = try await client.chatCompletions(req)
         return decode(result: result)
     }
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        let req = ChatQuery(
-            model: request.model.id.rawValue,
+        let req = OpenAI.ChatRequest(
             messages: encode(messages: request.messages),
+            model: request.model.id.rawValue,
+            temperature: request.temperature,
             tools: encode(tools: request.tools),
-            toolChoice: encode(toolChoice: request.toolChoice),
-            temperature: request.temperature
+            tool_choice: encode(toolChoice: request.toolChoice)
         )
         var message = Message(role: .assistant)
-        for try await result in client.chatsStream(query: req) {
+        for try await result in try client.chatCompletionsStream(req) {
             message = decode(result: result, into: message)
             try await update(message)
         }
@@ -44,10 +44,13 @@ extension OpenAIService: ChatService {
 }
 
 extension OpenAIService: EmbeddingService {
-    
+
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
-        let req = EmbeddingsQuery(model: request.model.id.rawValue, input: request.input)
-        let result = try await client.embeddings(query: req)
+        let req = OpenAI.EmbeddingsRequest(
+            input: request.input,
+            model: request.model.id.rawValue
+        )
+        let result = try await client.embeddings(req)
         return result.data.first?.embedding ?? []
     }
 }
@@ -63,42 +66,39 @@ extension OpenAIService: ModelService {
 extension OpenAIService: ImageService {
     
     public func imagine(_ request: ImagineServiceRequest) async throws -> [Data] {
-        let req = ImagesQuery(
+        let req = OpenAI.ImageRequest(
             prompt: request.prompt,
             model: request.model.id.rawValue,
             n: request.n,
-            size: request.size
+            size: .size_1024x1024
         )
-        let result = try await client.images(query: req)
-        
+        let result = try await client.imagesGenerations(req)
+
         // HACK: Wait for a second for the images to be available on OpenAI's CDN. Without this the URLs in the
         // result may fail.
         let seconds = 1
         try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
         
-        if let data = result.data {
-            return try data.map {
-                guard let url = $0.url else { return nil }
-                let remoteURL = URL(string: url)!
-                return try Data(contentsOf: remoteURL)
-            }.compactMap { $0 }
-        } 
-        throw ServiceError.missingImageData
+        return try result.data.map {
+            guard let url = $0.url else { return nil }
+            let remoteURL = URL(string: url)!
+            return try Data(contentsOf: remoteURL)
+        }.compactMap { $0 }
     }
 }
 
 extension OpenAIService: TranscriptionService {
     
     public func transcribe(_ request: TranscriptionServiceRequest) async throws -> String {
-        let req = AudioTranscriptionQuery(
+        let req = OpenAI.TranscriptionRequest(
             file: request.data,
             model: request.model.id.rawValue,
-            prompt: request.prompt,
-            temperature: request.temperature,
             language: request.language,
-            responseFormat: encode(responseFormat: request.responseFormat)
+            prompt: request.prompt,
+            response_format: (request.responseFormat != nil) ? .init(rawValue: request.responseFormat!) : nil,
+            temperature: request.temperature
         )
-        let result = try await client.audioTranscriptions(query: req)
+        let result = try await client.transcriptions(req)
         return result.text
     }
 }
@@ -106,14 +106,13 @@ extension OpenAIService: TranscriptionService {
 extension OpenAIService: SpeechService {
     
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {
-        let req = AudioSpeechQuery(
+        let req = OpenAI.SpeechRequest(
             model: request.model.id.rawValue,
             input: request.input,
             voice: .init(rawValue: request.voice) ?? .alloy,
-            responseFormat: try encode(responseFormat: request.responseFormat),
+            response_format: (request.responseFormat != nil) ? .init(rawValue: request.responseFormat!) : nil,
             speed: request.speed
         )
-        let result = try await client.audioSpeech(query: req)
-        return result
+        return try await client.speech(req)
     }
 }

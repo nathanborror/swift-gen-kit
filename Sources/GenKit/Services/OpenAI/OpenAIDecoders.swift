@@ -4,34 +4,39 @@ import SharedKit
 
 extension OpenAIService {
     
-    func decode(result: ChatResult) -> Message {
+    func decode(result: OpenAI.ChatResponse) -> Message {
         let choice = result.choices.first
-        let message = choice?.message
-        
-        return .init(
+        var message = Message(
             id: Message.ID(result.id),
-            role: decode(role: message?.role ?? .assistant),
-            content: message?.content,
-            toolCalls: message?.toolCalls?.map { decode(toolCall: $0) },
-            toolCallID: message?.toolCallID,
-            name: message?.name,
-            finishReason: decode(finishReason: choice?.finishReason))
+            role: decode(role: choice?.message.role ?? "assistant"),
+            toolCalls: choice?.message.tool_calls?.map { decode(toolCall: $0) },
+            finishReason: decode(finishReason: choice?.finish_reason)
+        )
+        if let content = choice?.message.content {
+            message.content = [.text(content)]
+        }
+        return message
     }
     
-    func decode(result: ChatStreamResult, into message: Message) -> Message {
+    func decode(result: OpenAI.ChatStreamResponse, into message: Message) -> Message {
         var message = message
         let choice = result.choices.first
-        
-        message.content = patch(string: message.content, with: choice?.delta.content)
-        message.finishReason = decode(finishReason: choice?.finishReason)
+
+        if case .text(let text) = message.content?.last {
+            if let patched = patch(string: text, with: choice?.delta.content) {
+                message.content = [.text(patched)]
+            }
+        }
+        message.finishReason = decode(finishReason: choice?.finish_reason)
         message.modified = .now
         
         // Convoluted way to add new tool calls and patch the last tool call being streamed in.
-        if let toolCalls = choice?.delta.toolCalls {
+        if let toolCalls = choice?.delta.tool_calls {
             if message.toolCalls == nil {
                 message.toolCalls = []
             }
             for toolCall in toolCalls {
+                // TODO: FIX THIS
                 if toolCall.id == nil {
                     if var existing = message.toolCalls?.last {
                         existing.function.arguments = patch(string: existing.function.arguments, with: toolCall.function.arguments) ?? ""
@@ -46,12 +51,13 @@ extension OpenAIService {
         return message
     }
 
-    func decode(role: Chat.Role) -> Message.Role {
+    func decode(role: String) -> Message.Role {
         switch role {
-        case .system: .system
-        case .user: .user
-        case .assistant: .assistant
-        case .tool: .tool
+        case "system": .system
+        case "user": .user
+        case "assistant": .assistant
+        case "tool": .tool
+        default: .assistant
         }
     }
 
@@ -65,18 +71,18 @@ extension OpenAIService {
         }
     }
 
-    func decode(toolCall: Chat.ToolCall) -> ToolCall {
+    func decode(toolCall: OpenAI.ChatResponse.Choice.Message.ToolCall) -> ToolCall {
         .init(
-            id: toolCall.id ?? "",
-            type: toolCall.type ?? "",
+            id: toolCall.id,
+            type: toolCall.type,
             function: .init(
-                name: toolCall.function.name ?? "",
-                arguments: toolCall.function.arguments ?? ""
+                name: toolCall.function.name,
+                arguments: toolCall.function.arguments
             )
         )
     }
     
-    func decode(model: OpenAI.ModelResult) -> Model {
+    func decode(model: OpenAI.Model) -> Model {
         var name = String?.none
         var family = String?.none
         var maxOutput = Int?.none
@@ -274,7 +280,7 @@ extension OpenAIService {
             id: Model.ID(model.id),
             family: family,
             name: name,
-            owner: model.ownedBy,
+            owner: model.owned_by,
             contextWindow: contextWindow,
             maxOutput: maxOutput,
             trainingCutoff: nil

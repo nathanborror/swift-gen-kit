@@ -17,15 +17,15 @@ extension AnthropicService {
         }
         
         // Proceed as normal
-        let system = messages
-            .filter { $0.role == .system }
-            .map { $0.content }
-            .compactMap { $0 }
-            .joined(separator: "\n\n")
+//        let system = messages
+//            .filter { $0.role == .system }
+//            .map { $0.content }
+//            .compactMap { $0 }
+//            .joined(separator: "\n\n")
         
-        let messagesFiltered = messages
-            .filter { $0.role != .system }
-            .map { encode(message: $0) }
+//        let messagesFiltered = messages
+//            .filter { $0.role != .system }
+//            .map { encode(message: $0) }
         
         let messagesCleaned = messagesFiltered.reduce(into: [Anthropic.ChatRequest.Message]()) { result, message in
             if let lastMessage = result.last {
@@ -44,20 +44,8 @@ extension AnthropicService {
     func encode(message: Message) -> Anthropic.ChatRequest.Message {
         var out = Anthropic.ChatRequest.Message(
             role: encode(role: message.role),
-            content: []
+            content: encode(content: message.content)
         )
-        
-        // Prepare all the image assets attached to the message
-        let assets: [Asset] = message.visionImages
-        out.content += assets.map { (asset) -> Anthropic.ChatRequest.Message.Content? in
-            switch asset.location {
-            case .none:
-                guard let data = asset.data else { return nil }
-                return .init(type: .image, source: .init(type: .base64, mediaType: .png, data: data))
-            default:
-                return nil
-            }
-        }.compactMap { $0 }
         
         // Prepare tool calls
         if let toolCalls = message.toolCalls {
@@ -121,7 +109,20 @@ extension AnthropicService {
         }
         return out
     }
-    
+
+    func encode(content: [Message.Content]?) -> [Anthropic.ChatRequest.Message.Content] {
+        content?.compactMap {
+            switch $0 {
+            case .text(let text):
+                return .init(type: .text, text: text)
+            case .image(data: let data):
+                return .init(type: .image, source: .init(type: .base64, mediaType: .png, data: data))
+            default:
+                return nil
+            }
+        } ?? []
+    }
+
     func encode(role: Message.Role) -> Anthropic.Role {
         switch role {
         case .system, .user, .tool: .user

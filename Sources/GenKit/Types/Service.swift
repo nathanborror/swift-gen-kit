@@ -80,7 +80,7 @@ extension Service {
     }
     
     public func groq() -> OpenAIService {
-        OpenAIService(configuration: .init(host: hostURL, token: token))
+        OpenAIService(host: hostURL, apiKey: token)
     }
     
     public func mistral() -> MistralService {
@@ -92,7 +92,7 @@ extension Service {
     }
     
     public func openAI() -> OpenAIService {
-        OpenAIService(configuration: .init(host: hostURL, token: token))
+        OpenAIService(host: hostURL, apiKey: token)
     }
     
     public func perplexity() -> PerplexityService {

@@ -10,18 +10,16 @@ public struct ImagineServiceRequest {
     public var n: Int?
     public var quality: String?
     public var responseFormat: String?
-    public var size: String?
     public var style: String?
     public var user: String?
 
     public init(model: Model, prompt: String, n: Int? = nil, quality: String? = nil, responseFormat: String? = nil,
-                size: String? = nil, style: String? = nil, user: String? = nil) {
+                style: String? = nil, user: String? = nil) {
         self.model = model
         self.prompt = prompt
         self.n = n
         self.quality = quality
         self.responseFormat = responseFormat
-        self.size = size
         self.style = style
         self.user = user
     }

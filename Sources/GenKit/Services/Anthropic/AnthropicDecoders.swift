@@ -12,7 +12,9 @@ extension AnthropicService {
         for content in result.content ?? [] {
             switch content.type {
             case .text, .text_delta:
-                message.content = content.text
+                if let text = content.text {
+                    message.content = [.text(text)]
+                }
             case .tool_use:
                 if message.toolCalls == nil {
                     message.toolCalls = []
@@ -58,7 +60,9 @@ extension AnthropicService {
             if let contentBlock = result.contentBlock {
                 switch contentBlock.type {
                 case .text:
-                    message.content = contentBlock.text
+                    if let text = contentBlock.text {
+                        message.content = [.text(text)]
+                    }
                 case .tool_use:
                     var toolCall = ToolCall(function: .init(name: contentBlock.name ?? "", arguments: ""))
                     toolCall.id = contentBlock.id ?? toolCall.id

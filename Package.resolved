@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-anthropic",
       "state" : {
-        "branch" : "main",
-        "revision" : "62c7da63e8c0da46323806f7f20f4077536adae3"
+        "branch" : "simplify",
+        "revision" : "73cd43f027b69e9eea4b7d08d1177721ea145613"
       }
     },
     {
@@ -15,7 +15,7 @@
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
         "branch" : "main",
-        "revision" : "e4009c1616ef861459fe56e05b579e29942fc3d3"
+        "revision" : "41d58ffe702cfe7b00b2c4c6a6611d9d25a0adc1"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-mistral",
       "state" : {
-        "branch" : "main",
-        "revision" : "b684e503b4b4642d485be9b1c6131093ccd7f46d"
+        "branch" : "simplify",
+        "revision" : "316650b27ba7a3c94f023c9167374fedb8560ab5"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-ollama",
       "state" : {
-        "branch" : "main",
-        "revision" : "0a9ce934d10316e503e5fcfff1d8d6e98d2cfd83"
+        "branch" : "simplify",
+        "revision" : "f13dcd0aa5dacd4bc5453cc899c6ee02d6de0097"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
-        "branch" : "main",
-        "revision" : "d9fcd32777cb3547873087df3ee2331c48812885"
+        "branch" : "simplify",
+        "revision" : "1422da7b3e0bd7663f041b096444a32179056ff5"
       }
     },
     {

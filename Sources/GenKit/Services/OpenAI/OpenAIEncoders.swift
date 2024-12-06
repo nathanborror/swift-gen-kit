@@ -3,21 +3,34 @@ import OpenAI
 
 extension OpenAIService {
     
-    func encode(messages: [Message]) -> [Chat] {
+    func encode(messages: [Message]) -> [OpenAI.ChatRequest.Message] {
         messages.map { encode(message: $0) }
     }
-    
-    func encode(message: Message) -> Chat {
+
+    func encode(message: Message) -> OpenAI.ChatRequest.Message {
         .init(
+            content: encode(content: message.content),
             role: encode(role: message.role),
-            content: message.content,
             name: message.name,
-            toolCalls: message.toolCalls?.map { encode(toolCall: $0) },
-            toolCallID: message.toolCallID
+            tool_calls: message.toolCalls?.map { encode(toolCall: $0) },
+            tool_call_id: message.toolCallID
         )
     }
-    
-    func encode(role: Message.Role) -> Chat.Role {
+
+    func encode(content: [Message.Content]?) -> [OpenAI.ChatRequest.Message.Content]? {
+        content?.map {
+            switch $0 {
+            case .text(let text):
+                return .init(type: "text", text: text)
+            case .image(let data):
+                return .init(type: "image", image_url: .init(url: data.base64EncodedString()))
+            case .audio(let data, let format):
+                return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: format))
+            }
+        }
+    }
+
+    func encode(role: Message.Role) -> OpenAI.ChatRequest.Message.Role {
         switch role {
         case .system: .system
         case .assistant: .assistant
@@ -25,14 +38,12 @@ extension OpenAIService {
         case .tool: .tool
         }
     }
-
-    func encode(content: Message.Content) -> 
-
-    func encode(toolCalls: [ToolCall]?) -> [Chat.ToolCall]? {
+    
+    func encode(toolCalls: [ToolCall]?) -> [OpenAI.ChatRequest.Message.ToolCall]? {
         toolCalls?.map { encode(toolCall: $0) }
     }
     
-    func encode(toolCall: ToolCall) -> Chat.ToolCall {
+    func encode(toolCall: ToolCall) -> OpenAI.ChatRequest.Message.ToolCall {
         .init(
             id: toolCall.id,
             type: toolCall.type,
@@ -40,23 +51,23 @@ extension OpenAIService {
         )
     }
     
-    func encode(functionCall: ToolCall.FunctionCall) -> Chat.ToolCall.Function {
+    func encode(functionCall: ToolCall.FunctionCall) -> OpenAI.ChatRequest.Message.ToolCall.Function {
         .init(name: functionCall.name, arguments: functionCall.arguments)
     }
     
-    func encode(tools: [Tool]?) -> [ChatQuery.Tool]? {
+    func encode(tools: [Tool]?) -> [OpenAI.ChatRequest.Tool]? {
         guard let tools, !tools.isEmpty else { return nil }
         return tools.map { encode(tool: $0) }
     }
     
-    func encode(tool: Tool) -> ChatQuery.Tool {
+    func encode(tool: Tool) -> OpenAI.ChatRequest.Tool {
         .init(
             type: tool.type.rawValue,
             function: encode(function: tool.function)
         )
     }
 
-    func encode(function: Tool.Function) -> ChatQuery.Tool.Function {
+    func encode(function: Tool.Function) -> OpenAI.ChatRequest.Tool.Function {
         .init(
             name: function.name,
             description: function.description,
@@ -64,7 +75,7 @@ extension OpenAIService {
         )
     }
     
-    func encode(toolChoice: Tool?) -> ChatQuery.ToolChoice? {
+    func encode(toolChoice: Tool?) -> OpenAI.ChatRequest.ToolChoice? {
         guard let toolChoice else { return nil }
         return .tool(
             .init(
@@ -74,25 +85,25 @@ extension OpenAIService {
         )
     }
     
-    func encode(responseFormat: String?) -> AudioTranscriptionQuery.ResponseFormat? {
+    func encode(responseFormat: String?) -> OpenAI.TranslationRequest.ResponseFormat? {
         guard let responseFormat else { return nil }
         return .init(rawValue: responseFormat)
     }
     
     // Speech
     
-    func encode(responseFormat: SpeechServiceRequest.ResponseFormat?) throws -> AudioSpeechQuery.ResponseFormat? {
+    func encode(responseFormat: String?) throws -> OpenAI.SpeechRequest.ResponseFormat? {
         guard let responseFormat else { return nil }
         switch responseFormat {
-        case .mp3:
+        case "mp3":
             return .mp3
-        case .opus:
+        case "opus":
             return .opus
-        case .aac:
+        case "aac":
             return .aac
-        case .flac:
+        case "flac":
             return .flac
-        case .custom:
+        default:
             throw ServiceError.unsupportedResponseFormat
         }
     }

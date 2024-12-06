@@ -10,6 +10,8 @@ public struct Message: Codable, Identifiable, Sendable {
     public var model: Model.ID?
     public var role: Role
     public var content: [Content]?
+    public var context: [String: String]?
+    public var attachments: [Attachment]
     public var toolCalls: [ToolCall]?
     public var toolCallID: String?
     public var name: String?
@@ -17,34 +19,56 @@ public struct Message: Codable, Identifiable, Sendable {
     public var metadata: Metadata?
     public var created: Date
     public var modified: Date
-    
-    public enum Role: String, Codable, Sendable {
-        case system
-        case assistant
-        case user
-        case tool
-    }
 
-    /// Types of content that can be interleaved into a user message. All other roles always respond with text.
-    public enum Content: Codable, Sendable {
-        case text(String)
-        case image(Data)
-        case imageURL(URL)
-    }
-
-    /// The reason the model stopped generating tokens.
-    public enum FinishReason: Codable, Sendable {
-        case stop
-        case length
-        case tool_calls
-        case content_filter
-        case user_cancelled
+    public enum Kind: String, CaseIterable, Codable, Sendable {
+        /// Instructions are sent to APIs but not shown in the UI (unless in a debug mode).
+        case instruction
+        /// Local messages are never sent to an API but always displayed in the UI.
+        case local
+        /// Error messages are never sent to an API but always displayed in the UI.
         case error
+        /// Messages without a `kind` are always sent to APIs and always shown in the UI.
+        case none
+    }
+    
+    public enum Role: String, CaseIterable, Codable, Sendable {
+        case system, assistant, user, tool
     }
 
-    public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
-                role: Role, content: [Content]? = nil, toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
-                name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
+    public enum Content: Codable, Sendable {
+        /// Text content
+        case text(String)
+        /// Image content needs to be base64 encoded data.
+        case image(data: Data)
+        /// Audio content needs to be base64 encoded data.
+        case audio(data: Data, format: String)
+    }
+
+    public enum FinishReason: String, Codable, CaseIterable, Sendable {
+        case stop, length, toolCalls, contentFilter, cancelled, error
+    }
+    
+    public enum Attachment: Codable, Sendable {
+        case asset(Asset)
+        case agent(String)
+        case automation(String)
+        case component(Component)
+        case file(String, String)
+    }
+    
+    public struct Component: Codable, Sendable {
+        public var name: String
+        public var json: String
+        
+        public init(name: String, json: String) {
+            self.name = name
+            self.json = json
+        }
+    }
+    
+    public init(id: Message.ID = .id, parent: String? = nil, kind: Kind = .none, role: Role, content: [Content]? = nil,
+                context: [String: String]? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
+                runID: Run.ID? = nil, name: String? = nil, finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) {
         self.id = id
         self.referenceID = referenceID
         self.runID = runID

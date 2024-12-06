@@ -11,11 +11,16 @@ extension PerplexityService {
             logger.warning("failed to decode choice")
             return .init(role: .assistant)
         }
-        return .init(
+        var message = Message(
             role: decode(role: choice.message.role),
-            content: choice.message.content,
             finishReason: decode(finishReason: choice.finishReason)
         )
+        if case .text(let text) = message.content?.last {
+            if let patched = patch(string: text, with: choice.message.content) {
+                message.content = [.text(patched)]
+            }
+        }
+        return message
     }
     
     func decode(result: ChatStreamResponse, into message: Message) -> Message {
@@ -24,7 +29,11 @@ extension PerplexityService {
             logger.warning("failed to decode choice")
             return .init(role: .assistant)
         }
-        message.content = decode(content: choice.delta.content, into: message)
+        if case .text(let text) = message.content?.last {
+            if let patched = patch(string: text, with: choice.delta.content) {
+                message.content = [.text(patched)]
+            }
+        }
         message.finishReason = decode(finishReason: choice.finishReason)
         message.modified = .now
         return message
