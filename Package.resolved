@@ -24,7 +24,7 @@
       "location" : "https://github.com/nathanborror/swift-elevenlabs",
       "state" : {
         "branch" : "main",
-        "revision" : "80718d036fe5a4680184b5c3f2eebcbce538788f"
+        "revision" : "472f0ce330e54864144250436c0f78e8897d7b43"
       }
     },
     {
@@ -34,15 +34,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "bb6ebada9c54294b7e1e63457084dadcd198cffe"
-      }
-    },
-    {
-      "identity" : "swift-google-gen",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/nathanborror/swift-google-gen",
-      "state" : {
-        "branch" : "main",
-        "revision" : "4f9bcf32ef848b699f2d76b7978c9c4b56e42619"
       }
     },
     {

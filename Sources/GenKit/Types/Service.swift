@@ -22,7 +22,6 @@ public struct Service: Codable, Identifiable, Sendable {
         case anthropic
         case elevenLabs
         case fal
-        case google
         case groq
         case mistral
         case ollama
@@ -64,19 +63,15 @@ public struct Service: Codable, Identifiable, Sendable {
 extension Service {
     
     public func anthropic() -> AnthropicService {
-        AnthropicService(configuration: .init(host: hostURL, token: token))
+        AnthropicService(host: hostURL, apiKey: token)
     }
     
     public func elevenLabs() -> ElevenLabsService {
-        ElevenLabsService(configuration: .init(host: hostURL, token: token))
+        ElevenLabsService(apiKey: token)
     }
     
     public func fal() -> FalService {
         FalService(configuration: .init(host: hostURL, token: token))
-    }
-    
-    public func google() -> GoogleService {
-        GoogleService(configuration: .init(host: hostURL, token: token))
     }
     
     public func groq() -> OpenAIService {
@@ -84,11 +79,11 @@ extension Service {
     }
     
     public func mistral() -> MistralService {
-        MistralService(configuration: .init(host: hostURL, token: token))
+        MistralService(host: hostURL, apiKey: token)
     }
     
-    public func ollama() -> OpenAIService {
-        OpenAIService(configuration: .init(host: hostURL, token: token))
+    public func ollama() -> OllamaService {
+        OllamaService(host: hostURL)
     }
     
     public func openAI() -> OpenAIService {
@@ -107,8 +102,6 @@ extension Service {
             elevenLabs()
         case .fal:
             fal()
-        case .google:
-            google()
         case .groq:
             groq()
         case .mistral:
@@ -129,8 +122,6 @@ extension Service {
         switch id {
         case .anthropic:
             return anthropic()
-        case .google:
-            return google()
         case .groq:
             return groq()
         case .mistral:
@@ -155,7 +146,7 @@ extension Service {
             return fal()
         case .openAI:
             return openAI()
-        case .anthropic, .elevenLabs, .google, .groq, .mistral, .ollama, .perplexity:
+        case .anthropic, .elevenLabs, .groq, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -173,7 +164,7 @@ extension Service {
             return ollama()
         case .openAI:
             return openAI()
-        case .anthropic, .elevenLabs, .fal, .google, .perplexity:
+        case .anthropic, .elevenLabs, .fal, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -187,7 +178,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .elevenLabs, .fal, .google, .mistral, .ollama, .perplexity:
+        case .anthropic, .elevenLabs, .fal, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -203,7 +194,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .google, .fal, .mistral, .ollama, .perplexity:
+        case .anthropic, .fal, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -215,8 +206,6 @@ extension Service {
         switch id {
         case .anthropic:
             return anthropic()
-        case .google:
-            return google()
         case .groq:
             return groq()
         case .mistral:

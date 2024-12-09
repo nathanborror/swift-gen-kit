@@ -49,32 +49,22 @@ public struct Message: Codable, Identifiable, Sendable {
     }
     
     public enum Attachment: Codable, Sendable {
-        case asset(Asset)
         case agent(String)
-        case automation(String)
-        case component(Component)
         case file(String, String)
     }
-    
-    public struct Component: Codable, Sendable {
-        public var name: String
-        public var json: String
-        
-        public init(name: String, json: String) {
-            self.name = name
-            self.json = json
-        }
-    }
-    
-    public init(id: Message.ID = .id, parent: String? = nil, kind: Kind = .none, role: Role, content: [Content]? = nil,
-                context: [String: String]? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
-                runID: Run.ID? = nil, name: String? = nil, finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) {
+
+    public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
+                role: Role, content: [Content]? = nil, context: [String : String]? = nil, attachments: [Attachment] = [],
+                toolCalls: [ToolCall]? = nil, toolCallID: String? = nil, name: String? = nil,
+                finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
         self.id = id
         self.referenceID = referenceID
         self.runID = runID
         self.model = model
         self.role = role
         self.content = content
+        self.context = context
+        self.attachments = attachments
         self.toolCalls = toolCalls
         self.toolCallID = toolCallID
         self.name = name

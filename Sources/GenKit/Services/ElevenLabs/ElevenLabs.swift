@@ -6,10 +6,10 @@ private let logger = Logger(subsystem: "ElevenLabsService", category: "GenKit")
 
 public actor ElevenLabsService {
     
-    private var client: ElevenLabsClient
-    
-    public init(configuration: ElevenLabsClient.Configuration) {
-        self.client = ElevenLabsClient(configuration: configuration)
+    private var client: ElevenLabs.Client
+
+    public init(apiKey: String) {
+        self.client = .init(apiKey: apiKey)
     }
 }
 
@@ -27,6 +27,6 @@ extension ElevenLabsService: ModelService {
     
     public func models() async throws -> [Model] {
         let results = try await client.models()
-        return results.map { Model(id: Model.ID($0.modelID), owner: "") }
+        return results.map { Model(id: Model.ID($0.model_id), owner: "") }
     }
 }

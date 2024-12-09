@@ -89,7 +89,6 @@ Provider packages are swift interfaces that talk directly to model provider REST
 - [Perplexity](https://github.com/nathanborror/swift-perplexity) (chats, models)
 - [Anthropic](https://github.com/nathanborror/swift-anthropic) (chats, models)
 - [ElevenLabs](https://github.com/nathanborror/swift-elevenlabs) (speech, models)
-- [Google](https://github.com/nathanborror/swift-google-gen) (chat, models)
 
 ## Todos
 

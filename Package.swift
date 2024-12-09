@@ -23,7 +23,6 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/swift-anthropic", branch: "simplify"),
         .package(url: "https://github.com/nathanborror/swift-perplexity", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-elevenlabs", branch: "main"),
-        .package(url: "https://github.com/nathanborror/swift-google-gen", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-fal", branch: "main"),
         .package(url: "https://github.com/apple/swift-argument-parser", branch: "main"),
     ],
@@ -36,7 +35,6 @@ let package = Package(
             .product(name: "Perplexity", package: "swift-perplexity"),
             .product(name: "Anthropic", package: "swift-anthropic"),
             .product(name: "ElevenLabs", package: "swift-elevenlabs"),
-            .product(name: "GoogleGen", package: "swift-google-gen"),
             .product(name: "Fal", package: "swift-fal"),
         ]),
         .executableTarget(name: "GenCmd", dependencies: [
