@@ -8,7 +8,7 @@ extension GenKit.Message {
     init(_ resp: Anthropic.ChatResponse) {
         self.init(
             role: .init(resp.role) ?? .assistant,
-            content: resp.content?.compactMap { .init($0) },
+            content: resp.content?.compactMap { .init($0) } ?? [],
             toolCalls: resp.content?.compactMap { .init($0) },
             finishReason: .init(resp.stop_reason)
         )

@@ -42,7 +42,7 @@ public struct Message: Codable, Identifiable, Sendable {
     }
 
     public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
-                role: Role, content: [Content]? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
+                role: Role, content: [Content], attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
                 toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
         self.id = id
         self.referenceID = referenceID
@@ -50,6 +50,25 @@ public struct Message: Codable, Identifiable, Sendable {
         self.model = model
         self.role = role
         self.content = content
+        self.attachments = attachments
+        self.toolCalls = toolCalls
+        self.toolCallID = toolCallID
+        self.name = name
+        self.finishReason = finishReason
+        self.metadata = metadata
+        self.created = .now
+        self.modified = .now
+    }
+
+    public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
+                role: Role, content: String? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
+                toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
+        self.id = id
+        self.referenceID = referenceID
+        self.runID = runID
+        self.model = model
+        self.role = role
+        self.content = (content != nil) ? [.text(content!)] : nil
         self.attachments = attachments
         self.toolCalls = toolCalls
         self.toolCallID = toolCallID

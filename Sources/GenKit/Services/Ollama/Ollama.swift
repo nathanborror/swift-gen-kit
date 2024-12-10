@@ -18,8 +18,8 @@ extension OllamaService: ChatService {
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatRequest(
             model: request.model.id.rawValue,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
+            messages: request.messages.map { .init($0) },
+            tools: request.tools.map { .init($0) },
             stream: false
         )
         let resp = try await client.chatCompletions(req)
@@ -37,8 +37,8 @@ extension OllamaService: ChatService {
         
         let req = ChatRequest(
             model: request.model.id.rawValue,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
+            messages: request.messages.map { .init($0) },
+            tools: request.tools.map { .init($0) },
             stream: request.tools.isEmpty
         )
         var message = Message(role: .assistant)

@@ -6,7 +6,7 @@ extension GenKit.Message {
     init(_ resp: Ollama.ChatResponse) {
         self.init(
             role: .init(resp.message?.role) ?? .assistant,
-            content: (resp.message?.content != nil) ? [.text(resp.message!.content)] : nil,
+            content: resp.message?.content,
             toolCalls: resp.message?.tool_calls?.map { .init($0) },
             finishReason: .init(resp.done)
         )
