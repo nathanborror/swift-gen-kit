@@ -34,6 +34,7 @@ extension OpenAIService: ChatService {
         let req = OpenAI.ChatRequest(
             messages: encode(messages: request.messages),
             model: request.model.id.rawValue,
+            stream: true,
             temperature: request.temperature,
             tools: encode(tools: request.tools),
             tool_choice: encode(toolChoice: request.toolChoice)
