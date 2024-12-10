@@ -42,7 +42,7 @@
       "location" : "https://github.com/nathanborror/swift-mistral",
       "state" : {
         "branch" : "simplify",
-        "revision" : "316650b27ba7a3c94f023c9167374fedb8560ab5"
+        "revision" : "a9144a3cb324bcd29f8111aedc924c7ed4b462bd"
       }
     },
     {
@@ -60,7 +60,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "simplify",
-        "revision" : "1422da7b3e0bd7663f041b096444a32179056ff5"
+        "revision" : "509b19c75643ca79aede37ae66d43d334bd47bf2"
       }
     },
     {

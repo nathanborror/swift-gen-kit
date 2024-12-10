@@ -32,6 +32,7 @@ public struct Tool: Codable, Sendable {
 // Tool Calls
 
 public struct ToolCall: Codable, Identifiable, Sendable {
+    public var index: Int?
     public var id: String
     public var type: String
     public var function: FunctionCall
@@ -46,7 +47,8 @@ public struct ToolCall: Codable, Identifiable, Sendable {
         }
     }
     
-    public init(id: String = .id, type: String = "function", function: FunctionCall) {
+    public init(index: Int? = nil, id: String = .id, type: String = "function", function: FunctionCall) {
+        self.index = index
         self.id = id
         self.type = type
         self.function = function
