@@ -80,6 +80,8 @@ extension GenKit.Message {
             if let patched = GenKit.patch(string: text, with: choice.delta.content) {
                 content = [.text(patched)]
             }
+        } else if let text = choice.delta.content {
+            content = [.text(text)]
         }
         finishReason = .init(choice.finish_reason)
         modified = .now

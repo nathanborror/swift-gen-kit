@@ -17,6 +17,8 @@ extension GenKit.Message {
             if let patched = GenKit.patch(string: text, with: resp.message?.content) {
                 self.content = [.text(patched)]
             }
+        } else if let text = resp.message?.content {
+            self.content = [.text(text)]
         }
         self.finishReason = .init(resp.done)
         self.modified = .now

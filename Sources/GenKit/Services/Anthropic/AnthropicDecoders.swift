@@ -116,10 +116,8 @@ extension GenKit.Message {
                     if case .text(let existing) = self.content?.last {
                         let patched = GenKit.patch(string: existing, with: delta.text) ?? existing
                         self.content![self.content!.count-1] = .text(patched)
-                    } else {
-                        if let text = delta.text {
-                            self.content?.append(.text(text))
-                        }
+                    } else if let text = delta.text {
+                        self.content?.append(.text(text))
                     }
                 case .input_json_delta:
                     if var existing = self.toolCalls?.last {
