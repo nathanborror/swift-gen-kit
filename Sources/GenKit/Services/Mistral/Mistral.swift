@@ -16,8 +16,8 @@ public actor MistralService {
         return .init(
             model: model.rawValue,
             messages: messages.map { .init($0) },
-            tools: encode(tools: tools),
-            tool_choice: encode(toolChoice: toolChoice)
+            tools: tools.map { .init($0) },
+            tool_choice: .init(toolChoice)
         )
     }
 }
@@ -28,8 +28,11 @@ extension MistralService: ChatService {
         var req = makeRequest(model: request.model.id, messages: request.messages, tools: request.tools, toolChoice: request.toolChoice)
         req.temperature = request.temperature
 
-        let result = try await client.chatCompletions(req)
-        return decode(result: result)
+        let resp = try await client.chatCompletions(req)
+        guard let message = Message(resp) else {
+            throw ChatServiceError.responseError("Missing response choice")
+        }
+        return message
     }
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
@@ -38,8 +41,8 @@ extension MistralService: ChatService {
         req.stream = true
         
         var message = Message(role: .assistant)
-        for try await result in try client.chatCompletionsStream(req) {
-            message = decode(result: result, into: message)
+        for try await resp in try client.chatCompletionsStream(req) {
+            message.patch(with: resp)
             try await update(message)
         }
     }
@@ -58,6 +61,6 @@ extension MistralService: ModelService {
     
     public func models() async throws -> [Model] {
         let result = try await client.models()
-        return result.data.map { decode(model: $0) }
+        return result.data.map { .init($0) }
     }
 }

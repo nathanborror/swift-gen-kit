@@ -5,7 +5,8 @@ import Mistral
 // MARK: - Chat Response
 
 extension GenKit.Message {
-    init(_ choice: Mistral.ChatResponse.Choice) {
+    init?(_ resp: Mistral.ChatResponse) {
+        guard let choice = resp.choices.first else { return nil }
         self.init(
             role: .assistant,
             content: choice.message.content != nil ? [.text(choice.message.content!)] : [],
@@ -49,7 +50,8 @@ extension GenKit.Message.FinishReason {
 // MARK: - Chat Response Stream
 
 extension GenKit.Message {
-    mutating func patch(with choice: Mistral.ChatStreamResponse.Choice) {
+    mutating func patch(with resp: Mistral.ChatStreamResponse) {
+        guard let choice = resp.choices.first else { return }
         if case .text(let text) = content?.last, let delta = choice.delta.content {
             if let patched = GenKit.patch(string: text, with: delta) {
                 self.content![self.content!.count-1] = .text(patched)

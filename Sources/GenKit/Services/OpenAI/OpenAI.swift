@@ -23,8 +23,11 @@ extension OpenAIService: ChatService {
             tools: encode(tools: request.tools),
             tool_choice: encode(toolChoice: request.toolChoice)
         )
-        let result = try await client.chatCompletions(req)
-        return decode(result: result)
+        let resp = try await client.chatCompletions(req)
+        guard let message = Message(resp) else {
+            throw ChatServiceError.responseError("Missing response choice")
+        }
+        return message
     }
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
@@ -36,8 +39,8 @@ extension OpenAIService: ChatService {
             tool_choice: encode(toolChoice: request.toolChoice)
         )
         var message = Message(role: .assistant)
-        for try await result in try client.chatCompletionsStream(req) {
-            message = decode(result: result, into: message)
+        for try await resp in try client.chatCompletionsStream(req) {
+            message.patch(with: resp)
             try await update(message)
         }
     }
@@ -59,7 +62,7 @@ extension OpenAIService: ModelService {
     
     public func models() async throws -> [Model] {
         let result = try await client.models()
-        return result.data.map { decode(model: $0) }
+        return result.data.map { .init($0) }
     }
 }
 

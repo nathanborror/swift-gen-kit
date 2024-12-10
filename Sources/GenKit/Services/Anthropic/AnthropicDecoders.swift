@@ -92,43 +92,45 @@ extension GenKit.Message {
         case .message_stop:
             self.finishReason = (self.toolCalls != nil) ? .toolCalls : .stop
         case .content_block_start:
-            print("do something")
+            if let contentBlock = resp.content_block {
+                switch contentBlock.type {
+                case .text:
+                    if let text = contentBlock.text {
+                        self.content = [.text(text)]
+                    }
+                case .tool_use:
+                    var toolCall = ToolCall(function: .init(name: contentBlock.name ?? "", arguments: ""))
+                    toolCall.id = contentBlock.id ?? toolCall.id
+                    if self.toolCalls == nil {
+                        self.toolCalls = []
+                    }
+                    self.toolCalls?.append(toolCall)
+                default:
+                    break
+                }
+            }
         case .content_block_delta:
-            print("do something")
+            if let delta = resp.delta {
+                switch delta.type {
+                case .text_delta:
+                    if case .text(let existing) = self.content?.last {
+                        let patched = GenKit.patch(string: existing, with: delta.text) ?? existing
+                        self.content![self.content!.count-1] = .text(patched)
+                    } else {
+                        if let text = delta.text {
+                            self.content?.append(.text(text))
+                        }
+                    }
+                case .input_json_delta:
+                    if var existing = self.toolCalls?.last {
+                        existing.function.arguments = GenKit.patch(string: existing.function.arguments, with: delta.partial_json) ?? ""
+                        self.toolCalls![self.toolCalls!.count-1] = existing
+                    }
+                default:
+                    break
+                }
+            }
         }
         self.modified = .now
     }
 }
-
-//        case .content_block_start:
-//            if let contentBlock = result.contentBlock {
-//                switch contentBlock.type {
-//                case .text:
-//                    if let text = contentBlock.text {
-//                        message.content = [.text(text)]
-//                    }
-//                case .tool_use:
-//                    var toolCall = ToolCall(function: .init(name: contentBlock.name ?? "", arguments: ""))
-//                    toolCall.id = contentBlock.id ?? toolCall.id
-//                    if message.toolCalls == nil {
-//                        message.toolCalls = []
-//                    }
-//                    message.toolCalls?.append(toolCall)
-//                default:
-//                    break
-//                }
-//            }
-//        case .content_block_delta:
-//            if let delta = result.delta {
-//                switch delta.type {
-//                case .text_delta:
-//                    message.content = patch(string: message.content, with: delta.text)
-//                case .input_json_delta:
-//                    if var existing = message.toolCalls?.last {
-//                        existing.function.arguments = patch(string: existing.function.arguments, with: delta.partialJSON) ?? ""
-//                        message.toolCalls![message.toolCalls!.count-1] = existing
-//                    }
-//                default:
-//                    break
-//                }
-//            }

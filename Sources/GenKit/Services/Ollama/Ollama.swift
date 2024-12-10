@@ -22,8 +22,8 @@ extension OllamaService: ChatService {
             tools: encode(tools: request.tools),
             stream: false
         )
-        let result = try await client.chat(req)
-        return decode(result: result)
+        let resp = try await client.chatCompletions(req)
+        return .init(resp)
     }
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
@@ -42,8 +42,8 @@ extension OllamaService: ChatService {
             stream: request.tools.isEmpty
         )
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(req) {
-            message = decode(result: result, into: message)
+        for try await resp in try client.chatCompletionsStream(req) {
+            message.patch(resp)
             try await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
@@ -57,7 +57,7 @@ extension OllamaService: ChatService {
 extension OllamaService: EmbeddingService {
     
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
-        let req = EmbeddingRequest(model: request.model.id.rawValue, input: request.input)
+        let req = EmbeddingsRequest(model: request.model.id.rawValue, input: request.input)
         let result = try await client.embeddings(req)
         return result.embedding
     }
@@ -66,7 +66,7 @@ extension OllamaService: EmbeddingService {
 extension OllamaService: ModelService {
     
     public func models() async throws -> [Model] {
-        let result = try await client.models()
-        return result.models.map { decode(model: $0) }
+        let resp = try await client.models()
+        return resp.models.map { .init($0) }
     }
 }

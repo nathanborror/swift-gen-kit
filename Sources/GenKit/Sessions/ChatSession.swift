@@ -113,7 +113,7 @@ public class ChatSession {
                             content: [.text("Unknown tool.")],
                             toolCallID: toolCall.id,
                             name: toolCall.function.name,
-                            metadata: ["label": "Unknown tool"]
+                            metadata: .init(["label": "Unknown tool"])
                         )
                         return .init(messages: [message], shouldContinue: false)
                     }
@@ -171,7 +171,7 @@ public struct ChatSessionRequest {
     public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
     public private(set) var context: [String: String] = [:]
-    public private(set) var temperature: Float? = nil
+    public private(set) var temperature: Double? = nil
     public private(set) var customHeaders: [String: String] = [:]
 
     public init(service: ChatService, model: Model, toolCallback: ToolCallback? = nil) {
@@ -230,7 +230,7 @@ public struct ChatSessionRequest {
         // Apply system prompt
         if let system {
             let prompt = [system, systemContext].joined(separator: "\n\n")
-            messages.append(.init(kind: .instruction, role: .system, content: [.text(prompt)]))
+            messages.append(.init(role: .system, content: [.text(prompt)]))
         }
 
         // Apply history
