@@ -25,7 +25,11 @@ extension Anthropic.ChatRequest.Message.Content {
         case .image(let data, let format):
             self.init(
                 type: .image,
-                source: .init(type: .base64, media_type: .init(rawValue: format) ?? .png, data: data)
+                source: .init(
+                    type: .base64,
+                    media_type: .init(rawValue: format.rawValue) ?? .png,
+                    data: data
+                )
             )
         case .audio:
             return nil

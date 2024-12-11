@@ -23,9 +23,9 @@ extension OpenAIService {
             case .text(let text):
                 return .init(type: "text", text: text)
             case .image(let data, let format):
-                return .init(type: "image_url", image_url: .init(url: "data:image/\(format);base64,\(data.base64EncodedString())"))
+                return .init(type: "image_url", image_url: .init(url: "data:\(format.rawValue);base64,\(data.base64EncodedString())"))
             case .audio(let data, let format):
-                return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: format))
+                return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: format.rawValue))
             }
         }
     }

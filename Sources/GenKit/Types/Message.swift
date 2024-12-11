@@ -27,9 +27,22 @@ public struct Message: Codable, Identifiable, Sendable {
         /// Text content
         case text(String)
         /// Image content needs to be base64 encoded data.
-        case image(data: Data, format: String)
+        case image(data: Data, format: ImageFormat)
         /// Audio content needs to be base64 encoded data.
-        case audio(data: Data, format: String)
+        case audio(data: Data, format: AudioFormat)
+
+        public enum ImageFormat: String, CaseIterable, Codable, Sendable {
+            case jpeg = "image/jpeg"
+            case png = "image/png"
+            case gif = "image/gif"
+            case webp = "image/webp"
+            case pdf = "application/pdf"
+        }
+
+        public enum AudioFormat: String, CaseIterable, Codable, Sendable {
+            case mp3 = "mp3"
+            case wav = "wav"
+        }
     }
 
     public enum FinishReason: String, Codable, CaseIterable, Sendable {
