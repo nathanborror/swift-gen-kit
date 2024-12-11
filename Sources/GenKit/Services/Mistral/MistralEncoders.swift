@@ -17,8 +17,8 @@ extension Mistral.ChatRequest.Message.Content {
         switch content {
         case .text(let text):
             self.init(type: .text, text: text)
-        case .image(let data):
-            self.init(type: .image_url, image_url: .init(url: data.base64EncodedString()))
+        case .image(let data, let format):
+            self.init(type: .image_url, image_url: .init(url: "data:image/\(format);base64,\(data.base64EncodedString())"))
         default:
             fatalError("Unknown message content type")
         }

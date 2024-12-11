@@ -22,10 +22,10 @@ extension Anthropic.ChatRequest.Message.Content {
                 text: text
             )
         // TODO: Remove hard-coded media type
-        case .image(let data):
+        case .image(let data, let format):
             self.init(
                 type: .image,
-                source: .init(type: .base64, media_type: .png, data: data)
+                source: .init(type: .base64, media_type: .init(rawValue: format) ?? .png, data: data)
             )
         case .audio:
             return nil

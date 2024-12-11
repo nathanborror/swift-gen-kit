@@ -27,7 +27,7 @@ public struct Message: Codable, Identifiable, Sendable {
         /// Text content
         case text(String)
         /// Image content needs to be base64 encoded data.
-        case image(data: Data)
+        case image(data: Data, format: String)
         /// Audio content needs to be base64 encoded data.
         case audio(data: Data, format: String)
     }
