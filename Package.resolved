@@ -60,7 +60,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "simplify",
-        "revision" : "e8ca19ed61a26290120ed5b37102abc59ac38b0a"
+        "revision" : "3d2c69591b55568208adddb20ca4555302ba332f"
       }
     },
     {
@@ -78,7 +78,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "7a0ef4690938ace2579d222fa5da7ea7f2c4c56e"
+        "revision" : "2f2c55fabcdd81a1022e15c719a837cfe67ec530"
       }
     }
   ],
