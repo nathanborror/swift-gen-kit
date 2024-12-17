@@ -60,6 +60,7 @@ extension GenKit.Message.FinishReason {
 extension GenKit.ToolCall {
     init(_ resp: OpenAI.ChatResponse.Choice.Message.ToolCall) {
         self.init(
+            index: resp.index,
             id: resp.id ?? "",
             type: resp.type ?? "function",
             function: .init(
@@ -92,7 +93,7 @@ extension GenKit.Message {
                 self.toolCalls = []
             }
             for toolCall in toolCalls {
-                if toolCall.id == nil, var existing = self.toolCalls?.first(where: { $0.index == toolCall.index }) {
+                if var existing = self.toolCalls?.first(where: { $0.index == toolCall.index }) {
                     existing.function.arguments = GenKit.patch(string: existing.function.arguments, with: toolCall.function.arguments) ?? ""
                     self.toolCalls![existing.index!] = existing
                 } else {
