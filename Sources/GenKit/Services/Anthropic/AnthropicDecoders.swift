@@ -115,7 +115,7 @@ extension GenKit.Message {
                 case .text_delta:
                     if case .text(let existing) = self.contents?.last {
                         let patched = GenKit.patch(string: existing, with: delta.text) ?? existing
-                        self.contents![self.content!.count-1] = .text(patched)
+                        self.contents![self.contents!.count-1] = .text(patched)
                     } else if let text = delta.text {
                         self.contents?.append(.text(text))
                     }
