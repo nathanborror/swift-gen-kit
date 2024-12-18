@@ -20,8 +20,8 @@ extension OpenAIService: ChatService {
             messages: encode(messages: request.messages),
             model: request.model.id.rawValue,
             temperature: request.temperature,
-            tools: encode(tools: request.tools),
-            tool_choice: encode(toolChoice: request.toolChoice)
+            tools: encode(request.tools),
+            tool_choice: encode(request.toolChoice)
         )
         let resp = try await client.chatCompletions(req)
         guard let message = Message(resp) else {
@@ -36,8 +36,8 @@ extension OpenAIService: ChatService {
             model: request.model.id.rawValue,
             stream: true,
             temperature: request.temperature,
-            tools: encode(tools: request.tools),
-            tool_choice: encode(toolChoice: request.toolChoice)
+            tools: encode(request.tools),
+            tool_choice: encode(request.toolChoice)
         )
         var message = Message(role: .assistant)
         for try await resp in try client.chatCompletionsStream(req) {

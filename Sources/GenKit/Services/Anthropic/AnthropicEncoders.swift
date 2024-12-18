@@ -6,7 +6,7 @@ extension Anthropic.ChatRequest.Message {
     init(_ message: GenKit.Message) {
         self.init(
             role: .init(message.role),
-            content: message.content?.compactMap { .init($0) } ??
+            content: message.contents?.compactMap { .init($0) } ??
                 message.toolCalls?.compactMap { .init($0) } ??
                 [.init(message)].compactMap { $0 }
         )
@@ -53,7 +53,7 @@ extension Anthropic.ChatRequest.Message.Content {
         self.init(
             type: .tool_result,
             tool_use_id: toolMessage.toolCallID,
-            content: toolMessage.content?.compactMap { .init($0) }
+            content: toolMessage.contents?.compactMap { .init($0) }
         )
     }
 }

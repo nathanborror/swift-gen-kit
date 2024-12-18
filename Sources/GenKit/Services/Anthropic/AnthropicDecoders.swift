@@ -8,7 +8,7 @@ extension GenKit.Message {
     init(_ resp: Anthropic.ChatResponse) {
         self.init(
             role: .init(resp.role) ?? .assistant,
-            content: resp.content?.compactMap { .init($0) } ?? [],
+            contents: resp.content?.compactMap { .init($0) } ?? [],
             toolCalls: resp.content?.compactMap { .init($0) },
             finishReason: .init(resp.stop_reason)
         )
@@ -96,7 +96,7 @@ extension GenKit.Message {
                 switch contentBlock.type {
                 case .text:
                     if let text = contentBlock.text {
-                        self.content = [.text(text)]
+                        self.contents = [.text(text)]
                     }
                 case .tool_use:
                     var toolCall = ToolCall(function: .init(name: contentBlock.name ?? "", arguments: ""))
@@ -113,11 +113,11 @@ extension GenKit.Message {
             if let delta = resp.delta {
                 switch delta.type {
                 case .text_delta:
-                    if case .text(let existing) = self.content?.last {
+                    if case .text(let existing) = self.contents?.last {
                         let patched = GenKit.patch(string: existing, with: delta.text) ?? existing
-                        self.content![self.content!.count-1] = .text(patched)
+                        self.contents![self.content!.count-1] = .text(patched)
                     } else if let text = delta.text {
-                        self.content?.append(.text(text))
+                        self.contents?.append(.text(text))
                     }
                 case .input_json_delta:
                     if var existing = self.toolCalls?.last {

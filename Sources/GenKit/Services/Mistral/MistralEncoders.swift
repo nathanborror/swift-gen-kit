@@ -4,7 +4,7 @@ import Mistral
 extension Mistral.ChatRequest.Message {
     init(_ message: GenKit.Message) {
         self.init(
-            content: message.content?.map { .init($0) },
+            content: message.contents?.map { .init($0) },
             tool_calls: nil,
             prefix: nil,
             role: .init(message.role)

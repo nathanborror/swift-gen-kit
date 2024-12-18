@@ -9,16 +9,16 @@ extension OpenAIService {
 
     func encode(message: Message) -> OpenAI.ChatRequest.Message {
         .init(
-            content: encode(content: message.content),
-            role: encode(role: message.role),
+            content: encode(message.contents),
+            role: encode(message.role),
             name: message.name,
-            tool_calls: message.toolCalls?.map { encode(toolCall: $0) },
+            tool_calls: message.toolCalls?.map { encode($0) },
             tool_call_id: message.toolCallID
         )
     }
 
-    func encode(content: [Message.Content]?) -> [OpenAI.ChatRequest.Message.Content]? {
-        content?.map {
+    func encode(_ contents: [Message.Content]?) -> [OpenAI.ChatRequest.Message.Content]? {
+        contents?.map {
             switch $0 {
             case .text(let text):
                 return .init(type: "text", text: text)
@@ -30,7 +30,7 @@ extension OpenAIService {
         }
     }
 
-    func encode(role: Message.Role) -> OpenAI.ChatRequest.Message.Role {
+    func encode(_ role: Message.Role) -> OpenAI.ChatRequest.Message.Role {
         switch role {
         case .system: .system
         case .assistant: .assistant
@@ -39,35 +39,35 @@ extension OpenAIService {
         }
     }
     
-    func encode(toolCalls: [ToolCall]?) -> [OpenAI.ChatRequest.Message.ToolCall]? {
-        toolCalls?.map { encode(toolCall: $0) }
+    func encode(_ toolCalls: [ToolCall]?) -> [OpenAI.ChatRequest.Message.ToolCall]? {
+        toolCalls?.map { encode($0) }
     }
     
-    func encode(toolCall: ToolCall) -> OpenAI.ChatRequest.Message.ToolCall {
+    func encode(_ toolCall: ToolCall) -> OpenAI.ChatRequest.Message.ToolCall {
         .init(
             id: toolCall.id,
             type: toolCall.type,
-            function: encode(functionCall: toolCall.function)
+            function: encode(toolCall.function)
         )
     }
     
-    func encode(functionCall: ToolCall.FunctionCall) -> OpenAI.ChatRequest.Message.ToolCall.Function {
+    func encode(_ functionCall: ToolCall.FunctionCall) -> OpenAI.ChatRequest.Message.ToolCall.Function {
         .init(name: functionCall.name, arguments: functionCall.arguments)
     }
     
-    func encode(tools: [Tool]?) -> [OpenAI.ChatRequest.Tool]? {
+    func encode(_ tools: [Tool]?) -> [OpenAI.ChatRequest.Tool]? {
         guard let tools, !tools.isEmpty else { return nil }
-        return tools.map { encode(tool: $0) }
+        return tools.map { encode($0) }
     }
     
-    func encode(tool: Tool) -> OpenAI.ChatRequest.Tool {
+    func encode(_ tool: Tool) -> OpenAI.ChatRequest.Tool {
         .init(
             type: tool.type.rawValue,
-            function: encode(function: tool.function)
+            function: encode(tool.function)
         )
     }
 
-    func encode(function: Tool.Function) -> OpenAI.ChatRequest.Tool.Function {
+    func encode(_ function: Tool.Function) -> OpenAI.ChatRequest.Tool.Function {
         .init(
             name: function.name,
             description: function.description,
@@ -75,7 +75,7 @@ extension OpenAIService {
         )
     }
     
-    func encode(toolChoice: Tool?) -> OpenAI.ChatRequest.ToolChoice? {
+    func encode(_ toolChoice: Tool?) -> OpenAI.ChatRequest.ToolChoice? {
         guard let toolChoice else { return nil }
         return .tool(
             .init(

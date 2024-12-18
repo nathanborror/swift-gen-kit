@@ -5,13 +5,13 @@ extension Ollama.Message {
     init(_ message: GenKit.Message) {
         self.init(
             role: .init(message.role),
-            content: Self.encode(message.content),
-            images: Self.encode(images: message.content)
+            content: Self.encode(message.contents),
+            images: Self.encode(images: message.contents)
         )
     }
 
-    static func encode(_ content: [Message.Content]?) -> String {
-        content?.compactMap {
+    static func encode(_ contents: [Message.Content]?) -> String {
+        contents?.compactMap {
             switch $0 {
             case .text(let text):
                 return text

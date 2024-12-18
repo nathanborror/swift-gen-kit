@@ -111,7 +111,7 @@ public class ChatSession {
                     } catch {
                         let message = Message(
                             role: .tool,
-                            content: [.text("Unknown tool.")],
+                            content: "Unknown tool.",
                             toolCallID: toolCall.id,
                             name: toolCall.function.name,
                             metadata: .init(["label": "Unknown tool"])
@@ -231,7 +231,7 @@ public struct ChatSessionRequest {
         // Apply system prompt
         if let system {
             let prompt = [system, systemContext].joined(separator: "\n\n")
-            messages.append(.init(role: .system, content: [.text(prompt)]))
+            messages.append(.init(role: .system, content: prompt))
         }
 
         // Apply history

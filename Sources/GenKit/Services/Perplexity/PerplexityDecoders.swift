@@ -15,9 +15,9 @@ extension PerplexityService {
             role: decode(role: choice.message.role),
             finishReason: decode(finishReason: choice.finishReason)
         )
-        if case .text(let text) = message.content?.last {
+        if case .text(let text) = message.contents?.last {
             if let patched = patch(string: text, with: choice.message.content) {
-                message.content = [.text(patched)]
+                message.contents = [.text(patched)]
             }
         }
         return message
@@ -29,9 +29,9 @@ extension PerplexityService {
             logger.warning("failed to decode choice")
             return .init(role: .assistant)
         }
-        if case .text(let text) = message.content?.last {
+        if case .text(let text) = message.contents?.last {
             if let patched = patch(string: text, with: choice.delta.content) {
-                message.content = [.text(patched)]
+                message.contents = [.text(patched)]
             }
         }
         message.finishReason = decode(finishReason: choice.finishReason)
@@ -50,7 +50,7 @@ extension PerplexityService {
     func decode(content: String, into message: Message) -> [Message.Content] {
         guard message.role == .assistant else { return [] }
         guard
-            let existing = message.content, content.count > 0,
+            let existing = message.contents, content.count > 0,
             case .text(let existingText) = existing.last,
             let patched = patch(string: existingText, with: content)
         else {

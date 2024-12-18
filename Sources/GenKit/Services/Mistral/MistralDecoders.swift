@@ -9,7 +9,7 @@ extension GenKit.Message {
         guard let choice = resp.choices.first else { return nil }
         self.init(
             role: .assistant,
-            content: choice.message.content != nil ? [.text(choice.message.content!)] : [],
+            content: choice.message.content,
             toolCalls: choice.message.tool_calls?.map { .init($0) },
             finishReason: .init(choice.finish_reason)
         )
@@ -52,12 +52,12 @@ extension GenKit.Message.FinishReason {
 extension GenKit.Message {
     mutating func patch(with resp: Mistral.ChatStreamResponse) {
         guard let choice = resp.choices.first else { return }
-        if case .text(let text) = content?.last, let delta = choice.delta.content {
+        if case .text(let text) = contents?.last, let delta = choice.delta.content {
             if let patched = GenKit.patch(string: text, with: delta) {
-                self.content![self.content!.count-1] = .text(patched)
+                self.contents![self.content!.count-1] = .text(patched)
             }
         } else if let text = choice.delta.content {
-            self.content?.append(.text(text))
+            self.contents?.append(.text(text))
         }
         self.toolCalls = choice.delta.tool_calls?.map { .init($0) }
         self.finishReason = .init(choice.finish_reason)

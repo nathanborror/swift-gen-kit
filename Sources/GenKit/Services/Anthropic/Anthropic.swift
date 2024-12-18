@@ -31,7 +31,7 @@ public actor AnthropicService {
 
     private func prepareSystemPrompt(from messages: [Message]) -> [Anthropic.ChatRequest.Message.Content]? {
         guard let message = messages.first, message.role == .system else { return nil }
-        guard case .text(let text) = message.content?.first else { return nil }
+        guard case .text(let text) = message.contents?.first else { return nil }
         return [.init(type: .text, text: text)]
     }
 }

@@ -9,7 +9,7 @@ extension GenKit.Message {
         guard let choice = resp.choices.first else { return nil }
         self.init(
             role: .init(choice.message.role),
-            content: [.init(choice.message.content)].compactMap { $0 },
+            contents: [.init(choice.message.content)].compactMap { $0 },
             toolCalls: choice.message.tool_calls?.map { .init($0) },
             finishReason: .init(choice.finish_reason)
         )
@@ -77,12 +77,12 @@ extension GenKit.Message {
     mutating func patch(with resp: OpenAI.ChatStreamResponse) {
         guard let choice = resp.choices.first else { return }
 
-        if case .text(let text) = content?.last {
+        if case .text(let text) = contents?.last {
             if let patched = GenKit.patch(string: text, with: choice.delta.content) {
-                content = [.text(patched)]
+                contents = [.text(patched)]
             }
         } else if let text = choice.delta.content {
-            content = [.text(text)]
+            contents = [.text(text)]
         }
         finishReason = .init(choice.finish_reason)
         modified = .now
