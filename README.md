@@ -22,16 +22,12 @@ targets: [
 
 ## Usage
 
-Establish the service and model you want to use:
-
 ```swift
 let service = AnthropicService(apiKey: "ANTHROPIC_API_KEY")
 let model = Model(id: "claude-3-5-sonnet-20240620")
-```
 
-An example chat completion that just generates a single response:
+// Chat completion that just generates a single response.
 
-```swift
 let request = ChatServiceRequest(
     model: model,
     messages: [
@@ -41,11 +37,10 @@ let request = ChatServiceRequest(
 )
 let message = try await service.completion(request)
 print(message)
-```
 
-An streaming session example that may perform multiple generations in a loop if tools are present:
+// Streaming completions may perform multiple generations in a loop
+// if tools are present.
 
-```swift
 var request = ChatSessionRequest(service: service, model: model)
 request.with(system: "You are a helpful assistant.")
 request.with(history: [Message(role: .user, content: "Hello!")])
