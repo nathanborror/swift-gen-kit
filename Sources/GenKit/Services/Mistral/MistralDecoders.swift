@@ -1,209 +1,125 @@
 import Foundation
-import OSLog
 import SharedKit
 import Mistral
 
-private let logger = Logger(subsystem: "MistralService", category: "GenKit")
+// MARK: - Chat Response
 
-extension MistralService {
-    
-    func decode(result: ChatResponse) -> Message {
-        guard let choice = result.choices.first else {
-            logger.warning("failed to decode choice")
-            return .init(role: .assistant)
-        }
-        return .init(
-            role: decode(role: choice.message.role),
+extension GenKit.Message {
+    init?(_ resp: Mistral.ChatResponse) {
+        guard let choice = resp.choices.first else { return nil }
+        self.init(
+            role: .assistant,
             content: choice.message.content,
-            toolCalls: decode(toolCalls: choice.message.toolCalls),
-            finishReason: decode(finishReason: choice.finishReason)
+            toolCalls: choice.message.tool_calls?.map { .init($0) },
+            finishReason: .init(choice.finish_reason)
         )
     }
-    
-    func decode(result: ChatStreamResponse, into message: Message) -> Message {
-        var message = message
-        guard let choice = result.choices.first else {
-            logger.warning("failed to decode choice")
-            return .init(role: .assistant)
-        }
-        message.content = patch(string: message.content, with: choice.delta.content)
-        message.finishReason = decode(finishReason: choice.finishReason)
-        message.modified = .now
-        message.toolCalls = decode(toolCalls: choice.delta.toolCalls)
-        return message
-    }
-    
-    func decode(toolCalls: [Mistral.Message.ToolCall]?) -> [ToolCall]? {
-        toolCalls?.map { decode(toolCall: $0) }
-    }
-    
-    func decode(toolCall: Mistral.Message.ToolCall) -> ToolCall {
-        .init(
-            id: toolCall.id,
+}
+
+extension GenKit.ToolCall {
+    init(_ toolCall: Mistral.ChatResponse.Choice.Message.ToolCall) {
+        self.init(
+            id: toolCall.id ?? "",
             type: "function",
             function: .init(
-                name: toolCall.function.name ?? "",
-                arguments: toolCall.function.arguments ?? ""
+                name: toolCall.function.name,
+                arguments: toolCall.function.arguments
             )
         )
     }
+}
 
-    func decode(role: Mistral.Message.Role?) -> Message.Role {
-        switch role {
-        case .system: .system
-        case .user: .user
-        case .assistant, .none: .assistant
-        case .tool: .tool
-        }
-    }
-
-    func decode(finishReason: FinishReason?) -> Message.FinishReason? {
-        guard let finishReason else { return .none }
-        switch finishReason {
-        case .stop: 
-            return .stop
-        case .length, .model_length:
-            return .length
-        case .tool_calls:
-            return .toolCalls
+extension GenKit.Message.FinishReason {
+    init?(_ reason: Mistral.ChatResponse.Choice.FinishReason?) {
+        guard let reason else { return nil }
+        switch reason {
+        case .stop:
+            self = .stop
+        case .length:
+            self = .length
+        case .model_length:
+            self = .length
         case .error:
-            return .cancelled
+            self = .error
+        case .tool_calls:
+            self = .toolCalls
         }
     }
-    
-    func decode(model: Mistral.ModelResponse) -> Model {
-        var name = String?.none
-        var family = String?.none
-        var maxOutput = Int?.none
-        var contextWindow = Int?.none
-        
-        if model.id.hasPrefix("codestral") {
-            family = "Codestral"
-            switch model.id {
-            case "codestral-latest":
-                name = "Codestral (latest)"
-            case "codestral-2405":
-                name = "Codestral (2405)"
-            case "codestral-mamba-latest":
-                name = "Codestral Mamba (latest)"
-            case "codestral-mamba-2407":
-                name = "Codestral Mamba (2407)"
-            default:
-                name = model.id
+}
+
+// MARK: - Chat Response Stream
+
+extension GenKit.Message {
+    func patch(with resp: Mistral.ChatStreamResponse) -> Message {
+        var existing = self
+
+        // If there is no choice (rare) return existing message
+        guard let choice = resp.choices.first else { return existing }
+
+        // Get the last item in the contents array so it can be patched
+        if var contents = existing.contents {
+            if case .text(let text) = contents.last, let delta = choice.delta.content {
+                if let patched = GenKit.patch(string: text, with: delta) {
+                    contents[contents.count-1] = .text(patched)
+                    existing.contents = contents
+                }
+            } else if let delta = choice.delta.content {
+                contents.append(.text(delta))
+                existing.contents = contents
             }
         }
-        
-        if model.id.hasPrefix("mistral-large") {
-            family = "Mistral Large"
-            switch model.id {
-            case "mistral-large-latest":
-                name = "Mistral Large (latest)"
-            case "mistral-large-2402":
-                name = "Mistral Large (2402)"
-            case "mistral-large-2407":
-                name = "Mistral Large (2407)"
-            default:
-                name = model.id
-            }
+
+        // Patch remaining properties
+        existing.toolCalls = choice.delta.tool_calls?.map { .init($0) }
+        existing.finishReason = .init(choice.finish_reason)
+        existing.modified = .now
+        return existing
+    }
+}
+
+
+
+extension GenKit.ToolCall {
+    init(_ toolCall: Mistral.ChatStreamResponse.Choice.Message.ToolCall) {
+        self.init(
+            id: toolCall.id ?? "",
+            type: "function",
+            function: .init(
+                name: toolCall.function.name,
+                arguments: toolCall.function.arguments
+            )
+        )
+    }
+}
+
+extension GenKit.Message.FinishReason {
+    init?(_ reason: Mistral.ChatStreamResponse.Choice.FinishReason?) {
+        guard let reason else { return nil }
+        switch reason {
+        case .stop:
+            self = .stop
+        case .length:
+            self = .length
+        case .model_length:
+            self = .length
+        case .error:
+            self = .error
+        case .tool_calls:
+            self = .toolCalls
         }
-        
-        if model.id.hasPrefix("mistral-medium") {
-            family = "Mistral Medium"
-            switch model.id {
-            case "mistral-medium":
-                name = "Mistral Medium"
-            case "mistral-medium-latest":
-                name = "Mistral Medium (latest)"
-            case "mistral-medium-2312":
-                name = "Mistral Medium (2312)"
-            default:
-                name = model.id
-            }
-        }
-        
-        if model.id.hasPrefix("mistral-small") {
-            family = "Mistral Small"
-            switch model.id {
-            case "mistral-small":
-                name = "Mistral Small"
-            case "mistral-small-latest":
-                name = "Mistral Small (latest)"
-            case "mistral-small-2312":
-                name = "Mistral Small (2312)"
-            case "mistral-small-2402":
-                name = "Mistral Small (2402)"
-            case "mistral-small-2409":
-                name = "Mistral Small (2409)"
-            default:
-                name = model.id
-            }
-        }
-        
-        if model.id.hasPrefix("mistral-tiny") {
-            family = "Mistral Tiny"
-            switch model.id {
-            case "mistral-tiny":
-                name = "Mistral Tiny"
-            case "mistral-tiny-latest":
-                name = "Mistral Tiny (latest)"
-            case "mistral-tiny-2312":
-                name = "Mistral Tiny (2312)"
-            case "mistral-tiny-2407":
-                name = "Mistral Tiny (2407)"
-            default:
-                name = model.id
-            }
-        }
-        
-        if model.id.hasPrefix("pixtral") {
-            family = "Pixtral"
-            switch model.id {
-            case "pixtral-12b":
-                name = "Pixtral 12b"
-            case "pixtral-12b-latest":
-                name = "Pixtral 12b (latest)"
-            case "pixtral-12b-2409":
-                name = "Pixtral 12b (2409)"
-            default:
-                name = model.id
-            }
-        }
-        
-        if model.id.hasPrefix("open-mistral") {
-            family = "Open Mistral"
-            switch model.id {
-            case "open-mistral-7b":
-                name = "Open Mistral 7b"
-            case "open-mistral-nemo":
-                name = "Open Mistral Nemo"
-            case "open-mistral-nemo-2407":
-                name = "Open Mistral Nemo (2407)"
-            default:
-                name = model.id
-            }
-        }
-        
-        if model.id.hasPrefix("open-mixtral") {
-            family = "Open Mixtral"
-            switch model.id {
-            case "open-mixtral-8x22b":
-                name = "Open Mixtral 8x22b"
-            case "open-mixtral-8x22b-2404":
-                name = "Open Mixtral 8x22b (2404)"
-            case "open-mixtral-8x7b":
-                name = "Open Mixtral 8x7b"
-            default:
-                name = model.id
-            }
-        }
-        
-        return Model(
+    }
+}
+
+// MARK: - Models
+
+extension GenKit.Model {
+    init(_ model: Mistral.ModelsResponse.Model) {
+        self.init(
             id: Model.ID(model.id),
-            family: family,
-            name: name,
-            owner: model.ownedBy,
-            contextWindow: contextWindow,
-            maxOutput: maxOutput,
+            name: model.name,
+            owner: model.owned_by ?? "mistral",
+            contextWindow: model.max_context_length,
+            maxOutput: model.max_context_length,
             trainingCutoff: nil
         )
     }

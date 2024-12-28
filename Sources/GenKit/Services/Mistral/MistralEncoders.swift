@@ -1,37 +1,48 @@
 import Foundation
 import Mistral
 
-extension MistralService {
-    
-    func encode(messages: [Message]) -> [Mistral.Message] {
-        messages.map { encode(message: $0) }
-    }
-    
-    func encode(message: Message) -> Mistral.Message {
-        .init(
-            role: encode(role: message.role),
-            content: message.content ?? "",
-            toolCalls: encode(toolCalls: message.toolCalls),
-            toolCallID: message.toolCallID
+extension Mistral.ChatRequest.Message {
+    init(_ message: GenKit.Message) {
+        self.init(
+            content: message.contents?.map { .init($0) },
+            tool_calls: nil,
+            prefix: nil,
+            role: .init(message.role)
         )
     }
-    
-    func encode(role: Message.Role) -> Mistral.Message.Role {
-        switch role {
-        case .system: .system
-        case .assistant: .assistant
-        case .user: .user
-        case .tool: .tool
+}
+
+extension Mistral.ChatRequest.Message.Content {
+    init(_ content: GenKit.Message.Content) {
+        switch content {
+        case .text(let text):
+            self.init(type: .text, text: text)
+        case .image(let data, let format):
+            self.init(type: .image_url, image_url: .init(url: "data:image/\(format);base64,\(data.base64EncodedString())"))
+        default:
+            fatalError("Unknown message content type")
         }
     }
-    
-    func encode(tools: [Tool]) -> [Mistral.Tool] {
-        tools.map { encode(tool: $0) }
-    }
+}
 
-    func encode(tool: Tool) -> Mistral.Tool {
-        .init(
-            type: tool.type.rawValue,
+extension Mistral.ChatRequest.Message.Role {
+    init(_ role: GenKit.Message.Role) {
+        switch role {
+        case .system:
+            self = .system
+        case .assistant:
+            self = .assistant
+        case .user:
+            self = .user
+        case .tool:
+            self = .tool
+        }
+    }
+}
+
+extension Mistral.ChatRequest.Tool {
+    init(_ tool: GenKit.Tool) {
+        self.init(
             function: .init(
                 name: tool.function.name,
                 description: tool.function.description,
@@ -39,26 +50,23 @@ extension MistralService {
             )
         )
     }
-    
-    func encode(toolCalls: [ToolCall]?) -> [Mistral.Message.ToolCall]? {
-        guard let toolCalls else { return nil }
-        return toolCalls.map { encode(toolCall: $0) }
+}
+
+extension Mistral.ChatRequest.ToolChoice {
+    init?(_ tool: GenKit.Tool?) {
+        guard let tool else { return nil }
+        self = .tool(.init(function: .init(name: tool.function.name)))
     }
-    
-    func encode(toolCall: ToolCall) -> Mistral.Message.ToolCall {
-        .init(
+}
+
+extension Mistral.ChatRequest.Message.ToolCall {
+    init(_ toolCall: GenKit.ToolCall) {
+        self.init(
             id: toolCall.id,
             function: .init(
                 name: toolCall.function.name,
                 arguments: toolCall.function.arguments
             )
         )
-    }
-    
-    func encode(toolChoice: Tool?) -> ChatRequest.ToolChoice {
-        if toolChoice != nil {
-            return .any
-        }
-        return .auto
     }
 }

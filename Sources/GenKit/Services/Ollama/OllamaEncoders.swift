@@ -1,34 +1,56 @@
 import Foundation
 import Ollama
 
-extension OllamaService {
-    
-    func encode(messages: [Message]) -> [Ollama.Message] {
-        if messages.count == 1 { // When there's just one message it has to be from the user.
-            var message = messages[0]
-            message.role = .user // force this to be a user message
-            return [encode(message: message)]
-        }
-        return messages.map { encode(message: $0) }
-    }
-    
-    func encode(message: Message) -> Ollama.Message {
-        .init(
-            role: encode(role: message.role),
-            content: message.content ?? "",
-            images: encode(attachments: message)
+extension Ollama.Message {
+    init(_ message: GenKit.Message) {
+        self.init(
+            role: .init(message.role),
+            content: Self.encode(message.contents),
+            images: Self.encode(images: message.contents)
         )
     }
-    
-    func encode(tools: [Tool]) -> [Ollama.Tool] {
-        tools.map { encode(tool: $0) }
+
+    static func encode(_ contents: [Message.Content]?) -> String {
+        contents?.compactMap {
+            switch $0 {
+            case .text(let text):
+                return text
+            default:
+                return ""
+            }
+        }.joined() ?? ""
     }
-    
-    func encode(tool: Tool) -> Ollama.Tool {
-        let jsonData = try? JSONEncoder().encode(tool.function.parameters)
-        let json = String(data: jsonData!, encoding: .utf8)!
-        
-        return .init(
+
+    static func encode(images content: [Message.Content]?) -> [Data]? {
+        content?.compactMap {
+            switch $0 {
+            case .image(let data, _):
+                return data
+            default:
+                return nil
+            }
+        }
+    }
+}
+
+extension Ollama.Message.Role {
+    init(_ role: GenKit.Message.Role) {
+        switch role {
+        case .system:
+            self = .system
+        case .user:
+            self = .user
+        case .assistant:
+            self = .assistant
+        case .tool:
+            self = .tool
+        }
+    }
+}
+
+extension Ollama.Tool {
+    init(_ tool: GenKit.Tool) {
+        self.init(
             type: "function",
             function: .init(
                 name: tool.function.name,
@@ -36,25 +58,5 @@ extension OllamaService {
                 parameters: tool.function.parameters
             )
         )
-    }
-    
-    func encode(role: Message.Role) -> Ollama.Message.Role {
-        switch role {
-        case .system: .system
-        case .assistant: .assistant
-        case .user: .user
-        case .tool: .tool
-        }
-    }
-    
-    func encode(attachments message: Message) -> [Data]? {
-        let assets = message.visionImages
-        
-        // Prepare all the image assets attached to the message
-        let dataList = assets.map { (asset) -> Data? in
-            return asset.data
-        }.compactMap { $0 }
-        
-        return dataList.count > 0 ? dataList : nil
     }
 }

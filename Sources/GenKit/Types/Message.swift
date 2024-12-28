@@ -3,89 +3,99 @@ import SharedKit
 
 public struct Message: Codable, Identifiable, Sendable {
     public var id: ID<Message>
-    public var parent: String?
-    public var kind: Kind
+    public var referenceID: String?
+    public var runID: Run.ID?
+    public var model: Model.ID?
     public var role: Role
-    public var content: String?
-    public var context: [String: String]?
+    public var contents: [Content]?
     public var attachments: [Attachment]
     public var toolCalls: [ToolCall]?
     public var toolCallID: String?
-    public var runID: Run.ID?
     public var name: String?
     public var finishReason: FinishReason?
-    public var metadata: Metadata
+    public var metadata: Metadata?
     public var created: Date
     public var modified: Date
-    
-    public enum Kind: String, Codable, Sendable {
-        /// Instructions are sent to APIs but not shown in the UI (unless in a debug mode).
-        case instruction
-        /// Local messages are never sent to an API but always displayed in the UI.
-        case local
-        /// Error messages are never sent to an API but always displayed in the UI.
-        case error
-        /// Messages without a `kind` are always sent to APIs and always shown in the UI.
-        case none
-    }
-    
-    public enum Role: String, Codable, Sendable {
+
+    public enum Role: String, CaseIterable, Codable, Sendable {
         case system, assistant, user, tool
     }
-    
-    public enum FinishReason: Codable, Sendable {
-        case stop, length, toolCalls, contentFilter, cancelled
-    }
-    
-    public enum Attachment: Codable, Sendable {
-        case asset(Asset)
-        case agent(String)
-        case automation(String)
-        case component(Component)
-        case file(String, String)
-    }
-    
-    public struct Component: Codable, Sendable {
-        public var name: String
-        public var json: String
-        
-        public init(name: String, json: String) {
-            self.name = name
-            self.json = json
+
+    public enum Content: Codable, Sendable {
+        case text(String)
+        case image(data: Data, format: ImageFormat)
+        case audio(data: Data, format: AudioFormat)
+
+        public enum ImageFormat: String, CaseIterable, Codable, Sendable {
+            case jpeg = "image/jpeg"
+            case png  = "image/png"
+            case gif  = "image/gif"
+            case webp = "image/webp"
+            case pdf  = "application/pdf"
+        }
+
+        public enum AudioFormat: String, CaseIterable, Codable, Sendable {
+            case mp3 = "mp3"
+            case wav = "wav"
         }
     }
-    
-    public init(id: Message.ID = .id, parent: String? = nil, kind: Kind = .none, role: Role, content: String? = nil,
-                context: [String: String]? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil, toolCallID: String? = nil,
-                runID: Run.ID? = nil, name: String? = nil, finishReason: FinishReason? = .stop, metadata: [String: String] = [:]) {
+
+    public enum FinishReason: String, Codable, CaseIterable, Sendable {
+        case stop, length, toolCalls, contentFilter, cancelled, error
+    }
+
+    public enum Attachment: Codable, Sendable {
+        case agent(String)
+        case file(String, String)
+    }
+
+    public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
+                role: Role, contents: [Content], attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
+                toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
         self.id = id
-        self.parent = parent
-        self.kind = kind
+        self.referenceID = referenceID
+        self.runID = runID
+        self.model = model
         self.role = role
-        self.content = content
-        self.context = context
+        self.contents = contents
         self.attachments = attachments
         self.toolCalls = toolCalls
         self.toolCallID = toolCallID
-        self.runID = runID
         self.name = name
         self.finishReason = finishReason
-        self.metadata = .init(metadata)
+        self.metadata = metadata
+        self.created = .now
+        self.modified = .now
+    }
+
+    public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
+                role: Role, content: String? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
+                toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
+        self.id = id
+        self.referenceID = referenceID
+        self.runID = runID
+        self.model = model
+        self.role = role
+        self.contents = (content != nil) ? [.text(content!)] : nil
+        self.attachments = attachments
+        self.toolCalls = toolCalls
+        self.toolCallID = toolCallID
+        self.name = name
+        self.finishReason = finishReason
+        self.metadata = metadata
         self.created = .now
         self.modified = .now
     }
 }
 
 extension Message {
-    
-    var visionImages: [Asset] {
-        attachments
-            .map { (attachment) -> Asset? in
-                guard case .asset(let asset) = attachment else { return nil }
-                return asset
+
+    public var content: String? {
+        contents?.compactMap { content in
+            if case .text(let text) = content {
+                return text
             }
-            .filter { $0?.kind == .image }
-            .filter { $0?.noop == false }
-            .compactMap { $0 }
+            return nil
+        }.joined(separator: "\n")
     }
 }

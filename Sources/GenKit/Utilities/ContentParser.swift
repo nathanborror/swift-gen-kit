@@ -5,28 +5,28 @@ public final class ContentParser {
 
     public struct Result: Sendable {
         public var contents: [Content]
-        
+
         public enum Content: Sendable {
             case text(String)
             case tag(Tag)
         }
-        
+
         public struct Tag: Sendable {
             public let name: String
             public let content: String?
             public let params: [String: String]
-            
+
             public init(name: String, content: String? = nil, params: [String : String] = [:]) {
                 self.name = name
                 self.content = content
                 self.params = params
             }
         }
-        
+
         public init(contents: [Content]) {
             self.contents = contents
         }
-        
+
         public func first(tag name: String) -> Tag? {
             for content in contents {
                 if case .tag(let tag) = content {
@@ -36,12 +36,12 @@ public final class ContentParser {
             return nil
         }
     }
-    
+
     private let tagPattern = #/<(?<name>[^>\s]+)(?<params>\s+[^>]+)?>(?<content>.*?)(?:<\/\k<name>>|$)/#
     private let tagParamsPattern = #/(?<name>\w+)="(?<value>[^"]*)"/#
-    
+
     private init() {}
-    
+
     public func parse(input: String, tags: [String] = []) throws -> Result {
         let matches = input.ranges(of: tagPattern.dotMatchesNewlines())
         var contents: [Result.Content] = []
@@ -56,9 +56,9 @@ public final class ContentParser {
                 contents.append(.text(text))
             }
         }
-        
+
         for range in matches {
-            
+
             // Add text before the tag if there's any
             if positionIndex < range.lowerBound {
                 let textRange = positionIndex..<range.lowerBound
@@ -72,7 +72,7 @@ public final class ContentParser {
                 let name = String(output.name)
                 let content = String(output.content)
                 let params = try parseTagParams(output.params)
-                
+
                 if tags.isEmpty || tags.contains(name) {
                     contents.append(.tag(.init(name: name, content: content, params: params)))
                 } else {
@@ -89,6 +89,16 @@ public final class ContentParser {
         if positionIndex < input.endIndex {
             let text = String(input[positionIndex...])
             appendToContent(text)
+        }
+
+        // Filter out any text content with empty strings after stripping whitespace
+        contents = contents.filter { content in
+            switch content {
+            case .text(let text):
+                return !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            case .tag(let tag):
+                return true
+            }
         }
         return .init(contents: contents)
     }

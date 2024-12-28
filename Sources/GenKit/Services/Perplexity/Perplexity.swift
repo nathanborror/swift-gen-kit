@@ -19,7 +19,7 @@ extension PerplexityService: ChatService {
         let req = ChatRequest(
             model: request.model.id.rawValue,
             messages: encode(messages: request.messages),
-            temperature: request.temperature
+            temperature: (request.temperature != nil) ? Float(request.temperature!) : nil
         )
         let result = try await client.chat(req)
         return decode(result: result)
@@ -29,7 +29,7 @@ extension PerplexityService: ChatService {
         let req = ChatRequest(
             model: request.model.id.rawValue,
             messages: encode(messages: request.messages),
-            temperature: request.temperature,
+            temperature: (request.temperature != nil) ? Float(request.temperature!) : nil,
             stream: true
         )
         var message = Message(role: .assistant)

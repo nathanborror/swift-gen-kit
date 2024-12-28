@@ -6,10 +6,10 @@ private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 
 public actor OllamaService {
     
-    private var client: OllamaClient
-    
-    public init(configuration: OllamaClient.Configuration) {
-        self.client = OllamaClient(configuration: configuration)
+    private var client: Ollama.Client
+
+    public init(host: URL? = nil) {
+        self.client = .init(host: host)
     }
 }
 
@@ -18,12 +18,12 @@ extension OllamaService: ChatService {
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatRequest(
             model: request.model.id.rawValue,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
+            messages: request.messages.map { .init($0) },
+            tools: request.tools.map { .init($0) },
             stream: false
         )
-        let result = try await client.chat(req)
-        return decode(result: result)
+        let resp = try await client.chatCompletions(req)
+        return .init(resp)
     }
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
@@ -37,13 +37,13 @@ extension OllamaService: ChatService {
         
         let req = ChatRequest(
             model: request.model.id.rawValue,
-            messages: encode(messages: request.messages),
-            tools: encode(tools: request.tools),
+            messages: request.messages.map { .init($0) },
+            tools: request.tools.map { .init($0) },
             stream: request.tools.isEmpty
         )
         var message = Message(role: .assistant)
-        for try await result in client.chatStream(req) {
-            message = decode(result: result, into: message)
+        for try await resp in try client.chatCompletionsStream(req) {
+            message.patch(resp)
             try await update(message)
             
             // The connection hangs if we don't explicitly return when the stream has stopped.
@@ -57,7 +57,7 @@ extension OllamaService: ChatService {
 extension OllamaService: EmbeddingService {
     
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
-        let req = EmbeddingRequest(model: request.model.id.rawValue, input: request.input)
+        let req = EmbeddingsRequest(model: request.model.id.rawValue, input: request.input)
         let result = try await client.embeddings(req)
         return result.embedding
     }
@@ -66,32 +66,7 @@ extension OllamaService: EmbeddingService {
 extension OllamaService: ModelService {
     
     public func models() async throws -> [Model] {
-        let result = try await client.models()
-        return result.models.map { decode(model: $0) }
+        let resp = try await client.models()
+        return resp.models.map { .init($0) }
     }
 }
-
-extension OllamaService: VisionService {
-
-    public func completion(_ request: VisionServiceRequest) async throws -> Message {
-        let messages = encode(messages: request.messages)
-        let payload = ChatRequest(model: request.model.id.rawValue, messages: messages)
-        let result = try await client.chat(payload)
-        return decode(result: result)
-    }
-    
-    public func completionStream(_ request: VisionServiceRequest, update: (Message) async throws -> Void) async throws {
-        let payload = ChatRequest(model: request.model.id.rawValue, messages: encode(messages: request.messages), stream: true)
-        var message = Message(role: .assistant)
-        for try await result in client.chatStream(payload) {
-            message = decode(result: result, into: message)
-            try await update(message)
-            
-            // The connection hangs if we don't explicitly return when the stream has stopped.
-            if message.finishReason == .stop {
-                return
-            }
-        }
-    }
-}
-

@@ -8,9 +8,7 @@ public class ChatSession {
             Task {
                 do {
                     let runID = Run.ID.id
-
                     var messages = request.messages
-
                     var runLoopCount = 0
                     var runShouldContinue = true
 
@@ -22,7 +20,8 @@ public class ChatSession {
                             messages: messages,
                             tools: request.tools,
                             toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
-                            temperature: request.temperature
+                            temperature: request.temperature,
+                            customHeaders: request.customHeaders
                         )
                         try await request.service.completionStream(req) { message in
                             let message = apply(runID: runID, message: message)
@@ -45,10 +44,10 @@ public class ChatSession {
                         runShouldContinue = shouldContinue
                         runLoopCount += 1
                     }
+                    continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
                 }
-                continuation.finish()
             }
         }
     }
@@ -70,7 +69,8 @@ public class ChatSession {
                 messages: messages,
                 tools: request.tools,
                 toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
-                temperature: request.temperature
+                temperature: request.temperature,
+                customHeaders: request.customHeaders
             )
             var message = try await request.service.completion(req)
             message = apply(runID: runID, message: message)
@@ -114,7 +114,7 @@ public class ChatSession {
                             content: "Unknown tool.",
                             toolCallID: toolCall.id,
                             name: toolCall.function.name,
-                            metadata: ["label": "Unknown tool"]
+                            metadata: .init(["label": "Unknown tool"])
                         )
                         return .init(messages: [message], shouldContinue: false)
                     }
@@ -172,7 +172,8 @@ public struct ChatSessionRequest {
     public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
     public private(set) var context: [String: String] = [:]
-    public private(set) var temperature: Float? = nil
+    public private(set) var temperature: Double? = nil
+    public private(set) var customHeaders: [String: String] = [:]
 
     public init(service: ChatService, model: Model, toolCallback: ToolCallback? = nil) {
         self.service = service
@@ -205,8 +206,12 @@ public struct ChatSessionRequest {
         self.context = context
     }
 
-    public mutating func with(temperature: Float) {
+    public mutating func with(temperature: Double) {
         self.temperature = temperature
+    }
+
+    public mutating func with(header: String, value: String) {
+        customHeaders[header] = value
     }
 
     var messages: [Message] {
@@ -225,7 +230,8 @@ public struct ChatSessionRequest {
 
         // Apply system prompt
         if let system {
-            messages.append(.init(kind: .instruction, role: .system, content: [system, systemContext].joined(separator: "\n\n")))
+            let prompt = [system, systemContext].joined(separator: "\n\n")
+            messages.append(.init(role: .system, content: prompt))
         }
 
         // Apply history

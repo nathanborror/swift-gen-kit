@@ -2,114 +2,133 @@ import Foundation
 import Anthropic
 import SharedKit
 
-extension AnthropicService {
-    
-    func decode(result: ChatResponse) -> Message {
-        var message = Message(
-            role: decode(role: result.role),
-            finishReason: decode(finishReason: result.stopReason)
+// MARK: - Chat Response
+
+extension GenKit.Message {
+    init(_ resp: Anthropic.ChatResponse) {
+        self.init(
+            role: .init(resp.role) ?? .assistant,
+            contents: resp.content?.compactMap { .init($0) } ?? [],
+            toolCalls: resp.content?.compactMap { .init($0) },
+            finishReason: .init(resp.stop_reason)
         )
-        for content in result.content ?? [] {
-            switch content.type {
-            case .text, .text_delta:
-                message.content = content.text
-            case .tool_use:
-                if message.toolCalls == nil {
-                    message.toolCalls = []
-                }
-                let data = try? JSONEncoder().encode(content.input)
-                message.toolCalls?.append(.init(
-                    id: content.id ?? .id,
-                    function: .init(
-                        name: content.name ?? "",
-                        arguments: (data != nil) ? String(data: data!, encoding: .utf8)! : ""
-                    )
-                ))
-            case .input_json_delta:
-                break
-            case .none:
-                break
-            }
-        }
-        return message
     }
-    
-    func decode(result: ChatStreamResponse, into message: Message) -> Message {
-        var message = message
-        switch result.type {
-        case .ping:
-            break
-        case .error:
-            break // nothing to do here
-        case .message_start:
-            if let msg = result.message {
-                message.id = (msg.id != nil) ? Message.ID(msg.id!) : message.id
-                message.finishReason = decode(finishReason: msg.stopReason)
-            }
-        case .message_delta:
-            break // nothing to do here
-        case .message_stop:
-            if message.toolCalls != nil {
-                message.finishReason = .toolCalls
+}
+
+extension GenKit.Message.Role {
+    init?(_ role: Anthropic.ChatResponse.Role?) {
+        guard let role else { return nil }
+        switch role {
+        case .assistant:
+            self = .assistant
+        case .user:
+            self = .user
+        }
+    }
+}
+
+extension GenKit.Message.Content {
+    init?(_ content: Anthropic.ChatResponse.Content) {
+        switch content.type {
+        case .text, .text_delta:
+            if let text = content.text {
+                self = .text(text)
             } else {
-                message.finishReason = .stop
+                return nil
             }
+        case .tool_use, .input_json_delta, .none:
+            return nil
+        }
+    }
+}
+
+extension GenKit.Message.FinishReason {
+    init?(_ reason: Anthropic.ChatResponse.StopReason?) {
+        guard let reason else { return nil }
+        switch reason {
+        case .end_turn:
+            self = .stop
+        case .max_tokens:
+            self = .length
+        case .stop_sequence:
+            self = .stop
+        case .tool_use:
+            self = .toolCalls
+        }
+    }
+}
+
+extension GenKit.ToolCall {
+    init?(_ content: Anthropic.ChatResponse.Content) {
+        switch content.type {
+        case .tool_use:
+            let data = try? JSONEncoder().encode(content.input)
+            let arguments = (data != nil) ? String(data: data!, encoding: .utf8)! : ""
+            self.init(
+                id: content.id ?? .id,
+                function: .init(
+                    name: content.name ?? "",
+                    arguments: arguments
+                )
+            )
+        case .text, .text_delta, .input_json_delta, .none:
+            return nil
+        }
+    }
+}
+
+// MARK: - Chat Response Stream
+
+extension GenKit.Message {
+    mutating func patch(with resp: ChatResponseStream) {
+        switch resp.type {
+        case .ping, .error, .message_delta, .content_block_stop:
+            return
+        case .message_start:
+            if let message = resp.message {
+                self.id = (message.id != nil) ? Message.ID(message.id!) : self.id
+                self.finishReason = .init(message.stop_reason)
+            }
+        case .message_stop:
+            self.finishReason = (self.toolCalls != nil) ? .toolCalls : .stop
         case .content_block_start:
-            if let contentBlock = result.contentBlock {
+            if let contentBlock = resp.content_block {
                 switch contentBlock.type {
                 case .text:
-                    message.content = contentBlock.text
+                    if let text = contentBlock.text {
+                        self.contents = [.text(text)]
+                    }
                 case .tool_use:
                     var toolCall = ToolCall(function: .init(name: contentBlock.name ?? "", arguments: ""))
                     toolCall.id = contentBlock.id ?? toolCall.id
-                    if message.toolCalls == nil {
-                        message.toolCalls = []
+                    if self.toolCalls == nil {
+                        self.toolCalls = []
                     }
-                    message.toolCalls?.append(toolCall)
+                    self.toolCalls?.append(toolCall)
                 default:
                     break
                 }
             }
         case .content_block_delta:
-            if let delta = result.delta {
+            if let delta = resp.delta {
                 switch delta.type {
                 case .text_delta:
-                    message.content = patch(string: message.content, with: delta.text)
+                    if case .text(let existing) = self.contents?.last {
+                        let patched = GenKit.patch(string: existing, with: delta.text) ?? existing
+                        self.contents![self.contents!.count-1] = .text(patched)
+                    } else if let text = delta.text {
+                        self.contents?.append(.text(text))
+                    }
                 case .input_json_delta:
-                    if var existing = message.toolCalls?.last {
-                        existing.function.arguments = patch(string: existing.function.arguments, with: delta.partialJSON) ?? ""
-                        message.toolCalls![message.toolCalls!.count-1] = existing
+                    if var existing = self.toolCalls?.last {
+                        existing.function.arguments = GenKit.patch(string: existing.function.arguments, with: delta.partial_json) ?? ""
+                        self.toolCalls![self.toolCalls!.count-1] = existing
                     }
                 default:
                     break
                 }
             }
-        case .content_block_stop:
-            break // nothing to do here
         }
-        message.modified = .now
-        return message
-    }
-
-    func decode(role: Anthropic.Role?) -> Message.Role {
-        switch role {
-        case .user: .user
-        case .assistant, .none: .assistant
-        }
-    }
-
-    func decode(finishReason: Anthropic.StopReason?) -> Message.FinishReason? {
-        switch finishReason {
-        case .end_turn:
-            return .stop
-        case .max_tokens:
-            return .length
-        case .stop_sequence:
-            return .cancelled
-        case .tool_use:
-            return .toolCalls
-        default:
-            return .none
-        }
+        self.modified = .now
     }
 }
