@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-mistral",
       "state" : {
-        "branch" : "simplify",
-        "revision" : "b4fd1482d5251169aba2b5a7ec54edf62a33e81f"
+        "branch" : "main",
+        "revision" : "1b57cab1adf9c89ea99cf05b8ff858c42c5fad64"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-ollama",
       "state" : {
-        "branch" : "simplify",
-        "revision" : "ce683f9e27268f0f8852989957e12ef763105bf0"
+        "branch" : "main",
+        "revision" : "4480bf945e44b083d262a69c4a423db22a3cf54b"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
-        "branch" : "simplify",
-        "revision" : "da1961b32f276283023739d47f2f9cb8357c11b6"
+        "branch" : "main",
+        "revision" : "0441838b950241036df85ac651eda1ac1549bf9c"
       }
     },
     {
