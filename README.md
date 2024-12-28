@@ -76,10 +76,10 @@ Services are a common interface for working across many platforms. They allow yo
 
 Provider packages are swift interfaces that talk directly to model provider REST APIs. You can use these directly but their APIs vary slightly.
 
-- [Anthropic](/nathanborror/swift-anthropic)
-- [ElevenLabs](/nathanborror/swift-elevenlabs)
-- [Fal](/nathanborror/swift-fal)
-- [Mistral](/nathanborror/swift-mistral)
-- [Ollama](/nathanborror/swift-ollama)
-- [OpenAI](/nathanborror/swift-openai)
-- [Perplexity](/nathanborror/swift-perplexity)
+- [Anthropic](https://github.com/nathanborror/swift-anthropic)
+- [ElevenLabs](https://github.com/nathanborror/swift-elevenlabs)
+- [Fal](https://github.com/nathanborror/swift-fal)
+- [Mistral](https://github.com/nathanborror/swift-mistral)
+- [Ollama](https://github.com/nathanborror/swift-ollama)
+- [OpenAI](https://github.com/nathanborror/swift-openai)
+- [Perplexity](https://github.com/nathanborror/swift-perplexity)
