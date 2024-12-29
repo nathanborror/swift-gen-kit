@@ -4,7 +4,7 @@
 import Foundation
 
 public struct Service: Codable, Identifiable, Sendable {
-    public var id: ServiceID
+    public var id: String
     public var name: String
     public var host: String
     public var token: String
@@ -40,7 +40,7 @@ public struct Service: Codable, Identifiable, Sendable {
                 preferredChatModel: String? = nil, preferredImageModel: String? = nil,
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
                 preferredSpeechModel: String? = nil, preferredSummarizationModel: String? = nil) {
-        self.id = id
+        self.id = id.rawValue
         self.name = name
         self.host = host
         self.token = token
@@ -95,7 +95,7 @@ extension Service {
     }
 
     public func modelService() -> ModelService {
-        switch id {
+        switch ServiceID(rawValue: id)! {
         case .anthropic:
             anthropic()
         case .elevenLabs:
@@ -119,7 +119,7 @@ extension Service {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
-        switch id {
+        switch ServiceID(rawValue: id)! {
         case .anthropic:
             return anthropic()
         case .groq:
@@ -141,7 +141,7 @@ extension Service {
         guard preferredImageModel != nil else {
             throw ServiceError.missingService
         }
-        switch id {
+        switch ServiceID(rawValue: id)! {
         case .fal:
             return fal()
         case .openAI:
@@ -155,7 +155,7 @@ extension Service {
         guard preferredEmbeddingModel != nil else {
             throw ServiceError.missingService
         }
-        switch id {
+        switch ServiceID(rawValue: id)! {
         case .groq:
             return groq()
         case .mistral:
@@ -173,7 +173,7 @@ extension Service {
         guard preferredTranscriptionModel != nil else {
             throw ServiceError.missingService
         }
-        switch id {
+        switch ServiceID(rawValue: id)! {
         case .groq:
             return groq()
         case .openAI:
@@ -187,7 +187,7 @@ extension Service {
         guard preferredSpeechModel != nil else {
             throw ServiceError.missingService
         }
-        switch id {
+        switch ServiceID(rawValue: id)! {
         case .elevenLabs:
             return elevenLabs()
         case .groq:
@@ -203,7 +203,7 @@ extension Service {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
-        switch id {
+        switch ServiceID(rawValue: id)! {
         case .anthropic:
             return anthropic()
         case .groq:
