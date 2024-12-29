@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-anthropic",
       "state" : {
-        "branch" : "simplify",
-        "revision" : "6898266edd2a9f387c608ec6aa23059e5f30854b"
+        "branch" : "main",
+        "revision" : "bdef3c0c76601a62a8f702370fc05ee3d789c8a4"
       }
     },
     {
@@ -60,7 +60,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "0441838b950241036df85ac651eda1ac1549bf9c"
+        "revision" : "17873133d611012638c99562a24a1877609b8d4b"
       }
     },
     {

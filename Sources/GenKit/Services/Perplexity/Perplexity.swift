@@ -17,7 +17,7 @@ extension PerplexityService: ChatService {
     
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatRequest(
-            model: request.model.id.rawValue,
+            model: request.model.id,
             messages: encode(messages: request.messages),
             temperature: (request.temperature != nil) ? Float(request.temperature!) : nil
         )
@@ -27,7 +27,7 @@ extension PerplexityService: ChatService {
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = ChatRequest(
-            model: request.model.id.rawValue,
+            model: request.model.id,
             messages: encode(messages: request.messages),
             temperature: (request.temperature != nil) ? Float(request.temperature!) : nil,
             stream: true
@@ -45,7 +45,7 @@ extension PerplexityService: ModelService {
     public func models() async throws -> [Model] {
         let result = try await client.models()
         return result.models.map {
-            Model(id: Model.ID($0.id), name: $0.name, owner: $0.owner, contextWindow: $0.contextWindow)
+            Model(id: $0.id, name: $0.name, owner: $0.owner, contextWindow: $0.contextWindow)
         }
     }
 }

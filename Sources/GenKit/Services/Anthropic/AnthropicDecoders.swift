@@ -86,7 +86,7 @@ extension GenKit.Message {
             return
         case .message_start:
             if let message = resp.message {
-                self.id = (message.id != nil) ? Message.ID(message.id!) : self.id
+                self.id = (message.id != nil) ? message.id! : self.id
                 self.finishReason = .init(message.stop_reason)
             }
         case .message_stop:

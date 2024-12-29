@@ -115,7 +115,7 @@ extension GenKit.Message.FinishReason {
 extension GenKit.Model {
     init(_ model: Mistral.ModelsResponse.Model) {
         self.init(
-            id: Model.ID(model.id),
+            id: model.id,
             name: model.name,
             owner: model.owned_by ?? "mistral",
             contextWindow: model.max_context_length,

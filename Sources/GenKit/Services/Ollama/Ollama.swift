@@ -17,7 +17,7 @@ extension OllamaService: ChatService {
     
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatRequest(
-            model: request.model.id.rawValue,
+            model: request.model.id,
             messages: request.messages.map { .init($0) },
             tools: request.tools.map { .init($0) },
             stream: false
@@ -36,7 +36,7 @@ extension OllamaService: ChatService {
         }
         
         let req = ChatRequest(
-            model: request.model.id.rawValue,
+            model: request.model.id,
             messages: request.messages.map { .init($0) },
             tools: request.tools.map { .init($0) },
             stream: request.tools.isEmpty
@@ -57,7 +57,7 @@ extension OllamaService: ChatService {
 extension OllamaService: EmbeddingService {
     
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
-        let req = EmbeddingsRequest(model: request.model.id.rawValue, input: request.input)
+        let req = EmbeddingsRequest(model: request.model.id, input: request.input)
         let result = try await client.embeddings(req)
         return result.embedding
     }

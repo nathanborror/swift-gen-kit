@@ -18,7 +18,7 @@ extension OpenAIService: ChatService {
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         let req = ChatRequest(
             messages: encode(messages: request.messages),
-            model: request.model.id.rawValue,
+            model: request.model.id,
             temperature: request.temperature,
             tools: encode(request.tools),
             tool_choice: encode(request.toolChoice)
@@ -33,7 +33,7 @@ extension OpenAIService: ChatService {
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         let req = OpenAI.ChatRequest(
             messages: encode(messages: request.messages),
-            model: request.model.id.rawValue,
+            model: request.model.id,
             stream: true,
             temperature: request.temperature,
             tools: encode(request.tools),
@@ -52,7 +52,7 @@ extension OpenAIService: EmbeddingService {
     public func embeddings(_ request: EmbeddingServiceRequest) async throws -> [Double] {
         let req = OpenAI.EmbeddingsRequest(
             input: request.input,
-            model: request.model.id.rawValue
+            model: request.model.id
         )
         let result = try await client.embeddings(req)
         return result.data.first?.embedding ?? []
@@ -72,7 +72,7 @@ extension OpenAIService: ImageService {
     public func imagine(_ request: ImagineServiceRequest) async throws -> [Data] {
         let req = OpenAI.ImageRequest(
             prompt: request.prompt,
-            model: request.model.id.rawValue,
+            model: request.model.id,
             n: request.n,
             size: .size_1024x1024
         )
@@ -96,7 +96,7 @@ extension OpenAIService: TranscriptionService {
     public func transcribe(_ request: TranscriptionServiceRequest) async throws -> String {
         let req = OpenAI.TranscriptionRequest(
             file: request.data,
-            model: request.model.id.rawValue,
+            model: request.model.id,
             language: request.language,
             prompt: request.prompt,
             response_format: (request.responseFormat != nil) ? .init(rawValue: request.responseFormat!) : nil,
@@ -111,7 +111,7 @@ extension OpenAIService: SpeechService {
     
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {
         let req = OpenAI.SpeechRequest(
-            model: request.model.id.rawValue,
+            model: request.model.id,
             input: request.input,
             voice: .init(rawValue: request.voice) ?? .alloy,
             response_format: (request.responseFormat != nil) ? .init(rawValue: request.responseFormat!) : nil,

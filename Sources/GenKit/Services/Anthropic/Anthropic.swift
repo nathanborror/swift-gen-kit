@@ -14,7 +14,7 @@ public actor AnthropicService {
 
     private func makeRequest(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> Anthropic.ChatRequest {
         .init(
-            model: model.id.rawValue,
+            model: model.id,
             messages: prepare(messages: messages),
             max_tokens: model.maxOutput ?? 8192,
             system: prepareSystemPrompt(from: messages),
@@ -67,7 +67,7 @@ extension AnthropicService: ModelService {
         let result = try await client.models()
         return result.models.map {
             Model(
-                id: Model.ID($0.id),
+                id: $0.id,
                 name: $0.name,
                 owner: $0.owner,
                 contextWindow: $0.contextWindow,

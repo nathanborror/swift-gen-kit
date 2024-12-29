@@ -62,7 +62,7 @@ extension GenKit.ToolCall {
 extension GenKit.Model {
     init(_ model: Ollama.ModelResponse) {
         self.init(
-            id: Model.ID(model.model),
+            id: model.model,
             family: model.details?.family,
             name: model.name,
             owner: "ollama",

@@ -2,10 +2,10 @@ import Foundation
 import SharedKit
 
 public struct Message: Codable, Identifiable, Sendable {
-    public var id: ID<Message>
+    public var id: String
     public var referenceID: String?
-    public var runID: Run.ID?
-    public var model: Model.ID?
+    public var runID: String?
+    public var modelID: String?
     public var role: Role
     public var contents: [Content]?
     public var attachments: [Attachment]
@@ -49,13 +49,13 @@ public struct Message: Codable, Identifiable, Sendable {
         case file(String, String)
     }
 
-    public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
+    public init(id: String = .id, referenceID: String? = nil, runID: String? = nil, modelID: String? = nil,
                 role: Role, contents: [Content], attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
                 toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
         self.id = id
         self.referenceID = referenceID
         self.runID = runID
-        self.model = model
+        self.modelID = modelID
         self.role = role
         self.contents = contents
         self.attachments = attachments
@@ -68,13 +68,13 @@ public struct Message: Codable, Identifiable, Sendable {
         self.modified = .now
     }
 
-    public init(id: Message.ID = .id, referenceID: String? = nil, runID: Run.ID? = nil, model: Model.ID? = nil,
+    public init(id: String = .id, referenceID: String? = nil, runID: String? = nil, modelID: String? = nil,
                 role: Role, content: String? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
                 toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
         self.id = id
         self.referenceID = referenceID
         self.runID = runID
-        self.model = model
+        self.modelID = modelID
         self.role = role
         self.contents = (content != nil) ? [.text(content!)] : nil
         self.attachments = attachments

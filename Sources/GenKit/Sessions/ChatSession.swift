@@ -1,4 +1,5 @@
 import Foundation
+import SharedKit
 
 public class ChatSession {
     public static let shared = ChatSession()
@@ -7,7 +8,7 @@ public class ChatSession {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    let runID = Run.ID.id
+                    let runID = String.id
                     var messages = request.messages
                     var runLoopCount = 0
                     var runShouldContinue = true
@@ -53,7 +54,7 @@ public class ChatSession {
     }
 
     public func completion(_ request: ChatSessionRequest, runLoopLimit: Int = 10, maxConcurrentToolCalls: Int = 3) async throws -> ChatSessionResponse {
-        let runID = Run.ID.id
+        let runID = String.id
 
         var messages = request.messages
         var response = ChatSessionResponse(messages: [])
@@ -151,7 +152,7 @@ public class ChatSession {
         }
     }
 
-    func apply(runID: Run.ID?, message: Message) -> Message {
+    func apply(runID: String?, message: Message) -> Message {
         var message = message
         message.runID = runID
         return message

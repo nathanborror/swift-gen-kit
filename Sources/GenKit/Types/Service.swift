@@ -11,12 +11,12 @@ public struct Service: Codable, Identifiable, Sendable {
     public var models: [Model]
     public var status: Status
 
-    public var preferredChatModel: Model.ID?
-    public var preferredImageModel: Model.ID?
-    public var preferredEmbeddingModel: Model.ID?
-    public var preferredTranscriptionModel: Model.ID?
-    public var preferredSpeechModel: Model.ID?
-    public var preferredSummarizationModel: Model.ID?
+    public var preferredChatModel: String?
+    public var preferredImageModel: String?
+    public var preferredEmbeddingModel: String?
+    public var preferredTranscriptionModel: String?
+    public var preferredSpeechModel: String?
+    public var preferredSummarizationModel: String?
 
     public enum ServiceID: String, Codable, Sendable {
         case anthropic
@@ -37,9 +37,9 @@ public struct Service: Codable, Identifiable, Sendable {
     }
 
     public init(id: ServiceID, name: String, host: String = "", token: String = "", models: [Model] = [],
-                preferredChatModel: Model.ID? = nil, preferredImageModel: Model.ID? = nil,
-                preferredEmbeddingModel: Model.ID? = nil, preferredTranscriptionModel: Model.ID? = nil,
-                preferredSpeechModel: Model.ID? = nil, preferredSummarizationModel: Model.ID? = nil) {
+                preferredChatModel: String? = nil, preferredImageModel: String? = nil,
+                preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
+                preferredSpeechModel: String? = nil, preferredSummarizationModel: String? = nil) {
         self.id = id
         self.name = name
         self.host = host
