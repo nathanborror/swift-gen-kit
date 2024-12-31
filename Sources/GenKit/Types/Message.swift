@@ -1,7 +1,7 @@
 import Foundation
 import SharedKit
 
-public struct Message: Codable, Identifiable, Sendable {
+public struct Message: Identifiable, Codable, Hashable, Sendable {
     public var id: String
     public var referenceID: String?
     public var runID: String?
@@ -17,16 +17,16 @@ public struct Message: Codable, Identifiable, Sendable {
     public var created: Date
     public var modified: Date
 
-    public enum Role: String, CaseIterable, Codable, Sendable {
+    public enum Role: String, CaseIterable, Codable, Hashable, Sendable {
         case system, assistant, user, tool
     }
 
-    public enum Content: Codable, Sendable {
+    public enum Content: Codable, Hashable, Sendable {
         case text(String)
         case image(data: Data, format: ImageFormat)
         case audio(data: Data, format: AudioFormat)
 
-        public enum ImageFormat: String, CaseIterable, Codable, Sendable {
+        public enum ImageFormat: String, CaseIterable, Codable, Hashable, Sendable {
             case jpeg = "image/jpeg"
             case png  = "image/png"
             case gif  = "image/gif"
@@ -34,17 +34,17 @@ public struct Message: Codable, Identifiable, Sendable {
             case pdf  = "application/pdf"
         }
 
-        public enum AudioFormat: String, CaseIterable, Codable, Sendable {
+        public enum AudioFormat: String, CaseIterable, Codable, Hashable, Sendable {
             case mp3 = "mp3"
             case wav = "wav"
         }
     }
 
-    public enum FinishReason: String, Codable, CaseIterable, Sendable {
+    public enum FinishReason: String, CaseIterable, Codable, Hashable, Sendable {
         case stop, length, toolCalls, contentFilter, cancelled, error
     }
 
-    public enum Attachment: Codable, Sendable {
+    public enum Attachment: Codable, Hashable, Sendable {
         case agent(String)
         case file(String, String)
     }

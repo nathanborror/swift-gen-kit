@@ -1,7 +1,7 @@
 import Foundation
 import SharedKit
 
-public struct Model: Codable, Identifiable, Sendable {
+public struct Model: Identifiable, Codable, Hashable, Sendable {
     public var id: String
     public var family: String?
     public var name: String?

@@ -3,15 +3,15 @@ import SharedKit
 
 // Tools
 
-public struct Tool: Codable, Sendable {
+public struct Tool: Codable, Hashable, Sendable {
     public var type: Kind
     public var function: Function
     
-    public enum Kind: String, Codable, Sendable {
+    public enum Kind: String, Codable, Hashable, Sendable {
         case function
     }
 
-    public struct Function: Codable, Sendable {
+    public struct Function: Codable, Hashable, Sendable {
         public var name: String
         public var description: String
         public var parameters: JSONSchema
@@ -31,13 +31,13 @@ public struct Tool: Codable, Sendable {
 
 // Tool Calls
 
-public struct ToolCall: Codable, Identifiable, Sendable {
+public struct ToolCall: Identifiable, Codable, Hashable, Sendable {
     public var index: Int?
     public var id: String
     public var type: String
     public var function: FunctionCall
     
-    public struct FunctionCall: Codable, Sendable {
+    public struct FunctionCall: Codable, Hashable, Sendable {
         public var name: String
         public var arguments: String
         
@@ -67,7 +67,7 @@ public struct ToolCall: Codable, Identifiable, Sendable {
     }
 }
 
-public struct ToolCallResponse: Codable, Sendable {
+public struct ToolCallResponse: Codable, Hashable, Sendable {
     public var messages: [Message]
     public var shouldContinue: Bool
     

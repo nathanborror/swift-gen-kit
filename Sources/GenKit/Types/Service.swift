@@ -3,7 +3,7 @@
 
 import Foundation
 
-public struct Service: Codable, Identifiable, Sendable {
+public struct Service: Identifiable, Codable, Hashable, Sendable {
     public var id: String
     public var name: String
     public var host: String
@@ -18,7 +18,7 @@ public struct Service: Codable, Identifiable, Sendable {
     public var preferredSpeechModel: String?
     public var preferredSummarizationModel: String?
 
-    public enum ServiceID: String, Codable, Sendable {
+    public enum ServiceID: String, Codable, Hashable, Sendable {
         case anthropic
         case elevenLabs
         case fal
@@ -29,7 +29,7 @@ public struct Service: Codable, Identifiable, Sendable {
         case perplexity
     }
 
-    public enum Status: String, Codable, Sendable {
+    public enum Status: String, Codable, Hashable, Sendable {
         case ready
         case missingHost
         case missingToken
