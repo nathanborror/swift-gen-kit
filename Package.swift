@@ -16,6 +16,7 @@ let package = Package(
         .executable(name: "GenCmd", targets: ["GenCmd"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/nathanborror/swift-json", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-shared-kit", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-openai", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-ollama", branch: "main"),
@@ -28,6 +29,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
+            .product(name: "JSON", package: "swift-json"),
             .product(name: "SharedKit", package: "swift-shared-kit"),
             .product(name: "OpenAI", package: "swift-openai"),
             .product(name: "Ollama", package: "swift-ollama"),

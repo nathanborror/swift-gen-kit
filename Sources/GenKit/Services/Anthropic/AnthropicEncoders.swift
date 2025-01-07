@@ -1,6 +1,6 @@
 import Foundation
 import Anthropic
-import SharedKit
+import JSON
 
 extension Anthropic.ChatRequest.Message {
     init(_ message: GenKit.Message) {
@@ -39,7 +39,7 @@ extension Anthropic.ChatRequest.Message.Content {
     init?(_ toolCall: GenKit.ToolCall?) {
         guard let toolCall else { return nil }
         guard let data = toolCall.function.arguments.data(using: .utf8) else { return nil }
-        guard let input = try? JSONDecoder().decode([String: AnyValue].self, from: data) else { return nil }
+        guard let input = try? JSONDecoder().decode([String: JSONValue].self, from: data) else { return nil }
         self.init(
             type: .tool_use,
             id: toolCall.id,
