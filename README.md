@@ -83,3 +83,5 @@ Provider packages are swift interfaces that talk directly to model provider REST
 - [Ollama](https://github.com/nathanborror/swift-ollama)
 - [OpenAI](https://github.com/nathanborror/swift-openai)
 - [Perplexity](https://github.com/nathanborror/swift-perplexity)
+
+_GenKit also supports [Grok](https://docs.x.ai/docs/overview), [Groq](https://groq.com) and [DeepSeek](https://api-docs.deepseek.com) which all use a subset of the [swift-openai](https://github.com/nathanborror/swift-openai) package._

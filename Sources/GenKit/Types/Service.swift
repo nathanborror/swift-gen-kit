@@ -20,8 +20,10 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
 
     public enum ServiceID: String, Codable, Hashable, Sendable {
         case anthropic
+        case deepseek
         case elevenLabs
         case fal
+        case grok
         case groq
         case mistral
         case ollama
@@ -66,12 +68,20 @@ extension Service {
         AnthropicService(host: hostURL, apiKey: token)
     }
 
+    public func deepseek() -> OpenAIService {
+        OpenAIService(host: hostURL, apiKey: token)
+    }
+
     public func elevenLabs() -> ElevenLabsService {
         ElevenLabsService(apiKey: token)
     }
 
     public func fal() -> FalService {
         FalService(configuration: .init(host: hostURL, token: token))
+    }
+
+    public func grok() -> OpenAIService {
+        OpenAIService(host: hostURL, apiKey: token)
     }
 
     public func groq() -> OpenAIService {
@@ -98,10 +108,14 @@ extension Service {
         switch ServiceID(rawValue: id)! {
         case .anthropic:
             anthropic()
+        case .deepseek:
+            deepseek()
         case .elevenLabs:
             elevenLabs()
         case .fal:
             fal()
+        case .grok:
+            grok()
         case .groq:
             groq()
         case .mistral:
@@ -122,6 +136,10 @@ extension Service {
         switch ServiceID(rawValue: id)! {
         case .anthropic:
             return anthropic()
+        case .deepseek:
+            return deepseek()
+        case .grok:
+            return grok()
         case .groq:
             return groq()
         case .mistral:
@@ -146,7 +164,7 @@ extension Service {
             return fal()
         case .openAI:
             return openAI()
-        case .anthropic, .elevenLabs, .groq, .mistral, .ollama, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -158,13 +176,15 @@ extension Service {
         switch ServiceID(rawValue: id)! {
         case .groq:
             return groq()
+        case .grok:
+            return grok()
         case .mistral:
             return mistral()
         case .ollama:
             return ollama()
         case .openAI:
             return openAI()
-        case .anthropic, .elevenLabs, .fal, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -178,7 +198,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .elevenLabs, .fal, .mistral, .ollama, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -194,7 +214,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .fal, .mistral, .ollama, .perplexity:
+        case .anthropic, .deepseek, .fal, .grok, .mistral, .ollama, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -206,6 +226,10 @@ extension Service {
         switch ServiceID(rawValue: id)! {
         case .anthropic:
             return anthropic()
+        case .deepseek:
+            return deepseek()
+        case .grok:
+            return grok()
         case .groq:
             return groq()
         case .mistral:
