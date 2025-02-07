@@ -1,6 +1,5 @@
 import Foundation
 import SharedKit
-import JSON
 
 // Tools
 
@@ -15,9 +14,9 @@ public struct Tool: Codable, Hashable, Sendable {
     public struct Function: Codable, Hashable, Sendable {
         public var name: String
         public var description: String
-        public var parameters: JSONSchema
-        
-        public init(name: String, description: String, parameters: JSONSchema) {
+        public var parameters: [String: AnyValue]
+
+        public init(name: String, description: String, parameters: [String: AnyValue]) {
             self.name = name
             self.description = description
             self.parameters = parameters
