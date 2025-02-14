@@ -13,7 +13,12 @@ public class ChatSession {
                     var runLoopCount = 0
                     var runShouldContinue = true
 
-                    while runShouldContinue && runLoopCount < runLoopLimit {
+                    while runShouldContinue {
+                        guard runLoopCount < runLoopLimit else {
+                            continuation.finish(throwing: ChatSessionError.maxRunLoopLimit)
+                            return
+                        }
+
                         // Prepare service request, DO NOT include a tool choice on subsequent runs, this will
                         // cause an expensive infinite loop of tool calls.
                         let req = ChatServiceRequest(
@@ -62,7 +67,11 @@ public class ChatSession {
         var runLoopCount = 0
         var runShouldContinue = true
 
-        while runShouldContinue && runLoopCount < runLoopLimit {
+        while runShouldContinue {
+            guard runLoopCount < runLoopLimit else {
+                throw ChatSessionError.maxRunLoopLimit
+            }
+
             // Prepare service request, DO NOT include a tool choice on subsequent runs, this will
             // cause an expensive infinite loop of tool calls.
             let req = ChatServiceRequest(
@@ -267,5 +276,6 @@ enum ChatSessionError: Error {
     case missingToolCalls
     case missingToolCall
     case missingTool
+    case maxRunLoopLimit
     case unknown
 }
