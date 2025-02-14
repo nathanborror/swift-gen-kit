@@ -82,7 +82,7 @@ extension GenKit.ToolCall {
 extension GenKit.Message {
     mutating func patch(with resp: ChatResponseStream) {
         switch resp.type {
-        case .ping, .error, .message_delta, .content_block_stop:
+        case .ping, .message_delta, .content_block_stop:
             return
         case .message_start:
             if let message = resp.message {

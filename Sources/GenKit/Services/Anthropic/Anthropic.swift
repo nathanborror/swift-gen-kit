@@ -52,9 +52,6 @@ extension AnthropicService: ChatService {
         
         var message = Message(role: .assistant)
         for try await result in try client.chatCompletionsStream(req) {
-            if let error = result.error {
-                throw ChatServiceError.responseError(error.message)
-            }
             message.patch(with: result)
             try await update(message)
         }
