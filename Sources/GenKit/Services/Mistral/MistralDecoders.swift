@@ -50,30 +50,29 @@ extension GenKit.Message.FinishReason {
 // MARK: - Chat Response Stream
 
 extension GenKit.Message {
-    func patch(with resp: Mistral.ChatStreamResponse) -> Message {
-        var existing = self
-
+    mutating func patch(with resp: Mistral.ChatStreamResponse) {
         // If there is no choice (rare) return existing message
-        guard let choice = resp.choices.first else { return existing }
+        guard let choice = resp.choices.first else {
+            return
+        }
 
         // Get the last item in the contents array so it can be patched
-        if var contents = existing.contents {
+        if var contents = self.contents {
             if case .text(let text) = contents.last, let delta = choice.delta.content {
                 if let patched = GenKit.patch(string: text, with: delta) {
                     contents[contents.count-1] = .text(patched)
-                    existing.contents = contents
+                    self.contents = contents
                 }
             } else if let delta = choice.delta.content {
                 contents.append(.text(delta))
-                existing.contents = contents
+                self.contents = contents
             }
         }
 
         // Patch remaining properties
-        existing.toolCalls = choice.delta.tool_calls?.map { .init($0) }
-        existing.finishReason = .init(choice.finish_reason)
-        existing.modified = .now
-        return existing
+        self.toolCalls = choice.delta.tool_calls?.map { .init($0) }
+        self.finishReason = .init(choice.finish_reason)
+        self.modified = .now
     }
 }
 

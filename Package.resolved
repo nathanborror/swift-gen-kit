@@ -6,7 +6,7 @@
       "location" : "https://github.com/nathanborror/swift-anthropic",
       "state" : {
         "branch" : "main",
-        "revision" : "80b5ba418155ff01f5538ded77236fded136a1ad"
+        "revision" : "c0df04e832a8cad4368f9c73421523b75c75d121"
       }
     },
     {
@@ -15,7 +15,7 @@
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
         "branch" : "main",
-        "revision" : "385cfb2ad9dac8a27374a269879855e86055ec5c"
+        "revision" : "5bb54b937c879eb232d1ef90a4dbf2d5a2498352"
       }
     },
     {
@@ -87,7 +87,7 @@
       "location" : "https://github.com/nathanborror/swift-shared-kit",
       "state" : {
         "branch" : "main",
-        "revision" : "d4e4994642ba4706280d8d1ec89cff6eb98684eb"
+        "revision" : "3159eb54575d9f8b432bc236f7f46a8d6431d563"
       }
     }
   ],

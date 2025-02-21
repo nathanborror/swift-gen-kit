@@ -96,7 +96,7 @@ public final class ContentParser {
             switch content {
             case .text(let text):
                 return !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            case .tag(let tag):
+            case .tag:
                 return true
             }
         }
