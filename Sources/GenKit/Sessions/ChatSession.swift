@@ -181,7 +181,7 @@ public struct ChatSessionRequest {
     public private(set) var history: [Message] = []
     public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
-    public private(set) var context: [String: String] = [:]
+    public private(set) var context: [String: Value] = [:]
     public private(set) var temperature: Double? = nil
     public private(set) var customHeaders: [String: String] = [:]
 
@@ -212,7 +212,7 @@ public struct ChatSessionRequest {
         }
     }
 
-    public mutating func with(context: [String: String]) {
+    public mutating func with(context: [String: Value]) {
         self.context = context
     }
 
