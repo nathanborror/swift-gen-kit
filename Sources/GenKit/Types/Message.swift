@@ -3,9 +3,6 @@ import SharedKit
 
 public struct Message: Identifiable, Codable, Hashable, Sendable {
     public var id: String
-    public var referenceID: String?
-    public var runID: String?
-    public var modelID: String?
     public var role: Role
     public var contents: [Content]?
     public var attachments: [Attachment]
@@ -13,7 +10,7 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
     public var toolCallID: String?
     public var name: String?
     public var finishReason: FinishReason?
-    public var metadata: Metadata?
+    public var metadata: [String: Value]
     public var created: Date
     public var modified: Date
 
@@ -49,13 +46,26 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
         case file(String, String)
     }
 
+    public var referenceID: String? {
+        set { metadata["referenceID"] = (newValue != nil) ? .string(newValue!) : nil }
+        get { metadata["referenceID"]?.stringValue ?? "" }
+    }
+
+    public var runID: String? {
+        set { metadata["runID"] = (newValue != nil) ? .string(newValue!) : nil }
+        get { metadata["runID"]?.stringValue ?? "" }
+    }
+
+    public var modelID: String? {
+        set { metadata["modelID"] = (newValue != nil) ? .string(newValue!) : nil }
+        get { metadata["modelID"]?.stringValue ?? "" }
+    }
+
     public init(id: String = .id, referenceID: String? = nil, runID: String? = nil, modelID: String? = nil,
                 role: Role, contents: [Content], attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
-                toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
+                toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil,
+                metadata: [String: Value] = [:]) {
         self.id = id
-        self.referenceID = referenceID
-        self.runID = runID
-        self.modelID = modelID
         self.role = role
         self.contents = contents
         self.attachments = attachments
@@ -66,15 +76,18 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
         self.metadata = metadata
         self.created = .now
         self.modified = .now
+
+        // Metadata
+        self.referenceID = referenceID
+        self.runID = runID
+        self.modelID = modelID
     }
 
     public init(id: String = .id, referenceID: String? = nil, runID: String? = nil, modelID: String? = nil,
                 role: Role, content: String? = nil, attachments: [Attachment] = [], toolCalls: [ToolCall]? = nil,
-                toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil, metadata: Metadata? = nil) {
+                toolCallID: String? = nil, name: String? = nil, finishReason: FinishReason? = nil,
+                metadata: [String: Value] = [:]) {
         self.id = id
-        self.referenceID = referenceID
-        self.runID = runID
-        self.modelID = modelID
         self.role = role
         self.contents = (content != nil) ? [.text(content!)] : nil
         self.attachments = attachments
@@ -85,6 +98,11 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
         self.metadata = metadata
         self.created = .now
         self.modified = .now
+
+        // Metadata
+        self.referenceID = referenceID
+        self.runID = runID
+        self.modelID = modelID
     }
 }
 

@@ -124,7 +124,7 @@ public class ChatSession {
                             content: "Unknown tool.",
                             toolCallID: toolCall.id,
                             name: toolCall.function.name,
-                            metadata: .init(["label": "Unknown tool"])
+                            metadata: ["label": .string("Unknown tool")]
                         )
                         return .init(messages: [message], shouldContinue: false)
                     }
