@@ -15,11 +15,13 @@ public final class ContentParser {
             public let name: String
             public let content: String?
             public let params: [String: String]
+            public let hasClosingTag: Bool
 
-            public init(name: String, content: String? = nil, params: [String : String] = [:]) {
+            public init(name: String, content: String? = nil, params: [String : String] = [:], hasClosingTag: Bool = true) {
                 self.name = name
                 self.content = content
                 self.params = params
+                self.hasClosingTag = hasClosingTag
             }
         }
 
@@ -37,7 +39,7 @@ public final class ContentParser {
         }
     }
 
-    private let tagPattern = #/<(?<name>[^>\s]+)(?<params>\s+[^>]+)?>(?<content>.*?)(?:<\/\k<name>>|$)/#
+    private let tagPattern = #/<(?<name>[^>\s]+)(?<params>\s+[^>]+)?>(?<content>.*?)(?<closing><\/\k<name>>|$)/#
     private let tagParamsPattern = #/(?<name>\w+)="(?<value>[^"]*)"/#
 
     private init() {}
@@ -73,8 +75,12 @@ public final class ContentParser {
                 let content = String(output.content)
                 let params = try parseTagParams(output.params)
 
+                // Determine if the tag has a closing element by checking the captured closing group
+                let closingTag = String(output.closing)
+                let hasClosingTag = closingTag.starts(with: "</") && closingTag.contains(name)
+
                 if tags.isEmpty || tags.contains(name) {
-                    contents.append(.tag(.init(name: name, content: content, params: params)))
+                    contents.append(.tag(.init(name: name, content: content, params: params, hasClosingTag: hasClosingTag)))
                 } else {
                     let text = String(match)
                     appendToContent(text)

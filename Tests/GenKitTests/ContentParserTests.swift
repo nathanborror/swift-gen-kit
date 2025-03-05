@@ -48,4 +48,15 @@ final class ContentParserTests: XCTestCase {
         XCTAssertEqual(nestedResult.contents.count, 1)
         XCTAssertEqual(nestedResult.first(tag: "outer")?.content, "<inner>Nested content</inner>")
     }
+
+    func testHasClosingTag() throws {
+        let simpleInput = """
+            Lorem ipsum
+            <foo>content
+            Dolor sit amet
+            """
+        let simpleResult = try ContentParser.shared.parse(input: simpleInput)
+
+        XCTAssertEqual(simpleResult.first(tag: "foo")?.hasClosingTag, false)
+    }
 }
