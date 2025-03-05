@@ -6,7 +6,7 @@
       "location" : "https://github.com/nathanborror/swift-anthropic",
       "state" : {
         "branch" : "main",
-        "revision" : "4d436ca71d91ae5cd908fc2f8293977df789cc25"
+        "revision" : "1da5a1aa4b8fe9ca2ba0d5841ac3feec77e69b85"
       }
     },
     {
@@ -24,7 +24,7 @@
       "location" : "https://github.com/nathanborror/swift-elevenlabs",
       "state" : {
         "branch" : "main",
-        "revision" : "2da6102f39beba3b06fa62e9751618b2999ad6a0"
+        "revision" : "e81c176190e899a05d161de98c4edf278c431219"
       }
     },
     {

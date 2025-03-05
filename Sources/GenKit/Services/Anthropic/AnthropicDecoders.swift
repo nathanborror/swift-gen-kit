@@ -36,7 +36,7 @@ extension GenKit.Message.Content {
             } else {
                 return nil
             }
-        case .tool_use, .input_json_delta, .none:
+        case .tool_use, .input_json_delta, .none, .thinking_delta, .redacted_thinking, .signature_delta:
             return nil
         }
     }
@@ -71,7 +71,7 @@ extension GenKit.ToolCall {
                     arguments: arguments
                 )
             )
-        case .text, .text_delta, .input_json_delta, .none:
+        case .text, .text_delta, .input_json_delta, .none, .thinking_delta, .redacted_thinking, .signature_delta:
             return nil
         }
     }
