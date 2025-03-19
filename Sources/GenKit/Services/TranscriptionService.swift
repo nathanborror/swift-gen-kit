@@ -6,16 +6,16 @@ public protocol TranscriptionService: Sendable {
 
 public struct TranscriptionServiceRequest {
     public var model: Model
-    public var data: Data
+    public var file: URL
     public var prompt: String?
     public var language: String?
     public var responseFormat: String?
     public var temperature: Double?
     
-    public init(model: Model, data: Data, prompt: String? = nil, language: String? = nil,
+    public init(model: Model, file: URL, prompt: String? = nil, language: String? = nil,
                 responseFormat: String? = nil, temperature: Double? = nil) {
         self.model = model
-        self.data = data
+        self.file = file
         self.prompt = prompt
         self.language = language
         self.responseFormat = responseFormat

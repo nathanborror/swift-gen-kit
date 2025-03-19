@@ -15,7 +15,7 @@
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
         "branch" : "main",
-        "revision" : "134451f572e89e2552b242149c37ef4028729c3b"
+        "revision" : "d67151befa39533a6a449136c7992537cbf8ec99"
       }
     },
     {
@@ -24,7 +24,7 @@
       "location" : "https://github.com/nathanborror/swift-elevenlabs",
       "state" : {
         "branch" : "main",
-        "revision" : "e81c176190e899a05d161de98c4edf278c431219"
+        "revision" : "b06be3a7a4a5552141480f19d83ec9dabdbfc95c"
       }
     },
     {
@@ -69,7 +69,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "9ec3129a574eac27492181896752dcacfab2f5d8"
+        "revision" : "a86fb2e1101d31cf687ff9ebc95cdfbf8b652b5f"
       }
     },
     {

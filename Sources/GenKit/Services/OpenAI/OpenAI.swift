@@ -95,7 +95,7 @@ extension OpenAIService: TranscriptionService {
     
     public func transcribe(_ request: TranscriptionServiceRequest) async throws -> String {
         let req = OpenAI.TranscriptionRequest(
-            file: request.data,
+            file: request.file,
             model: request.model.id,
             language: request.language,
             prompt: request.prompt,
