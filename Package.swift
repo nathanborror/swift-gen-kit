@@ -13,7 +13,6 @@ let package = Package(
     ],
     products: [
         .library(name: "GenKit", targets: ["GenKit"]),
-        .executable(name: "GenCmd", targets: ["GenCmd"]),
     ],
     dependencies: [
         .package(url: "https://github.com/nathanborror/swift-json", branch: "main"),
@@ -38,10 +37,6 @@ let package = Package(
             .product(name: "Anthropic", package: "swift-anthropic"),
             .product(name: "ElevenLabs", package: "swift-elevenlabs"),
             .product(name: "Fal", package: "swift-fal"),
-        ]),
-        .executableTarget(name: "GenCmd", dependencies: [
-            "GenKit",
-            .product(name: "ArgumentParser", package: "swift-argument-parser"),
         ]),
         .testTarget(name: "GenKitTests", dependencies: ["GenKit"]),
     ]
