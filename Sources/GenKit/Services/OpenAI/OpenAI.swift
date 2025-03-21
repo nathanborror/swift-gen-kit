@@ -83,11 +83,22 @@ extension OpenAIService: ImageService {
         let seconds = 1
         try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
         
-        return try result.data.map {
-            guard let url = $0.url else { return nil }
-            let remoteURL = URL(string: url)!
-            return try Data(contentsOf: remoteURL)
-        }.compactMap { $0 }
+        return try await withThrowingTaskGroup(of: Data?.self) { group in
+            for image in result.data {
+                group.addTask {
+                    guard let imageURL = image.url, let url = URL(string: imageURL) else { return nil }
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    return data
+                }
+            }
+            var downloadedImages: [Data] = []
+            for try await data in group {
+                if let data {
+                    downloadedImages.append(data)
+                }
+            }
+            return downloadedImages
+        }
     }
 }
 

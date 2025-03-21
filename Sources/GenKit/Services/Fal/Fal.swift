@@ -21,10 +21,23 @@ extension FalService: ImageService {
             numImages: request.n
         )
         let result = try await client.textToImage(query, model: request.model.id)
-        return try result.images.map {
-            guard let url = URL(string: $0.url) else { return nil }
-            return try Data(contentsOf: url)
-        }.compactMap { $0 }
+
+        return try await withThrowingTaskGroup(of: Data?.self) { group in
+            for image in result.images {
+                group.addTask {
+                    guard let url = URL(string: image.url) else { return nil }
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    return data
+                }
+            }
+            var downloadedImages: [Data] = []
+            for try await data in group {
+                if let data {
+                    downloadedImages.append(data)
+                }
+            }
+            return downloadedImages
+        }
     }
 }
 
