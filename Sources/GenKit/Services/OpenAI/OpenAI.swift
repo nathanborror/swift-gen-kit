@@ -119,7 +119,13 @@ extension OpenAIService: TranscriptionService {
 }
 
 extension OpenAIService: SpeechService {
-    
+
+    public func voices() async throws -> [Voice] {
+        return ["alloy", "ash", "ballad", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer", "verse"].map {
+            Voice(id: $0, name: nil)
+        }
+    }
+
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {
         let req = OpenAI.SpeechRequest(
             model: request.model.id,

@@ -15,6 +15,13 @@ public actor ElevenLabsService {
 
 extension ElevenLabsService: SpeechService {
 
+    public func voices() async throws -> [Voice] {
+        let resp = try await client.voices()
+        return resp.voices.map {
+            Voice(id: $0.voice_id, name: $0.name)
+        }
+    }
+
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {
         try await client.textToSpeech(.init(
             text: request.input,

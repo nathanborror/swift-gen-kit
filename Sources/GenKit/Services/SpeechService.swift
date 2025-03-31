@@ -1,6 +1,7 @@
 import Foundation
 
 public protocol SpeechService: Sendable {
+    func voices() async throws -> [Voice]
     func speak(_ request: SpeechServiceRequest) async throws -> Data
 }
 
