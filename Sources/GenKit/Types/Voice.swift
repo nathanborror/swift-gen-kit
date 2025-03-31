@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Voice: Codable, Sendable {
+public struct Voice: Codable, Identifiable, Sendable {
     public let id: String
     public let name: String?
 
