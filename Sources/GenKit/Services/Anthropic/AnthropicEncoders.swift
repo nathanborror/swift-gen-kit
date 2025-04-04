@@ -6,9 +6,7 @@ extension Anthropic.ChatRequest.Message {
     init(_ message: GenKit.Message) {
         self.init(
             role: .init(message.role),
-            content: message.contents?.compactMap { .init($0) } ??
-                message.toolCalls?.compactMap { .init($0) } ??
-                [.init(message)].compactMap { $0 }
+            content: message.contents?.compactMap { .init($0) } ?? message.toolCalls?.compactMap { .init($0) } ?? [.init(message)].compactMap { $0 }
         )
     }
 }
@@ -21,7 +19,6 @@ extension Anthropic.ChatRequest.Message.Content {
                 type: .text,
                 text: text
             )
-        // TODO: Remove hard-coded media type
         case .image(let url, let format):
             if let data = try? Data(contentsOf: url) {
                 self.init(
@@ -32,11 +29,12 @@ extension Anthropic.ChatRequest.Message.Content {
                         data: data
                     )
                 )
+            } else {
+                return nil
             }
         case .audio:
             return nil
         }
-        return nil
     }
 
     init?(_ toolCall: GenKit.ToolCall?) {
