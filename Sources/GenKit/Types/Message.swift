@@ -20,8 +20,8 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
 
     public enum Content: Codable, Hashable, Sendable {
         case text(String)
-        case image(data: Data, format: ImageFormat)
-        case audio(data: Data, format: AudioFormat)
+        case image(url: URL, format: ImageFormat)
+        case audio(url: URL, format: AudioFormat)
 
         public enum ImageFormat: String, CaseIterable, Codable, Hashable, Sendable {
             case jpeg = "image/jpeg"

@@ -22,18 +22,21 @@ extension Anthropic.ChatRequest.Message.Content {
                 text: text
             )
         // TODO: Remove hard-coded media type
-        case .image(let data, let format):
-            self.init(
-                type: .image,
-                source: .init(
-                    type: .base64,
-                    media_type: .init(rawValue: format.rawValue) ?? .png,
-                    data: data
+        case .image(let url, let format):
+            if let data = try? Data(contentsOf: url) {
+                self.init(
+                    type: .image,
+                    source: .init(
+                        type: .base64,
+                        media_type: .init(rawValue: format.rawValue) ?? .png,
+                        data: data
+                    )
                 )
-            )
+            }
         case .audio:
             return nil
         }
+        return nil
     }
 
     init?(_ toolCall: GenKit.ToolCall?) {

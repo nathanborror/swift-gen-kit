@@ -24,11 +24,14 @@ extension Ollama.Message {
     static func encode(images content: [Message.Content]?) -> [Data]? {
         content?.compactMap {
             switch $0 {
-            case .image(let data, _):
-                return data
+            case .image(let url, _):
+                if let data = try? Data(contentsOf: url) {
+                    return data
+                }
             default:
                 return nil
             }
+            return nil
         }
     }
 }

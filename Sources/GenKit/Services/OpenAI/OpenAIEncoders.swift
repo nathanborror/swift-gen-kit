@@ -22,13 +22,19 @@ extension OpenAIService {
             switch $0 {
             case .text(let text):
                 return .init(type: "text", text: text)
-            case .image(let data, let format):
+            case .image(let url, let format):
                 guard role == .user else {
                     return nil
                 }
+                guard let data = try? Data(contentsOf: url) else {
+                    return nil
+                }
                 return .init(type: "image_url", image_url: .init(url: "data:\(format.rawValue);base64,\(data.base64EncodedString())"))
-            case .audio(let data, let format):
+            case .audio(let url, let format):
                 guard role == .user else {
+                    return nil
+                }
+                guard let data = try? Data(contentsOf: url) else {
                     return nil
                 }
                 return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: format.rawValue))

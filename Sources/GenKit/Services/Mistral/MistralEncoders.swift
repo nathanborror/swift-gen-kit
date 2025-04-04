@@ -4,7 +4,7 @@ import Mistral
 extension Mistral.ChatRequest.Message {
     init(_ message: GenKit.Message) {
         self.init(
-            content: message.contents?.map { .init($0) },
+            content: message.contents?.map { .init($0) }.compactMap({$0}),
             tool_calls: nil,
             prefix: nil,
             role: .init(message.role)
@@ -13,15 +13,18 @@ extension Mistral.ChatRequest.Message {
 }
 
 extension Mistral.ChatRequest.Message.Content {
-    init(_ content: GenKit.Message.Content) {
+    init?(_ content: GenKit.Message.Content) {
         switch content {
         case .text(let text):
             self.init(type: .text, text: text)
-        case .image(let data, let format):
-            self.init(type: .image_url, image_url: .init(url: "data:image/\(format);base64,\(data.base64EncodedString())"))
+        case .image(let url, let format):
+            if let data = try? Data(contentsOf: url) {
+                self.init(type: .image_url, image_url: .init(url: "data:image/\(format);base64,\(data.base64EncodedString())"))
+            }
         default:
             fatalError("Unknown message content type")
         }
+        return nil
     }
 }
 
