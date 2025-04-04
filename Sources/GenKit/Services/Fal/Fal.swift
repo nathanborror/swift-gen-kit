@@ -18,7 +18,8 @@ extension FalService: ImageService {
     public func imagine(_ request: ImagineServiceRequest) async throws -> [Data] {
         let query = Fal.TextToImageRequest(
             prompt: request.prompt,
-            numImages: request.n
+            num_images: request.n,
+            output_format: .png // TODO: Use response_format
         )
         let result = try await client.textToImage(query, model: request.model.id)
 

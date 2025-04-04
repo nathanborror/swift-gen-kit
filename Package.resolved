@@ -33,7 +33,7 @@
       "location" : "https://github.com/nathanborror/swift-fal",
       "state" : {
         "branch" : "main",
-        "revision" : "bb6ebada9c54294b7e1e63457084dadcd198cffe"
+        "revision" : "69e70be1551c70a8069f98318de1f049458aa672"
       }
     },
     {
@@ -69,7 +69,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "7c7c41f9afb4e4bef699589e572cf695b013620c"
+        "revision" : "975ab1bb32bb6c74515f6ed138f29cfd34b4b623"
       }
     },
     {
