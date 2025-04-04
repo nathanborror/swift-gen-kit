@@ -9,7 +9,7 @@ extension OpenAIService {
 
     func encode(message: Message) -> OpenAI.ChatRequest.Message {
         .init(
-            content: encode(message.contents),
+            content: encode(message.contents, role: message.role),
             role: encode(message.role),
             name: message.name,
             tool_calls: message.toolCalls?.map { encode($0) },
@@ -17,17 +17,23 @@ extension OpenAIService {
         )
     }
 
-    func encode(_ contents: [Message.Content]?) -> [OpenAI.ChatRequest.Message.Content]? {
+    func encode(_ contents: [Message.Content]?, role: Message.Role) -> [OpenAI.ChatRequest.Message.Content]? {
         contents?.map {
             switch $0 {
             case .text(let text):
                 return .init(type: "text", text: text)
             case .image(let data, let format):
+                guard role == .user else {
+                    return nil
+                }
                 return .init(type: "image_url", image_url: .init(url: "data:\(format.rawValue);base64,\(data.base64EncodedString())"))
             case .audio(let data, let format):
+                guard role == .user else {
+                    return nil
+                }
                 return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: format.rawValue))
             }
-        }
+        }.compactMap({$0})
     }
 
     func encode(_ role: Message.Role) -> OpenAI.ChatRequest.Message.Role {
