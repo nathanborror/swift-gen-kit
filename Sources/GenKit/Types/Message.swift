@@ -26,7 +26,7 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
         public struct Image: Codable, Hashable, Sendable {
             public var url: URL
             public var format: Format
-            public var detail: String
+            public var detail: String?
 
             public enum Format: String, CaseIterable, Codable, Hashable, Sendable {
                 case jpeg = "image/jpeg"
@@ -36,7 +36,7 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
                 case pdf  = "application/pdf"
             }
 
-            public init(url: URL, format: Format, detail: String) {
+            public init(url: URL, format: Format, detail: String? = nil) {
                 self.url = url
                 self.format = format
                 self.detail = detail
