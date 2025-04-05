@@ -19,13 +19,13 @@ extension Anthropic.ChatRequest.Message.Content {
                 type: .text,
                 text: text
             )
-        case .image(let url, let format):
-            if let data = try? Data(contentsOf: url) {
+        case .image(let image):
+            if let data = try? Data(contentsOf: image.url) {
                 self.init(
                     type: .image,
                     source: .init(
                         type: .base64,
-                        media_type: .init(rawValue: format.rawValue) ?? .png,
+                        media_type: .init(rawValue: image.format.rawValue) ?? .png,
                         data: data
                     )
                 )

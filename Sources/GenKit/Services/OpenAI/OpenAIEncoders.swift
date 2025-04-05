@@ -22,22 +22,22 @@ extension OpenAIService {
             switch $0 {
             case .text(let text):
                 return .init(type: "text", text: text)
-            case .image(let url, let format):
+            case .image(let image):
                 guard role == .user else {
                     return nil
                 }
-                guard let data = try? Data(contentsOf: url) else {
+                guard let data = try? Data(contentsOf: image.url) else {
                     return nil
                 }
-                return .init(type: "image_url", image_url: .init(url: "data:\(format.rawValue);base64,\(data.base64EncodedString())"))
-            case .audio(let url, let format):
+                return .init(type: "image_url", image_url: .init(url: "data:\(image.format.rawValue);base64,\(data.base64EncodedString())"))
+            case .audio(let audio):
                 guard role == .user else {
                     return nil
                 }
-                guard let data = try? Data(contentsOf: url) else {
+                guard let data = try? Data(contentsOf: audio.url) else {
                     return nil
                 }
-                return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: format.rawValue))
+                return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: audio.format.rawValue))
             }
         }.compactMap({$0})
     }

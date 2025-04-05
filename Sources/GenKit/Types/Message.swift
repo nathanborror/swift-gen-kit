@@ -20,20 +20,42 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
 
     public enum Content: Codable, Hashable, Sendable {
         case text(String)
-        case image(url: URL, format: ImageFormat)
-        case audio(url: URL, format: AudioFormat)
+        case image(Image)
+        case audio(Audio)
 
-        public enum ImageFormat: String, CaseIterable, Codable, Hashable, Sendable {
-            case jpeg = "image/jpeg"
-            case png  = "image/png"
-            case gif  = "image/gif"
-            case webp = "image/webp"
-            case pdf  = "application/pdf"
+        public struct Image: Codable, Hashable, Sendable {
+            public var url: URL
+            public var format: Format
+            public var detail: String
+
+            public enum Format: String, CaseIterable, Codable, Hashable, Sendable {
+                case jpeg = "image/jpeg"
+                case png  = "image/png"
+                case gif  = "image/gif"
+                case webp = "image/webp"
+                case pdf  = "application/pdf"
+            }
+
+            public init(url: URL, format: Format, detail: String) {
+                self.url = url
+                self.format = format
+                self.detail = detail
+            }
         }
 
-        public enum AudioFormat: String, CaseIterable, Codable, Hashable, Sendable {
-            case mp3 = "mp3"
-            case wav = "wav"
+        public struct Audio: Codable, Hashable, Sendable {
+            public var url: URL
+            public var format: Format
+
+            public enum Format: String, CaseIterable, Codable, Hashable, Sendable {
+                case mp3 = "mp3"
+                case wav = "wav"
+            }
+
+            public init(url: URL, format: Format) {
+                self.url = url
+                self.format = format
+            }
         }
     }
 
