@@ -28,6 +28,7 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
         case mistral
         case ollama
         case openAI
+        case openRouter
         case perplexity
     }
 
@@ -100,6 +101,10 @@ extension Service {
         OpenAIService(host: hostURL, apiKey: token)
     }
 
+    public func openRouter() -> OpenAIService {
+        OpenAIService(host: hostURL, apiKey: token)
+    }
+
     public func perplexity() -> PerplexityService {
         PerplexityService(configuration: .init(host: hostURL, token: token))
     }
@@ -124,6 +129,8 @@ extension Service {
             ollama()
         case .openAI:
             openAI()
+        case .openRouter:
+            openRouter()
         case .perplexity:
             perplexity()
         }
@@ -148,6 +155,8 @@ extension Service {
             return ollama()
         case .openAI:
             return openAI()
+        case .openRouter:
+            return openRouter()
         case .perplexity:
             return perplexity()
         case .elevenLabs, .fal:
@@ -164,7 +173,7 @@ extension Service {
             return fal()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .mistral, .ollama, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -184,7 +193,7 @@ extension Service {
             return ollama()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .elevenLabs, .fal, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -198,7 +207,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .mistral, .ollama, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -214,7 +223,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .fal, .grok, .mistral, .ollama, .perplexity:
+        case .anthropic, .deepseek, .fal, .grok, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -238,6 +247,8 @@ extension Service {
             return ollama()
         case .openAI:
             return openAI()
+        case .openRouter:
+            return openRouter()
         case .perplexity:
             return perplexity()
         case .elevenLabs, .fal:
