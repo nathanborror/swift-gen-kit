@@ -33,7 +33,7 @@
       "location" : "https://github.com/nathanborror/swift-fal",
       "state" : {
         "branch" : "main",
-        "revision" : "69e70be1551c70a8069f98318de1f049458aa672"
+        "revision" : "171f20e6b3cc11b69437d99273955485e86847a1"
       }
     },
     {
@@ -43,6 +43,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "50e18f57a3e52bc2e4db280dbde8e8cc6793e94a"
+      }
+    },
+    {
+      "identity" : "swift-llama",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:nathanborror/swift-llama.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5223ca70bd143ca15be12eb35fefe9fa1747b743"
       }
     },
     {
@@ -69,7 +78,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "975ab1bb32bb6c74515f6ed138f29cfd34b4b623"
+        "revision" : "d5296c418352ab9038afab86afaaab834b7cdf26"
       }
     },
     {

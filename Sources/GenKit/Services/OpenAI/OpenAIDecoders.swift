@@ -111,7 +111,7 @@ extension GenKit.Model {
         self.init(
             id: .init(model.id),
             name: model.id,
-            owner: model.owned_by
+            owner: model.owned_by ?? "openai"
         )
     }
 }
