@@ -15,7 +15,6 @@ let package = Package(
         .library(name: "GenKit", targets: ["GenKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/nathanborror/swift-json", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-shared-kit", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-openai", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-ollama", branch: "main"),
@@ -24,11 +23,11 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/swift-perplexity", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-elevenlabs", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-fal", branch: "main"),
+        .package(url: "https://github.com/loopwork-ai/JSONSchema", branch: "main"),
         .package(url: "https://github.com/apple/swift-argument-parser", branch: "main"),
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
-            .product(name: "JSON", package: "swift-json"),
             .product(name: "SharedKit", package: "swift-shared-kit"),
             .product(name: "OpenAI", package: "swift-openai"),
             .product(name: "Ollama", package: "swift-ollama"),
@@ -37,6 +36,7 @@ let package = Package(
             .product(name: "Anthropic", package: "swift-anthropic"),
             .product(name: "ElevenLabs", package: "swift-elevenlabs"),
             .product(name: "Fal", package: "swift-fal"),
+            .product(name: "JSONSchema", package: "JSONSchema"),
         ]),
         .testTarget(name: "GenKitTests", dependencies: ["GenKit"]),
     ]

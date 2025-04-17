@@ -1,6 +1,6 @@
 import Foundation
 import Anthropic
-import JSON
+import JSONSchema
 
 extension Anthropic.ChatRequest.Message {
     init(_ message: GenKit.Message) {

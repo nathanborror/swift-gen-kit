@@ -1,6 +1,6 @@
 import Foundation
 import SharedKit
-import JSON
+import JSONSchema
 
 // Tools
 
