@@ -22,7 +22,9 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/swift-perplexity", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-elevenlabs", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-fal", branch: "main"),
+
         .package(url: "https://github.com/loopwork-ai/JSONSchema", from: "1.0.0"),
+        .package(url: "https://github.com/jpsim/Yams", from: "5.3.0"),
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
@@ -34,7 +36,9 @@ let package = Package(
             .product(name: "Anthropic", package: "swift-anthropic"),
             .product(name: "ElevenLabs", package: "swift-elevenlabs"),
             .product(name: "Fal", package: "swift-fal"),
+
             .product(name: "JSONSchema", package: "JSONSchema"),
+            .product(name: "Yams", package: "Yams"),
         ]),
         .testTarget(name: "GenKitTests", dependencies: ["GenKit"]),
     ]
