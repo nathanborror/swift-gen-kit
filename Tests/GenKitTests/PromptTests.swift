@@ -18,15 +18,10 @@ final class PromptTests: XCTestCase {
 
         let prompt = try Prompt(str)
 
-        XCTAssertEqual(prompt.model, "meta/llama4")
+        XCTAssertEqual(prompt.model, "llama4")
+        XCTAssertEqual(prompt.service, "meta")
         XCTAssertEqual(prompt.instructions, "This is my prompt.")
         XCTAssertEqual(prompt.input?.schema.keys.contains("name"), true)
         XCTAssertEqual(prompt.input?.schema.keys.contains("datetime?"), true)
-
-//        if case let .object(_, _, _, _, _, _, properties, _, _) = prompt.input {
-//            XCTAssertTrue(properties.keys.contains("name"))
-//        } else {
-//            fatalError("missing input")
-//        }
     }
 }
