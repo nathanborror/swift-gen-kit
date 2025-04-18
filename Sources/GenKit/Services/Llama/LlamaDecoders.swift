@@ -1,8 +1,101 @@
-//
-//  File.swift
-//  swift-gen-kit
-//
-//  Created by Nathan Borror on 4/7/25.
-//
-
 import Foundation
+import SharedKit
+import Llama
+
+// MARK: - Chat Response
+
+extension GenKit.Message {
+    init(_ resp: Llama.ChatResponse) {
+        self.init(
+            role: .assistant,
+            contents: [.init(resp.completion_message.content)].compactMap({$0}),
+            toolCalls: resp.completion_message.tool_calls?.map { .init($0) },
+            finishReason: .init(resp.completion_message.stop_reason)
+        )
+    }
+}
+
+extension GenKit.Message.Content {
+    init?(_ content: Llama.ChatResponse.CompletionMessage.Content) {
+        if let text = content.text {
+            self = .text(text)
+        }
+        if let reasoning = content.reasoning {
+            self = .text(reasoning)
+        }
+        if let answer = content.answer {
+            self = .text(answer)
+        }
+        return nil
+    }
+}
+
+extension GenKit.ToolCall {
+    init(_ toolCall: Llama.ToolCall) {
+        self.init(
+            id: toolCall.id,
+            type: "function",
+            function: .init(
+                name: toolCall.function.name,
+                arguments: toolCall.function.arguments
+            )
+        )
+    }
+}
+
+extension GenKit.Message.FinishReason {
+    init?(_ stop_reason: StopReason?) {
+        switch stop_reason {
+        case .stop:
+            self = .stop
+        case .length:
+            self = .length
+        case .tool_calls:
+            self = .toolCalls
+        default:
+            return nil
+        }
+    }
+}
+
+// MARK: - Chat Response Stream
+
+extension GenKit.Message {
+    mutating func patch(with resp: Llama.ChatStreamResponse) {
+
+        // Get the last item in the contents array so it can be patched
+        if var contents = self.contents {
+            if resp.event.event_type == "text" {
+                if case .text(let text) = contents.last, let delta = resp.event.delta.text {
+                    if let patched = GenKit.patch(string: text, with: delta) {
+                        contents[contents.count-1] = .text(patched)
+                        self.contents = contents
+                    }
+                }
+            }
+            if resp.event.event_type == "reasoning" {
+                print("not implemented")
+            }
+            if resp.event.event_type == "function" {
+                print("not implemented")
+            }
+        }
+
+        // Patch remaining properties
+        self.toolCalls = []
+        self.finishReason = .init(resp.event.stop_reason)
+        self.modified = .now
+    }
+}
+
+// MARK: - Models
+
+extension GenKit.Model {
+    init(_ model: Llama.Model) {
+        self.init(
+            id: model.id,
+            name: model.id,
+            owner: model.owned_by
+        )
+    }
+}

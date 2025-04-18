@@ -25,6 +25,7 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/swift-fal", branch: "main"),
         .package(url: "https://github.com/loopwork-ai/JSONSchema", branch: "main"),
         .package(url: "https://github.com/apple/swift-argument-parser", branch: "main"),
+        .package(url: "git@github.com:nathanborror/swift-llama.git", branch: "main"),
     ],
     targets: [
         .target(name: "GenKit", dependencies: [
@@ -36,6 +37,7 @@ let package = Package(
             .product(name: "Anthropic", package: "swift-anthropic"),
             .product(name: "ElevenLabs", package: "swift-elevenlabs"),
             .product(name: "Fal", package: "swift-fal"),
+            .product(name: "Llama", package: "swift-llama"),
             .product(name: "JSONSchema", package: "JSONSchema"),
         ]),
         .testTarget(name: "GenKitTests", dependencies: ["GenKit"]),

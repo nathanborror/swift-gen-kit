@@ -25,6 +25,7 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
         case fal
         case grok
         case groq
+        case llama
         case mistral
         case ollama
         case openAI
@@ -89,6 +90,10 @@ extension Service {
         OpenAIService(host: hostURL, apiKey: token)
     }
 
+    public func llama() -> LlamaService {
+        LlamaService(host: hostURL, apiKey: token)
+    }
+
     public func mistral() -> MistralService {
         MistralService(host: hostURL, apiKey: token)
     }
@@ -123,6 +128,8 @@ extension Service {
             grok()
         case .groq:
             groq()
+        case .llama:
+            llama()
         case .mistral:
             mistral()
         case .ollama:
@@ -149,6 +156,8 @@ extension Service {
             return grok()
         case .groq:
             return groq()
+        case .llama:
+            return llama()
         case .mistral:
             return mistral()
         case .ollama:
@@ -173,7 +182,7 @@ extension Service {
             return fal()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .mistral, .ollama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .llama, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -193,7 +202,7 @@ extension Service {
             return ollama()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .elevenLabs, .fal, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .llama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -207,7 +216,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .mistral, .ollama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -223,7 +232,7 @@ extension Service {
             return groq()
         case .openAI:
             return openAI()
-        case .anthropic, .deepseek, .fal, .grok, .mistral, .ollama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .fal, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
@@ -241,6 +250,8 @@ extension Service {
             return grok()
         case .groq:
             return groq()
+        case .llama:
+            return llama()
         case .mistral:
             return mistral()
         case .ollama:
