@@ -4,7 +4,7 @@ import Testing
 @Suite("Content Parser")
 struct ContentParserTests {
 
-    @Test("Single tag parsing")
+    @Test("Single tag")
     func testTag() async throws {
         let simpleInput = "<tag>content</tag>"
         let simpleResult = try ContentParser.shared.parse(input: simpleInput)
@@ -13,7 +13,7 @@ struct ContentParserTests {
         #expect(simpleResult.first(tag: "tag")?.content == "content")
     }
 
-    @Test("Single tag with attributes parsing")
+    @Test("Single tag with attributes")
     func testTagWithAttributes() async throws {
         let attributeInput = "<tag name=\"Tag\" id=\"1\">content</tag>"
         let attributeResult = try ContentParser.shared.parse(input: attributeInput)
@@ -27,7 +27,7 @@ struct ContentParserTests {
         #expect(attributeTag?.params["id"] == "1")
     }
 
-    @Test("Multiple tag parsing")
+    @Test("Multiple tag")
     func testMultipleTagsAndText() async throws {
         let mixedInput = "Text before <foo>Foo</foo> Text between <bar>Bar</bar> Text after"
         let mixedResult = try ContentParser.shared.parse(input: mixedInput)
@@ -37,7 +37,7 @@ struct ContentParserTests {
         #expect(mixedResult.first(tag: "bar")?.content == "Bar")
     }
 
-    @Test("Specific tag parsing")
+    @Test("Specific tag")
     func testSpecificTag() async throws {
         let specificTagsInput = "<keep>Keep this</keep> <ignore>Ignore this</ignore>"
         let specificTagsResult = try ContentParser.shared.parse(input: specificTagsInput, tags: ["keep"])
@@ -47,7 +47,7 @@ struct ContentParserTests {
         #expect(specificTagsResult.first(tag: "ignore") == nil)
     }
 
-    @Test("Nested tag parsing")
+    @Test("Nested tag")
     func testNestedTags() async throws {
         let nestedInput = "<outer><inner>Nested content</inner></outer>"
         let nestedResult = try ContentParser.shared.parse(input: nestedInput)
@@ -56,7 +56,7 @@ struct ContentParserTests {
         #expect(nestedResult.first(tag: "outer")?.content == "<inner>Nested content</inner>")
     }
 
-    @Test("Incomplete tag parsing")
+    @Test("Incomplete tag")
     func testHasClosingTag() async throws {
         let simpleInput = """
             Lorem ipsum

@@ -12,7 +12,7 @@ public enum PromptError: Error {
 }
 
 public struct Prompt: Codable {
-    var model: String
+    var model: String?
     var service: String?
     var config: Config?
     var input: Input?
@@ -36,7 +36,7 @@ public struct Prompt: Codable {
     }
 
     /// Returns a Prompt.
-    public init(model: String, service: String? = nil, config: Config? = nil, input: Input? = nil, output: Output? = nil, instructions: String? = nil) {
+    public init(model: String? = nil, service: String? = nil, config: Config? = nil, input: Input? = nil, output: Output? = nil, instructions: String? = nil) {
         self.model = model
         self.service = service
         self.config = config
@@ -56,20 +56,23 @@ public struct Prompt: Codable {
         let pattern = #/(?s)\A---\s*\n(?<yaml>.*?)\n---\s*\n(?<instructions>.*)\z/#
 
         guard let match = prompt.firstMatch(of: pattern) else {
-            throw PromptError.badFormatting
+            self = .init(instructions: prompt)
+            return
         }
         let yaml = String(match.output.yaml)
         let instructions = String(match.output.instructions)
 
         var prompt = try YAMLDecoder().decode(Prompt.self, from: yaml.data(using: .utf8)!)
 
-        let components = prompt.model.split(separator: "/", maxSplits: 1)
-        guard components.count == 2 else {
-            throw PromptError.badModelFormatting
+        if let model = prompt.model {
+            let components = model.split(separator: "/", maxSplits: 1)
+            guard components.count == 2 else {
+                throw PromptError.badModelFormatting
+            }
+            prompt.service = String(components[0])
+            prompt.model = String(components[1])
         }
 
-        prompt.service = String(components[0])
-        prompt.model = String(components[1])
         prompt.instructions = instructions
         self = prompt
     }

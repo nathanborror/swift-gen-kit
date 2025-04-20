@@ -4,8 +4,8 @@ import Testing
 @Suite("Prompt Tests")
 struct PromptTests {
 
-    @Test("Prompt parsing overall")
-    func testParser() async throws {
+    @Test("Prompt")
+    func testPrompt() async throws {
         let prompt = try Prompt("""
             ---
             model: meta/llama4
@@ -50,8 +50,8 @@ struct PromptTests {
         #expect(properties.count == 1)
     }
 
-    @Test("Parser ignores many dividers")
-    func testParserIgnoreManyDividers() async throws {
+    @Test("Prompt with many dividers")
+    func testPromptDividers() async throws {
         let prompt = try Prompt("""
             ---
             model: meta/llama4
@@ -67,8 +67,8 @@ struct PromptTests {
         #expect(prompt.instructions == "Section 1\n---\nSection 2\n---\nSection 3")
     }
 
-    @Test("Parser uses default values")
-    func testParserDefaults() throws {
+    @Test("Prompt with default values")
+    func testPromptDefaults() throws {
         let prompt = try Prompt("""
             ---
             model: meta/llama4
@@ -87,5 +87,15 @@ struct PromptTests {
 
         #expect(output1 == "The current date is 2025-01-02.")
         #expect(output2 == "The current date is 2025-01-01.")
+    }
+
+    @Test("Prompt without settings")
+    func testPromptWithoutSettings() throws {
+        let prompt = try Prompt("""
+            This is my prompt.
+            """)
+        
+        #expect(prompt.instructions == "This is my prompt.")
+        #expect(try prompt.render() == "This is my prompt.")
     }
 }
