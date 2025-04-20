@@ -1,27 +1,91 @@
-import XCTest
+import Testing
 @testable import GenKit
 
-final class PromptTests: XCTestCase {
+@Suite("Prompt Tests")
+struct PromptTests {
 
-    func testParser() throws {
-        let str = """
-        ---
-        model: meta/llama4
-        input:
-            schema:
-                name: string
-                datetime?: string
-        ---
-        
-        This is my prompt.
-        """
+    @Test("Prompt parsing overall")
+    func testParser() async throws {
+        let prompt = try Prompt("""
+            ---
+            model: meta/llama4
+            config:
+                maxOutputTokens: 400
+            input:
+                schema:
+                    name: string
+                    datetime?: string
+                default:
+                    datetime: 2025-01-02
+            output:
+                schema:
+                    type: object
+                    properties:
+                        name:
+                            type: string
+            ---
+            
+            This is my prompt.
+            """)
 
-        let prompt = try Prompt(str)
+        // Instructions
+        #expect(prompt.instructions == "This is my prompt.")
 
-        XCTAssertEqual(prompt.model, "llama4")
-        XCTAssertEqual(prompt.service, "meta")
-        XCTAssertEqual(prompt.instructions, "This is my prompt.")
-        XCTAssertEqual(prompt.input?.schema.keys.contains("name"), true)
-        XCTAssertEqual(prompt.input?.schema.keys.contains("datetime?"), true)
+        // Model
+        #expect(prompt.model == "llama4")
+        #expect(prompt.service == "meta")
+
+        // Config
+        #expect(prompt.config?.maxOutputTokens == 400)
+
+        // Input
+        #expect(prompt.input?.schema["name"] == "string")
+        #expect(prompt.input?.schema["datetime?"] == "string")
+        #expect(prompt.input?.default?["datetime"] == "2025-01-02")
+
+        // Output
+        guard case let .object(_, _, _, _, _, _, properties, _, _) = prompt.output?.schema else {
+            fatalError("bad output")
+        }
+        #expect(properties.count == 1)
+    }
+
+    @Test("Parser ignores many dividers")
+    func testParserIgnoreManyDividers() async throws {
+        let prompt = try Prompt("""
+            ---
+            model: meta/llama4
+            ---
+            
+            Section 1
+            ---
+            Section 2
+            ---
+            Section 3
+            """)
+
+        #expect(prompt.instructions == "Section 1\n---\nSection 2\n---\nSection 3")
+    }
+
+    @Test("Parser uses default values")
+    func testParserDefaults() throws {
+        let prompt = try Prompt("""
+            ---
+            model: meta/llama4
+            input:
+                schema:
+                    datetime?: string
+                default:
+                    datetime: 2025-01-02
+            ---
+            
+            The current date is {{datetime}}.
+            """)
+
+        let output1 = try prompt.render()
+        let output2 = try prompt.render(["datetime": .string("2025-01-01")])
+
+        #expect(output1 == "The current date is 2025-01-02.")
+        #expect(output2 == "The current date is 2025-01-01.")
     }
 }
