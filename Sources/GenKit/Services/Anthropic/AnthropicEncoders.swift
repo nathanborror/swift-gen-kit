@@ -15,10 +15,7 @@ extension Anthropic.ChatRequest.Message.Content {
     init?(_ content: GenKit.Message.Content) {
         switch content {
         case .text(let text):
-            self.init(
-                type: .text,
-                text: text
-            )
+            self.init(type: .text, text: text)
         case .image(let image):
             if let data = try? Data(contentsOf: image.url) {
                 self.init(
@@ -34,6 +31,8 @@ extension Anthropic.ChatRequest.Message.Content {
             }
         case .audio:
             return nil
+        case .json(let json):
+            self.init(type: .text, text: json.object)
         }
     }
 

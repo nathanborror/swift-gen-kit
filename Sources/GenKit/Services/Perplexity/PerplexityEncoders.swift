@@ -19,6 +19,8 @@ extension PerplexityService {
             switch $0 {
             case .text(let text):
                 return text
+            case .json(let json):
+                return json.object
             default:
                 return nil
             }

@@ -21,6 +21,8 @@ extension Mistral.ChatRequest.Message.Content {
             if let data = try? Data(contentsOf: image.url) {
                 self.init(type: .image_url, image_url: .init(url: "data:image/\(image.format);base64,\(data.base64EncodedString())"))
             }
+        case .json(let json):
+            self.init(type: .text, text: json.object)
         default:
             fatalError("Unknown message content type")
         }

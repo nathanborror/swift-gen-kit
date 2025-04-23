@@ -22,6 +22,7 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
         case text(String)
         case image(Image)
         case audio(Audio)
+        case json(JSON)
 
         public struct Image: Codable, Hashable, Sendable {
             public var url: URL
@@ -55,6 +56,16 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
             public init(url: URL, format: Format) {
                 self.url = url
                 self.format = format
+            }
+        }
+
+        public struct JSON: Codable, Hashable, Sendable {
+            public let kind: String
+            public let object: String
+
+            public init(kind: String, object: String) {
+                self.kind = kind
+                self.object = object
             }
         }
     }
