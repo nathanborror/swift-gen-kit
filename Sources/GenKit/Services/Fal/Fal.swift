@@ -42,6 +42,22 @@ extension FalService: ImageService {
     }
 }
 
+extension FalService: SpeechService {
+
+    public func speak(_ request: SpeechServiceRequest) async throws -> Data {
+        let query = Fal.TextToSpeechRequest(
+            text: request.input
+        )
+        let result = try await client.textToSpeech(query, model: request.model.id)
+        let (data, _) = try await URLSession.shared.data(from: result.audio.url)
+        return data
+    }
+
+    public func voices() async throws -> [Voice] {
+        return []
+    }
+}
+
 extension FalService: ModelService {
     
     public func models() async throws -> [Model] {
