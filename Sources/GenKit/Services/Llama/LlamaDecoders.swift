@@ -63,7 +63,7 @@ extension GenKit.Message {
     mutating func patch(with resp: Llama.ChatStreamResponse) {
         var contents = self.contents ?? []
 
-        if resp.event.event_type == "progress" {
+        if ["start", "progress", "complete"].contains(resp.event.event_type)  {
             if case .text(let text) = contents.last, let delta = resp.event.delta.text {
                 if let patched = GenKit.patch(string: text, with: delta) {
                     contents[contents.count-1] = .text(patched)
