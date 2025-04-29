@@ -48,7 +48,7 @@
     {
       "identity" : "swift-llama",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:nathanborror/swift-llama.git",
+      "location" : "https://github.com/nathanborror/swift-llama",
       "state" : {
         "branch" : "main",
         "revision" : "0deb90a90f399ecd89ab3407287f30cad96d666d"
@@ -78,7 +78,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "d6471bd7daa14d70ef8066c73e378ddc63efaf4a"
+        "revision" : "a96b97765c5348115788c936017392d00f0bd943"
       }
     },
     {
