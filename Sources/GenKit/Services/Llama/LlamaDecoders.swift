@@ -72,12 +72,8 @@ extension GenKit.Message {
                 contents.append(.text(delta))
             }
         }
-        if resp.event.event_type == "reasoning" {
-            print("not implemented")
-        }
-        if resp.event.event_type == "function" {
-            print("not implemented")
-        }
+
+        // TODO: Handle other possible event types
 
         self.contents = (contents.isEmpty) ? nil : contents
 
