@@ -79,6 +79,7 @@ Provider packages are swift interfaces that talk directly to model provider REST
 - [Anthropic](https://github.com/nathanborror/swift-anthropic)
 - [ElevenLabs](https://github.com/nathanborror/swift-elevenlabs)
 - [Fal](https://github.com/nathanborror/swift-fal)
+- [Llama](https://github.com/nathanborror/swift-llama)
 - [Mistral](https://github.com/nathanborror/swift-mistral)
 - [Ollama](https://github.com/nathanborror/swift-ollama)
 - [OpenAI](https://github.com/nathanborror/swift-openai)
