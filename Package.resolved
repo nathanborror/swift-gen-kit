@@ -46,6 +46,15 @@
       }
     },
     {
+      "identity" : "swift-llama",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:nathanborror/swift-llama.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0deb90a90f399ecd89ab3407287f30cad96d666d"
+      }
+    },
+    {
       "identity" : "swift-mistral",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nathanborror/swift-mistral",
