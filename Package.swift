@@ -1,5 +1,4 @@
 // swift-tools-version: 5.9
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
@@ -23,9 +22,8 @@ let package = Package(
         .package(url: "https://github.com/nathanborror/swift-perplexity", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-elevenlabs", branch: "main"),
         .package(url: "https://github.com/nathanborror/swift-fal", branch: "main"),
-        .package(url: "https://github.com/loopwork-ai/JSONSchema", branch: "main"),
-        .package(url: "https://github.com/apple/swift-argument-parser", branch: "main"),
-        .package(url: "git@github.com:nathanborror/swift-llama.git", branch: "main"),
+        .package(url: "https://github.com/nathanborror/swift-llama", branch: "main"),
+        .package(url: "https://github.com/loopwork-ai/JSONSchema", from: "1.0.0"),
     ],
     targets: [
         .target(name: "GenKit", dependencies: [

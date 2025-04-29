@@ -38,6 +38,8 @@ extension OpenAIService {
                     return nil
                 }
                 return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: audio.format.rawValue))
+            case .json(let json):
+                return .init(type: "text", text: json.object)
             }
         }.compactMap({$0})
     }

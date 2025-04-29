@@ -24,7 +24,7 @@
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
         "branch" : "main",
-        "revision" : "d67151befa39533a6a449136c7992537cbf8ec99"
+        "revision" : "cf4c4727ff253fe92c15f05b58dec666475fb7f5"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/nathanborror/swift-fal",
       "state" : {
         "branch" : "main",
-        "revision" : "171f20e6b3cc11b69437d99273955485e86847a1"
+        "revision" : "b100d9ba8d0f7d0111fc4489fdc1eee4b9bc2046"
       }
     },
     {
