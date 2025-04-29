@@ -27,19 +27,11 @@ extension OllamaService: ChatService {
     }
     
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
-        
-        // Ollama doesn't yet support streaming when tools are present.
-        guard request.tools.isEmpty else {
-            let message = try await completion(request)
-            try await update(message)
-            return
-        }
-        
         let req = ChatRequest(
             model: request.model.id,
             messages: request.messages.map { .init($0) },
             tools: request.tools.map { .init($0) },
-            stream: request.tools.isEmpty
+            stream: true
         )
         var message = Message(role: .assistant)
         for try await resp in try client.chatCompletionsStream(req) {
