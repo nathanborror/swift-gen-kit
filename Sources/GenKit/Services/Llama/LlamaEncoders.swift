@@ -18,13 +18,15 @@ extension Llama.ChatRequest.Message.Content {
     init?(_ content: GenKit.Message.Content) {
         switch content {
         case .text(let text):
-            self.init(text: text)
+            self = .init(text: text)
+            return
         case .image(let image):
             if let data = try? Data(contentsOf: image.url) {
-                self.init(image: "data:image/\(image.format);base64,\(data.base64EncodedString())")
+                self = .init(image: "data:image/\(image.format);base64,\(data.base64EncodedString())")
+                return
             }
-        default:
-            fatalError("Unknown message content type")
+        case .audio, .json:
+            return nil
         }
         return nil
     }

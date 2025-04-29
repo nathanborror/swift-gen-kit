@@ -19,14 +19,13 @@ extension GenKit.Message.Content {
     init?(_ content: Llama.ChatResponse.CompletionMessage.Content) {
         if let text = content.text {
             self = .text(text)
-        }
-        if let reasoning = content.reasoning {
+        } else if let reasoning = content.reasoning {
             self = .text(reasoning)
-        }
-        if let answer = content.answer {
+        } else if let answer = content.answer {
             self = .text(answer)
+        } else {
+            return nil
         }
-        return nil
     }
 }
 
@@ -62,24 +61,25 @@ extension GenKit.Message.FinishReason {
 
 extension GenKit.Message {
     mutating func patch(with resp: Llama.ChatStreamResponse) {
+        var contents = self.contents ?? []
 
-        // Get the last item in the contents array so it can be patched
-        if var contents = self.contents {
-            if resp.event.event_type == "text" {
-                if case .text(let text) = contents.last, let delta = resp.event.delta.text {
-                    if let patched = GenKit.patch(string: text, with: delta) {
-                        contents[contents.count-1] = .text(patched)
-                        self.contents = contents
-                    }
+        if resp.event.event_type == "progress" {
+            if case .text(let text) = contents.last, let delta = resp.event.delta.text {
+                if let patched = GenKit.patch(string: text, with: delta) {
+                    contents[contents.count-1] = .text(patched)
                 }
-            }
-            if resp.event.event_type == "reasoning" {
-                print("not implemented")
-            }
-            if resp.event.event_type == "function" {
-                print("not implemented")
+            } else if let delta = resp.event.delta.text {
+                contents.append(.text(delta))
             }
         }
+        if resp.event.event_type == "reasoning" {
+            print("not implemented")
+        }
+        if resp.event.event_type == "function" {
+            print("not implemented")
+        }
+
+        self.contents = (contents.isEmpty) ? nil : contents
 
         // Patch remaining properties
         self.toolCalls = []

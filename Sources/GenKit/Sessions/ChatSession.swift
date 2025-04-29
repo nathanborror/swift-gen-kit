@@ -41,6 +41,9 @@ public class ChatSession {
                             break
                         }
                         let lastMessage = messages.last!
+                        guard (lastMessage.toolCalls?.count ?? 0) > 0 else {
+                            break
+                        }
                         let (toolMessages, shouldContinue) = try await processToolCalls(in: lastMessage, callback: request.toolCallback, maxConcurrent: maxConcurrentToolCalls)
                         for message in toolMessages {
                             let message = apply(runID: runID, message: message)
@@ -91,6 +94,9 @@ public class ChatSession {
             // Determine if there were any tool calls on the last message, process them by calling their
             // repsective functions to return tool responses, then decide whether the loop should continue.
             guard request.toolCallback != nil else {
+                break
+            }
+            guard (message.toolCalls?.count ?? 0) > 0 else {
                 break
             }
             let (toolMessages, shouldContinue) = try await processToolCalls(in: message, callback: request.toolCallback, maxConcurrent: maxConcurrentToolCalls)
