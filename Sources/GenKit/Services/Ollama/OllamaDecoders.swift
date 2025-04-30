@@ -13,6 +13,8 @@ extension GenKit.Message {
     }
 
     mutating func patch(_ resp: Ollama.ChatResponse) {
+
+        // Patch message content
         if case .text(let text) = contents?.last {
             if let patched = GenKit.patch(string: text, with: resp.message?.content) {
                 self.contents = [.text(patched)]
@@ -20,6 +22,15 @@ extension GenKit.Message {
         } else if let text = resp.message?.content {
             self.contents = [.text(text)]
         }
+
+        // Patch message tool calls
+        if let toolCalls = resp.message?.tool_calls {
+            if self.toolCalls == nil {
+                self.toolCalls = []
+            }
+            self.toolCalls! += toolCalls.map { .init($0) }
+        }
+
         self.finishReason = .init(resp.done)
         self.modified = .now
     }
