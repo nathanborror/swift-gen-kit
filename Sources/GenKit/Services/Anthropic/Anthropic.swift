@@ -6,10 +6,10 @@ private let logger = Logger(subsystem: "AnthropicService", category: "GenKit")
 
 public actor AnthropicService {
 
-    let client: Anthropic.Client
+    private let client: Anthropic.Client
 
-    public init(host: URL? = nil, apiKey: String) {
-        self.client = .init(host: host, apiKey: apiKey)
+    public init(session: URLSession? = nil, host: URL? = nil, apiKey: String) {
+        self.client = .init(session: session, host: host, apiKey: apiKey)
     }
 
     private func makeRequest(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> Anthropic.ChatRequest {

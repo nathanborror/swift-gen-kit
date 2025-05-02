@@ -15,7 +15,7 @@
       "location" : "https://github.com/nathanborror/swift-anthropic",
       "state" : {
         "branch" : "main",
-        "revision" : "be77b1e0b1d6bc41e8a35ade0aaa8e8eb65aa310"
+        "revision" : "1e774f43376538eb19964c5bbb506beb8dd748bb"
       }
     },
     {
@@ -33,7 +33,7 @@
       "location" : "https://github.com/nathanborror/swift-elevenlabs",
       "state" : {
         "branch" : "main",
-        "revision" : "b06be3a7a4a5552141480f19d83ec9dabdbfc95c"
+        "revision" : "ff780660139032a2da87319ac8f8bf846969b11f"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/nathanborror/swift-fal",
       "state" : {
         "branch" : "main",
-        "revision" : "b100d9ba8d0f7d0111fc4489fdc1eee4b9bc2046"
+        "revision" : "28a7d31e2c295258b137344ec6c64bad838b7614"
       }
     },
     {
@@ -51,7 +51,7 @@
       "location" : "https://github.com/nathanborror/swift-llama",
       "state" : {
         "branch" : "main",
-        "revision" : "0deb90a90f399ecd89ab3407287f30cad96d666d"
+        "revision" : "e9d0e86faba26142fe867a5b829c6745fa7717cf"
       }
     },
     {
@@ -60,7 +60,7 @@
       "location" : "https://github.com/nathanborror/swift-mistral",
       "state" : {
         "branch" : "main",
-        "revision" : "235fd786cc1eddc9749e92a8fe2eb507716c76fa"
+        "revision" : "67b4507c730077b6e1fbb1af635d8e1afe71e26f"
       }
     },
     {
@@ -69,7 +69,7 @@
       "location" : "https://github.com/nathanborror/swift-ollama",
       "state" : {
         "branch" : "main",
-        "revision" : "2b181645e255b29006fa008e70a4c4b034b1015c"
+        "revision" : "cc532c842f2223e5d2748945f8e36120d379d8c8"
       }
     },
     {
@@ -78,7 +78,7 @@
       "location" : "https://github.com/nathanborror/swift-openai",
       "state" : {
         "branch" : "main",
-        "revision" : "a96b97765c5348115788c936017392d00f0bd943"
+        "revision" : "b82bd2606a835fc6356196d7d0abbc5f4d6a5cc4"
       }
     },
     {
@@ -87,7 +87,7 @@
       "location" : "https://github.com/nathanborror/swift-perplexity",
       "state" : {
         "branch" : "main",
-        "revision" : "7c16384e287f940133619ffdbda8c5a369d1ad37"
+        "revision" : "a98087619ecfa4225ab99ca1741df06f89ca1b6c"
       }
     },
     {

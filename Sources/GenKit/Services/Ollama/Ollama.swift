@@ -6,10 +6,10 @@ private let logger = Logger(subsystem: "OllamaService", category: "GenKit")
 
 public actor OllamaService {
     
-    private var client: Ollama.Client
+    private let client: Ollama.Client
 
-    public init(host: URL? = nil) {
-        self.client = .init(host: host)
+    public init(session: URLSession? = nil, host: URL? = nil) {
+        self.client = .init(session: session, host: host)
     }
 }
 

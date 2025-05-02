@@ -7,9 +7,11 @@ private let logger = Logger(subsystem: "OpenAIService", category: "GenKit")
 public actor OpenAIService {
     
     private var client: OpenAI.Client
+    private let session: URLSession
 
-    public init(host: URL? = nil, apiKey: String) {
-        self.client = .init(host: host, apiKey: apiKey)
+    public init(session: URLSession? = nil, host: URL? = nil, apiKey: String) {
+        self.client = .init(session: session, host: host, apiKey: apiKey)
+        self.session = session ?? URLSession(configuration: .default)
     }
 }
 
@@ -87,7 +89,7 @@ extension OpenAIService: ImageService {
             for image in result.data {
                 group.addTask {
                     guard let imageURL = image.url, let url = URL(string: imageURL) else { return nil }
-                    let (data, _) = try await URLSession.shared.data(from: url)
+                    let (data, _) = try await self.session.data(from: url)
                     return data
                 }
             }

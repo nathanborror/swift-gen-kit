@@ -8,8 +8,8 @@ public actor ElevenLabsService {
 
     private var client: ElevenLabs.Client
 
-    public init(apiKey: String) {
-        self.client = .init(apiKey: apiKey)
+    public init(session: URLSession? = nil, apiKey: String) {
+        self.client = .init(session: session, apiKey: apiKey)
     }
 }
 

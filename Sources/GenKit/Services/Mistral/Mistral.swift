@@ -8,8 +8,8 @@ public actor MistralService {
     
     private let client: Mistral.Client
 
-    public init(host: URL? = nil, apiKey: String) {
-        self.client = .init(host: host, apiKey: apiKey)
+    public init(session: URLSession? = nil, host: URL? = nil, apiKey: String) {
+        self.client = .init(session: session, host: host, apiKey: apiKey)
     }
 }
 

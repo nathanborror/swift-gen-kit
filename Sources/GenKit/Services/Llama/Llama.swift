@@ -1,15 +1,12 @@
 import Foundation
-import OSLog
 import Llama
-
-private let logger = Logger(subsystem: "LlamaService", category: "GenKit")
 
 public actor LlamaService {
 
-    let client: Llama.Client
+    private let client: Llama.Client
 
-    public init(host: URL? = nil, apiKey: String) {
-        self.client = .init(host: host, apiKey: apiKey)
+    public init(session: URLSession? = nil, host: URL? = nil, apiKey: String) {
+        self.client = .init(session: session, host: host, apiKey: apiKey)
     }
 
     private func makeRequest(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil) -> Llama.ChatRequest {

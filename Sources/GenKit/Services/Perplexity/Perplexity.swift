@@ -6,10 +6,10 @@ private let logger = Logger(subsystem: "PerplexityService", category: "GenKit")
 
 public actor PerplexityService {
     
-    let client: PerplexityClient
-    
-    public init(configuration: PerplexityClient.Configuration) {
-        self.client = PerplexityClient(configuration: configuration)
+    private let client: Perplexity.Client
+
+    public init(session: URLSession? = nil, host: URL? = nil, apiKey: String) {
+        self.client = .init(session: session, host: host, apiKey: apiKey)
     }
 }
 

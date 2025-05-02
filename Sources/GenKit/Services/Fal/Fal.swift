@@ -6,10 +6,12 @@ private let logger = Logger(subsystem: "FalService", category: "GenKit")
 
 public actor FalService {
     
-    private var client: FalClient
-    
-    public init(configuration: FalClient.Configuration) {
-        self.client = FalClient(configuration: configuration)
+    private var client: Fal.Client
+    private let session: URLSession
+
+    public init(session: URLSession? = nil, host: URL? = nil, apiKey: String) {
+        self.client = .init(session: session, host: host, apiKey: apiKey)
+        self.session = session ?? URLSession(configuration: .default)
     }
 }
 
@@ -27,7 +29,7 @@ extension FalService: ImageService {
             for image in result.images {
                 group.addTask {
                     guard let url = URL(string: image.url) else { return nil }
-                    let (data, _) = try await URLSession.shared.data(from: url)
+                    let (data, _) = try await self.session.data(from: url)
                     return data
                 }
             }
@@ -49,7 +51,7 @@ extension FalService: SpeechService {
             text: request.input
         )
         let result = try await client.textToSpeech(query, model: request.model.id)
-        let (data, _) = try await URLSession.shared.data(from: result.audio.url)
+        let (data, _) = try await session.data(from: result.audio.url)
         return data
     }
 

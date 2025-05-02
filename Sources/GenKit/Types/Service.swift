@@ -66,202 +66,202 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
 
 extension Service {
 
-    public func anthropic() -> AnthropicService {
-        AnthropicService(host: hostURL, apiKey: token)
+    public func anthropic(session: URLSession?) -> AnthropicService {
+        AnthropicService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func deepseek() -> OpenAIService {
-        OpenAIService(host: hostURL, apiKey: token)
+    public func deepseek(session: URLSession?) -> OpenAIService {
+        OpenAIService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func elevenLabs() -> ElevenLabsService {
-        ElevenLabsService(apiKey: token)
+    public func elevenLabs(session: URLSession?) -> ElevenLabsService {
+        ElevenLabsService(session: session, apiKey: token)
     }
 
-    public func fal() -> FalService {
-        FalService(configuration: .init(host: hostURL, token: token))
+    public func fal(session: URLSession?) -> FalService {
+        FalService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func grok() -> OpenAIService {
-        OpenAIService(host: hostURL, apiKey: token)
+    public func grok(session: URLSession?) -> OpenAIService {
+        OpenAIService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func groq() -> OpenAIService {
-        OpenAIService(host: hostURL, apiKey: token)
+    public func groq(session: URLSession?) -> OpenAIService {
+        OpenAIService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func llama() -> LlamaService {
-        LlamaService(host: hostURL, apiKey: token)
+    public func llama(session: URLSession?) -> LlamaService {
+        LlamaService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func mistral() -> MistralService {
-        MistralService(host: hostURL, apiKey: token)
+    public func mistral(session: URLSession?) -> MistralService {
+        MistralService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func ollama() -> OllamaService {
-        OllamaService(host: hostURL)
+    public func ollama(session: URLSession?) -> OllamaService {
+        OllamaService(session: session, host: hostURL)
     }
 
-    public func openAI() -> OpenAIService {
-        OpenAIService(host: hostURL, apiKey: token)
+    public func openAI(session: URLSession?) -> OpenAIService {
+        OpenAIService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func openRouter() -> OpenAIService {
-        OpenAIService(host: hostURL, apiKey: token)
+    public func openRouter(session: URLSession?) -> OpenAIService {
+        OpenAIService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func perplexity() -> PerplexityService {
-        PerplexityService(configuration: .init(host: hostURL, token: token))
+    public func perplexity(session: URLSession?) -> PerplexityService {
+        PerplexityService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func modelService() -> ModelService {
+    public func modelService(session: URLSession?) -> ModelService {
         switch ServiceID(rawValue: id)! {
         case .anthropic:
-            anthropic()
+            anthropic(session: session)
         case .deepseek:
-            deepseek()
+            deepseek(session: session)
         case .elevenLabs:
-            elevenLabs()
+            elevenLabs(session: session)
         case .fal:
-            fal()
+            fal(session: session)
         case .grok:
-            grok()
+            grok(session: session)
         case .groq:
-            groq()
+            groq(session: session)
         case .llama:
-            llama()
+            llama(session: session)
         case .mistral:
-            mistral()
+            mistral(session: session)
         case .ollama:
-            ollama()
+            ollama(session: session)
         case .openAI:
-            openAI()
+            openAI(session: session)
         case .openRouter:
-            openRouter()
+            openRouter(session: session)
         case .perplexity:
-            perplexity()
+            perplexity(session: session)
         }
     }
 
-    public func chatService() throws -> ChatService {
+    public func chatService(session: URLSession?) throws -> ChatService {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
         switch ServiceID(rawValue: id)! {
         case .anthropic:
-            return anthropic()
+            return anthropic(session: session)
         case .deepseek:
-            return deepseek()
+            return deepseek(session: session)
         case .grok:
-            return grok()
+            return grok(session: session)
         case .groq:
-            return groq()
+            return groq(session: session)
         case .llama:
-            return llama()
+            return llama(session: session)
         case .mistral:
-            return mistral()
+            return mistral(session: session)
         case .ollama:
-            return ollama()
+            return ollama(session: session)
         case .openAI:
-            return openAI()
+            return openAI(session: session)
         case .openRouter:
-            return openRouter()
+            return openRouter(session: session)
         case .perplexity:
-            return perplexity()
+            return perplexity(session: session)
         case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
     }
 
-    public func imageService() throws -> ImageService {
+    public func imageService(session: URLSession?) throws -> ImageService {
         guard preferredImageModel != nil else {
             throw ServiceError.missingService
         }
         switch ServiceID(rawValue: id)! {
         case .fal:
-            return fal()
+            return fal(session: session)
         case .openAI:
-            return openAI()
+            return openAI(session: session)
         case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .llama, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
 
-    public func embeddingService() throws -> EmbeddingService {
+    public func embeddingService(session: URLSession?) throws -> EmbeddingService {
         guard preferredEmbeddingModel != nil else {
             throw ServiceError.missingService
         }
         switch ServiceID(rawValue: id)! {
         case .groq:
-            return groq()
+            return groq(session: session)
         case .grok:
-            return grok()
+            return grok(session: session)
         case .mistral:
-            return mistral()
+            return mistral(session: session)
         case .ollama:
-            return ollama()
+            return ollama(session: session)
         case .openAI:
-            return openAI()
+            return openAI(session: session)
         case .anthropic, .deepseek, .elevenLabs, .fal, .llama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
 
-    public func transcriptionService() throws -> TranscriptionService {
+    public func transcriptionService(session: URLSession?) throws -> TranscriptionService {
         guard preferredTranscriptionModel != nil else {
             throw ServiceError.missingService
         }
         switch ServiceID(rawValue: id)! {
         case .groq:
-            return groq()
+            return groq(session: session)
         case .openAI:
-            return openAI()
+            return openAI(session: session)
         case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
 
-    public func speechService() throws -> SpeechService {
+    public func speechService(session: URLSession?) throws -> SpeechService {
         guard preferredSpeechModel != nil else {
             throw ServiceError.missingService
         }
         switch ServiceID(rawValue: id)! {
         case .elevenLabs:
-            return elevenLabs()
+            return elevenLabs(session: session)
         case .groq:
-            return groq()
+            return groq(session: session)
         case .openAI:
-            return openAI()
+            return openAI(session: session)
         case .anthropic, .deepseek, .fal, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
 
-    public func summarizationService() throws -> ChatService {
+    public func summarizationService(session: URLSession?) throws -> ChatService {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
         switch ServiceID(rawValue: id)! {
         case .anthropic:
-            return anthropic()
+            return anthropic(session: session)
         case .deepseek:
-            return deepseek()
+            return deepseek(session: session)
         case .grok:
-            return grok()
+            return grok(session: session)
         case .groq:
-            return groq()
+            return groq(session: session)
         case .llama:
-            return llama()
+            return llama(session: session)
         case .mistral:
-            return mistral()
+            return mistral(session: session)
         case .ollama:
-            return ollama()
+            return ollama(session: session)
         case .openAI:
-            return openAI()
+            return openAI(session: session)
         case .openRouter:
-            return openRouter()
+            return openRouter(session: session)
         case .perplexity:
-            return perplexity()
+            return perplexity(session: session)
         case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
