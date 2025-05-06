@@ -56,7 +56,15 @@ extension FalService: SpeechService {
     }
 
     public func voices() async throws -> [Voice] {
-        return []
+        throw ServiceError.notImplemented
+    }
+
+    public func voiceClone(_ request: SpeechVoiceCloneRequest) async throws -> String {
+        let query = Fal.VoiceCloneRequest(
+            audio_url: request.audio.base64EncodedString()
+        )
+        let result = try await client.voiceClone(query, model: request.model)
+        return result.custom_voice_id
     }
 }
 

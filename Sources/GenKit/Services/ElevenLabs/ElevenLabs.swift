@@ -22,6 +22,10 @@ extension ElevenLabsService: SpeechService {
         }
     }
 
+    public func voiceClone(_ request: SpeechVoiceCloneRequest) async throws -> String {
+        throw ServiceError.notImplemented
+    }
+
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {
         try await client.textToSpeech(.init(
             text: request.input,

@@ -128,6 +128,10 @@ extension OpenAIService: SpeechService {
         }
     }
 
+    public func voiceClone(_ request: SpeechVoiceCloneRequest) async throws -> String {
+        throw ServiceError.notImplemented
+    }
+
     public func speak(_ request: SpeechServiceRequest) async throws -> Data {
         let req = OpenAI.SpeechRequest(
             model: request.model.id,

@@ -6,7 +6,7 @@
       "location" : "https://github.com/loopwork-ai/JSONSchema",
       "state" : {
         "branch" : "main",
-        "revision" : "a60be45fa2ff42d342424f90a0859ee3e09aca2a"
+        "revision" : "1c3b710fb8e65e6a651abda0b32195ff6750d84b"
       }
     },
     {
@@ -24,7 +24,7 @@
       "location" : "https://github.com/apple/swift-argument-parser",
       "state" : {
         "branch" : "main",
-        "revision" : "cf4c4727ff253fe92c15f05b58dec666475fb7f5"
+        "revision" : "bfd1d17042cde1352978c99cf8ab2a412b7d8666"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/nathanborror/swift-fal",
       "state" : {
         "branch" : "main",
-        "revision" : "28a7d31e2c295258b137344ec6c64bad838b7614"
+        "revision" : "9e99ac5652f0229aa0cdbc378f392ebfed8d0ab7"
       }
     },
     {

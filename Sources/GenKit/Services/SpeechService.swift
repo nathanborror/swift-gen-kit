@@ -2,6 +2,8 @@ import Foundation
 
 public protocol SpeechService: Sendable {
     func voices() async throws -> [Voice]
+    func voiceClone(_ request: SpeechVoiceCloneRequest) async throws -> String
+
     func speak(_ request: SpeechServiceRequest) async throws -> Data
 }
 
@@ -18,5 +20,15 @@ public struct SpeechServiceRequest {
         self.input = input
         self.responseFormat = responseFormat
         self.speed = speed
+    }
+}
+
+public struct SpeechVoiceCloneRequest {
+    public var model: String
+    public var audio: Data
+
+    public init(model: String, audio: Data) {
+        self.model = model
+        self.audio = audio
     }
 }

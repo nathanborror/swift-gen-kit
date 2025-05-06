@@ -228,11 +228,13 @@ extension Service {
         switch ServiceID(rawValue: id)! {
         case .elevenLabs:
             return elevenLabs(session: session)
+        case .fal:
+            return fal(session: session)
         case .groq:
             return groq(session: session)
         case .openAI:
             return openAI(session: session)
-        case .anthropic, .deepseek, .fal, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
             throw ServiceError.unsupportedService
         }
     }
