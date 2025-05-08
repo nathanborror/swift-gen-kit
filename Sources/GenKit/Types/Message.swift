@@ -73,6 +73,11 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
         public struct File: Codable, Hashable, Sendable {
             public var url: URL
             public var type: String
+
+            public init(url: URL, type: String) {
+                self.url = url
+                self.type = type
+            }
         }
     }
 
