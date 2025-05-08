@@ -25,7 +25,7 @@ extension Llama.ChatRequest.Message.Content {
                 self = .init(image: "data:image/\(image.format);base64,\(data.base64EncodedString())")
                 return
             }
-        case .audio, .json:
+        case .audio, .json, .file:
             return nil
         }
         return nil

@@ -33,6 +33,17 @@ extension Anthropic.ChatRequest.Message.Content {
             return nil
         case .json(let json):
             self.init(type: .text, text: json.object)
+        case .file(let file):
+            guard
+                let data = try? Data(contentsOf: file.url),
+                let content = String(data: data, encoding: .utf8)
+            else { return nil }
+
+            self.init(type: .text, text: """
+                ```\(file.type) \(file.url.lastPathComponent)
+                \(content)
+                ```
+                """)
         }
     }
 

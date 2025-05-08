@@ -40,6 +40,17 @@ extension OpenAIService {
                 return .init(type: "input_audio", input_audio: .init(data: data.base64EncodedString(), format: audio.format.rawValue))
             case .json(let json):
                 return .init(type: "text", text: json.object)
+            case .file(let file):
+                guard
+                    let data = try? Data(contentsOf: file.url),
+                    let content = String(data: data, encoding: .utf8)
+                else { return nil }
+
+                return .init(type: "text", text: """
+                    ```\(file.type) \(file.url.lastPathComponent)
+                    \(content)
+                    ```
+                    """)
             }
         }.compactMap({$0})
     }
