@@ -102,6 +102,15 @@ extension MistralService {
                 return .init(type: .image_url, image_url: .init(url: "data:image/\(image.format);base64,\(data.base64EncodedString())"))
             case .json(let json):
                 return .init(type: .text, text: json.object)
+            case .file(let file):
+                guard
+                    let data = try? Data(contentsOf: file.url),
+                    let content = String(data: data, encoding: .utf8) else { return nil }
+                return .init(type: .text, text: """
+                    ```\(file.mimetype.preferredFilenameExtension ?? "txt") \(file.url.lastPathComponent)
+                    \(content)
+                    ```
+                    """)
             default:
                 return nil
             }

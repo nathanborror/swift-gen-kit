@@ -1,4 +1,5 @@
 import Foundation
+import UniformTypeIdentifiers
 import SharedKit
 
 public struct Message: Identifiable, Codable, Hashable, Sendable {
@@ -72,11 +73,11 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
 
         public struct File: Codable, Hashable, Sendable {
             public var url: URL
-            public var type: String
+            public var mimetype: UTType
 
-            public init(url: URL, type: String) {
+            public init(url: URL, mimetype: UTType) {
                 self.url = url
-                self.type = type
+                self.mimetype = mimetype
             }
         }
     }

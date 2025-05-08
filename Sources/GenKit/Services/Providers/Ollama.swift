@@ -91,9 +91,25 @@ extension OllamaService {
     private func encode(_ contents: [Message.Content]?) -> String {
         contents?.compactMap {
             switch $0 {
-            case .text(let text): text
-            case .json(let json): json.object
-            default: ""
+            case .text(let text):
+                return text
+            case .json(let json):
+                return """
+                ```json
+                \(json.object)
+                ```
+                """
+            case .file(let file):
+                guard
+                    let data = try? Data(contentsOf: file.url),
+                    let content = String(data: data, encoding: .utf8) else { return nil }
+                return """
+                ```\(file.mimetype.preferredFilenameExtension ?? "txt") \(file.url.lastPathComponent)
+                \(content)
+                ``` 
+                """
+            default: 
+                return nil
             }
         }.joined() ?? ""
     }

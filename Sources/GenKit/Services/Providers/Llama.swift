@@ -80,7 +80,22 @@ extension LlamaService {
                 return .init(image: "data:image/\(image.format);base64,\(data.base64EncodedString())")
             }
             return nil
-        case .audio, .json, .file:
+        case .json(let json):
+            return .init(text: """
+                ```json \(json.kind)
+                \(json.object)
+                ```
+                """)
+        case .file(let file):
+            guard
+                let data = try? Data(contentsOf: file.url),
+                let content = String(data: data, encoding: .utf8) else { return nil }
+            return .init(text: """
+                ```\(file.mimetype.preferredFilenameExtension ?? "txt") \(file.url.lastPathComponent)
+                \(content)
+                ```
+                """)
+        case .audio:
             return nil
         }
     }
