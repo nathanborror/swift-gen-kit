@@ -104,10 +104,10 @@ extension MistralService {
                 return .init(type: .text, text: json.object)
             case .file(let file):
                 guard
-                    let data = try? Data(contentsOf: file.url),
+                    let data = try? Data(contentsOf: .documentsDirectory.appending(path: file.path)),
                     let content = String(data: data, encoding: .utf8) else { return nil }
                 return .init(type: .text, text: """
-                    ```\(file.mimetype.preferredFilenameExtension ?? "txt") \(file.url.lastPathComponent)
+                    ```\(file.mimetype.preferredFilenameExtension ?? "txt") \(file.path)
                     \(content)
                     ```
                     """)

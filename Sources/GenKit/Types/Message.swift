@@ -72,11 +72,11 @@ public struct Message: Identifiable, Codable, Hashable, Sendable {
         }
 
         public struct File: Codable, Hashable, Sendable {
-            public var url: URL
+            public var path: String
             public var mimetype: UTType
 
-            public init(url: URL, mimetype: UTType) {
-                self.url = url
+            public init(path: String, mimetype: UTType) {
+                self.path = path
                 self.mimetype = mimetype
             }
         }
