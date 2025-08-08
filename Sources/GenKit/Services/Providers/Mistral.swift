@@ -118,32 +118,40 @@ extension MistralService {
     }
     
     private func encode(_ toolCalls: [ToolCall]?) -> [Mistral.ChatRequest.Message.ToolCall]? {
-        toolCalls?.map { toolCall in
-            Mistral.ChatRequest.Message.ToolCall(
-                id: toolCall.id,
-                function: .init(
-                    name: toolCall.function.name,
-                    arguments: toolCall.function.arguments
+        toolCalls?.compactMap { toolCall in
+            if let function = toolCall.function {
+                Mistral.ChatRequest.Message.ToolCall(
+                    id: toolCall.id,
+                    function: .init(
+                        name: function.name,
+                        arguments: function.arguments
+                    )
                 )
-            )
+            } else {
+                nil
+            }
         }
     }
-    
+
     private func encode(_ tools: [Tool]) -> [Mistral.ChatRequest.Tool] {
-        tools.map { tool in
-            Mistral.ChatRequest.Tool(
-                function: .init(
-                    name: tool.function.name,
-                    description: tool.function.description,
-                    parameters: tool.function.parameters
+        tools.compactMap { tool in
+            if let function = tool.function {
+                Mistral.ChatRequest.Tool(
+                    function: .init(
+                        name: function.name,
+                        description: function.description,
+                        parameters: function.parameters
+                    )
                 )
-            )
+            } else {
+                nil
+            }
         }
     }
     
     private func encode(_ toolChoice: Tool?) -> Mistral.ChatRequest.ToolChoice? {
-        guard let toolChoice else { return nil }
-        return .tool(.init(function: .init(name: toolChoice.function.name)))
+        guard let name = toolChoice?.function?.name else { return nil }
+        return .tool(.init(function: .init(name: name)))
     }
 }
 
@@ -168,7 +176,8 @@ extension MistralService {
             function: .init(
                 name: toolCall.function.name,
                 arguments: toolCall.function.arguments
-            )
+            ),
+            custom: nil
         )
     }
     
@@ -218,7 +227,8 @@ extension MistralService {
             function: .init(
                 name: toolCall.function.name,
                 arguments: toolCall.function.arguments
-            )
+            ),
+            custom: nil
         )
     }
     

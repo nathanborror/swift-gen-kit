@@ -127,15 +127,20 @@ extension OllamaService {
     }
 
     private func encode(_ tools: [Tool]) -> [Ollama.Tool] {
-        tools.map { tool in
-            Ollama.Tool(
-                type: "function",
-                function: .init(
-                    name: tool.function.name,
-                    description: tool.function.description,
-                    parameters: tool.function.parameters
+        tools.compactMap { tool in
+            // Does not support custom tool functions
+            if let function = tool.function {
+                Ollama.Tool(
+                    type: "function",
+                    function: .init(
+                        name: function.name,
+                        description: function.description,
+                        parameters: function.parameters
+                    )
                 )
-            )
+            } else {
+                nil
+            }
         }
     }
 }
@@ -164,11 +169,13 @@ extension OllamaService {
     }
 
     private func decode(_ toolCall: Ollama.ToolCall) -> ToolCall {
-        ToolCall(
+        .init(
+            type: "function",
             function: .init(
                 name: toolCall.function.name,
                 arguments: toolCall.function.arguments
-            )
+            ),
+            custom: nil
         )
     }
 
@@ -178,7 +185,7 @@ extension OllamaService {
     }
 
     private func decode(_ model: Ollama.ModelResponse) -> Model {
-        Model(
+        .init(
             id: model.model,
             family: model.details?.family,
             name: model.name,

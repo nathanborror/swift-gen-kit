@@ -217,13 +217,20 @@ extension OpenAIService {
             OpenAI.ChatRequest.Message.ToolCall(
                 id: toolCall.id,
                 type: toolCall.type,
-                function: encode(toolCall.function)
+                function: encode(toolCall.function),
+                custom: encode(toolCall.custom)
             )
         }
     }
 
-    private func encode(_ functionCall: ToolCall.FunctionCall) -> OpenAI.ChatRequest.Message.ToolCall.Function {
-        .init(name: functionCall.name, arguments: functionCall.arguments)
+    private func encode(_ functionCall: ToolCall.Function?) -> OpenAI.ChatRequest.Message.ToolCall.Function? {
+        guard let functionCall else { return nil }
+        return .init(name: functionCall.name, arguments: functionCall.arguments)
+    }
+
+    private func encode(_ customCall: ToolCall.Custom?) -> OpenAI.ChatRequest.Message.ToolCall.Custom? {
+        guard let customCall else { return nil }
+        return .init(name: customCall.name, input: customCall.input)
     }
 
     private func encode(_ tools: [Tool]) -> [OpenAI.ChatRequest.Tool]? {
@@ -231,27 +238,44 @@ extension OpenAIService {
         return tools.map { tool in
             OpenAI.ChatRequest.Tool(
                 type: tool.type.rawValue,
-                function: encode(tool.function)
+                function: encode(tool.function),
+                custom: encode(tool.custom)
             )
         }
     }
 
-    private func encode(_ function: Tool.Function) -> OpenAI.ChatRequest.Tool.Function {
-        .init(
+    private func encode(_ function: Tool.Function?) -> OpenAI.ChatRequest.Tool.Function? {
+        guard let function else { return nil }
+        return .init(
             name: function.name,
             description: function.description,
             parameters: function.parameters
         )
     }
 
-    private func encode(_ toolChoice: Tool?) -> OpenAI.ChatRequest.ToolChoice? {
-        guard let toolChoice else { return nil }
-        return .tool(
-            .init(
-                type: toolChoice.type.rawValue,
-                function: .init(name: toolChoice.function.name)
-            )
+    private func encode(_ custom: Tool.Custom?) -> OpenAI.ChatRequest.Tool.Custom? {
+        guard let custom else { return nil }
+        return .init(
+            name: custom.name,
+            description: custom.description,
+            format: (custom.format != nil) ? .init(
+                type: custom.format!.type,
+                grammar: (custom.format!.grammar != nil) ? .init(
+                    definition: custom.format!.grammar!.definition,
+                    syntax: custom.format!.grammar!.syntax
+                ) : nil
+            ) : nil
         )
+    }
+
+    private func encode(_ toolChoice: Tool?) -> OpenAI.ChatRequest.ToolChoice? {
+        if let function = toolChoice?.function {
+            return .tool(.init(function: function.name))
+        }
+        if let custom = toolChoice?.custom {
+            return .tool(.init(custom: custom.name))
+        }
+        return nil
     }
 
     private func encode(responseFormat: String?) -> OpenAI.TranslationRequest.ResponseFormat? {
@@ -334,10 +358,14 @@ extension OpenAIService {
             index: resp.index,
             id: resp.id ?? "",
             type: resp.type ?? "function",
-            function: .init(
-                name: resp.function.name ?? "",
-                arguments: resp.function.arguments
-            )
+            function: (resp.function != nil) ? .init(
+                name: resp.function!.name ?? "",
+                arguments: resp.function!.arguments
+            ) : nil,
+            custom: (resp.custom != nil) ? .init(
+                name: resp.custom!.name ?? "",
+                input: resp.custom!.input
+            ) : nil
         )
     }
     
@@ -369,7 +397,12 @@ extension OpenAIService {
             }
             for toolCall in toolCalls {
                 if var existing = message.toolCalls?.first(where: { $0.index == toolCall.index }) {
-                    existing.function.arguments = GenKit.patch(string: existing.function.arguments, with: toolCall.function.arguments) ?? ""
+                    if let function = existing.function {
+                        existing.function!.arguments = GenKit.patch(string: function.arguments, with: toolCall.function?.arguments) ?? ""
+                    }
+                    if let custom = existing.custom {
+                        existing.custom!.input = GenKit.patch(string: custom.input, with: toolCall.custom?.input) ?? ""
+                    }
                     message.toolCalls![existing.index!] = existing
                 } else {
                     message.toolCalls?.append(decode(toolCall))

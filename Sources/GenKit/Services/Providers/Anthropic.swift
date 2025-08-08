@@ -124,12 +124,12 @@ extension AnthropicService {
     }
 
     private func encode(_ toolCall: ToolCall) -> Anthropic.ChatRequest.Message.Content? {
-        guard let data = toolCall.function.arguments.data(using: .utf8) else { return nil }
+        guard let data = toolCall.function?.arguments.data(using: .utf8) else { return nil }
         guard let input = try? JSONDecoder().decode([String: JSONValue].self, from: data) else { return nil }
         return .init(
             type: .tool_use,
             id: toolCall.id,
-            name: toolCall.function.name,
+            name: toolCall.function?.name,
             input: input
         )
     }
@@ -144,12 +144,16 @@ extension AnthropicService {
     }
 
     private func encode(_ tools: [Tool]) -> [Anthropic.ChatRequest.Tool] {
-        tools.map { tool in
-            Anthropic.ChatRequest.Tool(
-                name: tool.function.name,
-                description: tool.function.description,
-                input_schema: tool.function.parameters
-            )
+        tools.compactMap { tool in
+            if let function = tool.function {
+                .init(
+                    name: function.name,
+                    description: function.description,
+                    input_schema: function.parameters
+                )
+            } else {
+                nil
+            }
         }
     }
 
@@ -159,7 +163,7 @@ extension AnthropicService {
         }
         return .init(
             type: .tool,
-            name: toolChoice.function.name
+            name: toolChoice.function?.name
         )
     }
 }
@@ -219,12 +223,14 @@ extension AnthropicService {
         case .tool_use:
             let data = try? JSONEncoder().encode(content.input)
             let arguments = (data != nil) ? String(data: data!, encoding: .utf8)! : ""
-            return ToolCall(
+            return .init(
                 id: content.id ?? .id,
+                type: "function",
                 function: .init(
                     name: content.name ?? "",
                     arguments: arguments
-                )
+                ),
+                custom: nil
             )
         case .text, .text_delta, .input_json_delta, .none, .thinking_delta, .redacted_thinking, .signature_delta:
             return nil
@@ -258,7 +264,11 @@ extension AnthropicService {
                         message.contents = [.text(text)]
                     }
                 case .tool_use:
-                    var toolCall = ToolCall(function: .init(name: contentBlock.name ?? "", arguments: ""))
+                    var toolCall = ToolCall(
+                        type: "function",
+                        function: .init(name: contentBlock.name ?? "", arguments: ""),
+                        custom: nil
+                    )
                     toolCall.id = contentBlock.id ?? toolCall.id
                     if message.toolCalls == nil {
                         message.toolCalls = []
@@ -280,7 +290,9 @@ extension AnthropicService {
                     }
                 case .input_json_delta:
                     if var existing = message.toolCalls?.last {
-                        existing.function.arguments = GenKit.patch(string: existing.function.arguments, with: delta.partial_json) ?? ""
+                        if let function = existing.function {
+                            existing.function!.arguments = GenKit.patch(string: function.arguments, with: delta.partial_json) ?? ""
+                        }
                         message.toolCalls![message.toolCalls!.count-1] = existing
                     }
                 default:

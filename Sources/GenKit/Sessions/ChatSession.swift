@@ -127,7 +127,7 @@ public class ChatSession {
                             role: .tool,
                             content: "Unknown tool.",
                             toolCallID: toolCall.id,
-                            name: toolCall.function.name,
+                            name: toolCall.function?.name ?? toolCall.custom?.name,
                             metadata: ["label": .string("Unknown tool")]
                         )
                         return .init(messages: [message], shouldContinue: false)
@@ -260,10 +260,10 @@ public struct ChatSessionResponse: Sendable {
         guard let toolCalls = message.toolCalls else {
             throw ChatSessionError.missingToolCalls
         }
-        guard let toolCall = toolCalls.first(where: { $0.function.name == name }) else {
+        guard let toolCall = toolCalls.first(where: { $0.function?.name == name || $0.custom?.name == name }) else {
             throw ChatSessionError.missingToolCall
         }
-        guard let data = toolCall.function.arguments.data(using: .utf8) else {
+        guard let data = toolCall.function?.arguments.data(using: .utf8) ?? toolCall.custom?.input.data(using: .utf8) else {
             throw ChatSessionError.unknown
         }
         return try JSONDecoder().decode(type, from: data)
