@@ -27,7 +27,8 @@ extension OpenAIService: ChatService {
                 reasoning_effort: request.options["reasoning_effort"]?.stringValue.flatMap(OpenAI.ChatRequest.ReasoningEffort.init),
                 temperature: request.options["temperature"]?.doubleValue,
                 tools: encode(request.tools),
-                tool_choice: encode(request.toolChoice)
+                tool_choice: encode(request.toolChoice),
+                verbosity: request.options["verbosity"]?.stringValue.flatMap(OpenAI.ChatRequest.Verbosity.init)
             )
             let resp = try await client.chatCompletions(req)
             guard let message = decode(resp) else {
@@ -44,7 +45,8 @@ extension OpenAIService: ChatService {
                 stream: true,
                 temperature: request.options["temperature"]?.doubleValue,
                 tools: encode(request.tools),
-                tool_choice: encode(request.toolChoice)
+                tool_choice: encode(request.toolChoice),
+                verbosity: request.options["verbosity"]?.stringValue.flatMap(OpenAI.ChatRequest.Verbosity.init)
             )
             var message = Message(role: .assistant)
             for try await resp in try client.chatCompletionsStream(req) {
