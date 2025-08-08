@@ -25,12 +25,10 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
         case fal
         case grok
         case groq
-        case llama
         case mistral
         case ollama
         case openAI
         case openRouter
-        case perplexity
     }
 
     public enum Status: String, Codable, Hashable, Sendable {
@@ -90,10 +88,6 @@ extension Service {
         OpenAIService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func llama(session: URLSession?) -> LlamaService {
-        LlamaService(session: session, host: hostURL, apiKey: token)
-    }
-
     public func mistral(session: URLSession?) -> MistralService {
         MistralService(session: session, host: hostURL, apiKey: token)
     }
@@ -110,10 +104,6 @@ extension Service {
         OpenAIService(session: session, host: hostURL, apiKey: token)
     }
 
-    public func perplexity(session: URLSession?) -> PerplexityService {
-        PerplexityService(session: session, host: hostURL, apiKey: token)
-    }
-
     public func modelService(session: URLSession?) -> ModelService {
         switch ServiceID(rawValue: id)! {
         case .anthropic:
@@ -128,8 +118,6 @@ extension Service {
             grok(session: session)
         case .groq:
             groq(session: session)
-        case .llama:
-            llama(session: session)
         case .mistral:
             mistral(session: session)
         case .ollama:
@@ -138,8 +126,6 @@ extension Service {
             openAI(session: session)
         case .openRouter:
             openRouter(session: session)
-        case .perplexity:
-            perplexity(session: session)
         }
     }
 
@@ -156,8 +142,6 @@ extension Service {
             return grok(session: session)
         case .groq:
             return groq(session: session)
-        case .llama:
-            return llama(session: session)
         case .mistral:
             return mistral(session: session)
         case .ollama:
@@ -166,8 +150,6 @@ extension Service {
             return openAI(session: session)
         case .openRouter:
             return openRouter(session: session)
-        case .perplexity:
-            return perplexity(session: session)
         case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
@@ -182,7 +164,7 @@ extension Service {
             return fal(session: session)
         case .openAI:
             return openAI(session: session)
-        case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .llama, .mistral, .ollama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .grok, .groq, .mistral, .ollama, .openRouter:
             throw ServiceError.unsupportedService
         }
     }
@@ -202,7 +184,7 @@ extension Service {
             return ollama(session: session)
         case .openAI:
             return openAI(session: session)
-        case .anthropic, .deepseek, .elevenLabs, .fal, .llama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .openRouter:
             throw ServiceError.unsupportedService
         }
     }
@@ -216,7 +198,7 @@ extension Service {
             return groq(session: session)
         case .openAI:
             return openAI(session: session)
-        case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .elevenLabs, .fal, .grok, .mistral, .ollama, .openRouter:
             throw ServiceError.unsupportedService
         }
     }
@@ -234,7 +216,7 @@ extension Service {
             return groq(session: session)
         case .openAI:
             return openAI(session: session)
-        case .anthropic, .deepseek, .grok, .llama, .mistral, .ollama, .openRouter, .perplexity:
+        case .anthropic, .deepseek, .grok, .mistral, .ollama, .openRouter:
             throw ServiceError.unsupportedService
         }
     }
@@ -252,8 +234,6 @@ extension Service {
             return grok(session: session)
         case .groq:
             return groq(session: session)
-        case .llama:
-            return llama(session: session)
         case .mistral:
             return mistral(session: session)
         case .ollama:
@@ -262,8 +242,6 @@ extension Service {
             return openAI(session: session)
         case .openRouter:
             return openRouter(session: session)
-        case .perplexity:
-            return perplexity(session: session)
         case .elevenLabs, .fal:
             throw ServiceError.unsupportedService
         }
