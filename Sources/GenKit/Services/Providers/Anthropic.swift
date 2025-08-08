@@ -32,14 +32,14 @@ extension AnthropicService: ChatService {
 
     public func completion(_ request: ChatServiceRequest) async throws -> Message {
         var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
-        req.temperature = request.temperature
+        req.temperature = request.options["temperature"]?.doubleValue
         let result = try await client.chatCompletions(req)
         return decode(result)
     }
 
     public func completionStream(_ request: ChatServiceRequest, update: (Message) async throws -> Void) async throws {
         var req = makeRequest(model: request.model, messages: request.messages, tools: request.tools)
-        req.temperature = request.temperature
+        req.temperature = request.options["temperature"]?.doubleValue
         req.stream = true
 
         var message = Message(role: .assistant)

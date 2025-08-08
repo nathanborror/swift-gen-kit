@@ -1,4 +1,5 @@
 import Foundation
+import SharedKit
 
 public protocol ChatService: Sendable {
     func completion(_ request: ChatServiceRequest) async throws -> Message
@@ -10,16 +11,14 @@ public struct ChatServiceRequest {
     public var messages: [Message]
     public var tools: [Tool]
     public var toolChoice: Tool?
-    public var temperature: Double?
-    public var customHeaders: [String: String]
+    public var options: [String: Value]
 
-    public init(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, temperature: Double? = nil, customHeaders: [String: String] = [:]) {
+    public init(model: Model, messages: [Message], tools: [Tool] = [], toolChoice: Tool? = nil, options: [String: Value] = [:]) {
         self.model = model
         self.messages = messages
         self.tools = tools
         self.toolChoice = toolChoice
-        self.temperature = temperature
-        self.customHeaders = customHeaders
+        self.options = options
     }
 }
 

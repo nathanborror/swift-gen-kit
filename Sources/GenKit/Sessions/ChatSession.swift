@@ -26,8 +26,7 @@ public class ChatSession {
                             messages: messages,
                             tools: request.tools,
                             toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
-                            temperature: request.temperature,
-                            customHeaders: request.customHeaders
+                            options: request.options
                         )
                         try await request.service.completionStream(req) { message in
                             let message = apply(runID: runID, message: message)
@@ -82,8 +81,7 @@ public class ChatSession {
                 messages: messages,
                 tools: request.tools,
                 toolChoice: (runLoopCount > 0) ? nil : request.tool, // FIRST REQUEST ONLY
-                temperature: request.temperature,
-                customHeaders: request.customHeaders
+                options: request.options
             )
             var message = try await request.service.completion(req)
             message = apply(runID: runID, message: message)
@@ -188,8 +186,7 @@ public struct ChatSessionRequest {
     public private(set) var tools: [Tool] = []
     public private(set) var tool: Tool? = nil
     public private(set) var context: [String: Value] = [:]
-    public private(set) var temperature: Double? = nil
-    public private(set) var customHeaders: [String: String] = [:]
+    public private(set) var options: [String: Value] = [:]
 
     public init(service: ChatService, model: Model, toolCallback: ToolCallback? = nil) {
         self.service = service
@@ -222,12 +219,8 @@ public struct ChatSessionRequest {
         self.context = context
     }
 
-    public mutating func with(temperature: Double) {
-        self.temperature = temperature
-    }
-
-    public mutating func with(header: String, value: String) {
-        customHeaders[header] = value
+    public mutating func with(option key: String, value: Value) {
+        options[key] = value
     }
 
     var messages: [Message] {

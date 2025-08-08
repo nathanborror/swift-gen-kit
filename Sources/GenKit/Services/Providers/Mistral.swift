@@ -24,8 +24,8 @@ extension MistralService: ChatService {
             tools: encode(request.tools),
             tool_choice: encode(request.toolChoice)
         )
-        req.temperature = request.temperature
-        
+        req.temperature = request.options["temperature"]?.doubleValue
+
         let resp = try await client.chatCompletions(req)
         guard let message = decode(resp) else {
             throw ChatServiceError.responseError("Missing response choice")
@@ -40,7 +40,7 @@ extension MistralService: ChatService {
             tools: encode(request.tools),
             tool_choice: encode(request.toolChoice)
         )
-        req.temperature = request.temperature
+        req.temperature = request.options["temperature"]?.doubleValue
         req.stream = true
         
         var message = Message(role: .assistant)

@@ -24,7 +24,8 @@ extension OpenAIService: ChatService {
             let req = ChatRequest(
                 messages: encode(messages: request.messages),
                 model: request.model.id,
-                temperature: request.temperature,
+                reasoning_effort: request.options["reasoning_effort"]?.stringValue.flatMap(OpenAI.ChatRequest.ReasoningEffort.init),
+                temperature: request.options["temperature"]?.doubleValue,
                 tools: encode(request.tools),
                 tool_choice: encode(request.toolChoice)
             )
@@ -39,8 +40,9 @@ extension OpenAIService: ChatService {
             let req = OpenAI.ChatRequest(
                 messages: encode(messages: request.messages),
                 model: request.model.id,
+                reasoning_effort: request.options["reasoning_effort"]?.stringValue.flatMap(OpenAI.ChatRequest.ReasoningEffort.init),
                 stream: true,
-                temperature: request.temperature,
+                temperature: request.options["temperature"]?.doubleValue,
                 tools: encode(request.tools),
                 tool_choice: encode(request.toolChoice)
             )
