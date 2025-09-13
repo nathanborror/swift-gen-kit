@@ -5,6 +5,7 @@ import Foundation
 
 public struct Service: Identifiable, Codable, Hashable, Sendable {
     public var id: String
+    public var kind: Kind
     public var name: String
     public var host: String
     public var token: String
@@ -18,7 +19,7 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
     public var preferredSpeechModel: String?
     public var preferredSummarizationModel: String?
 
-    public enum ServiceID: String, Codable, Hashable, Sendable {
+    public enum Kind: String, Codable, Hashable, Sendable {
         case anthropic
         case deepseek
         case elevenLabs
@@ -38,11 +39,12 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
         case unknown
     }
 
-    public init(id: ServiceID, name: String, host: String = "", token: String = "", models: [Model] = [],
-                preferredChatModel: String? = nil, preferredImageModel: String? = nil,
+    public init(id: String = UUID().uuidString, kind: Kind, name: String, host: String = "", token: String = "",
+                models: [Model] = [], preferredChatModel: String? = nil, preferredImageModel: String? = nil,
                 preferredEmbeddingModel: String? = nil, preferredTranscriptionModel: String? = nil,
                 preferredSpeechModel: String? = nil, preferredSummarizationModel: String? = nil) {
-        self.id = id.rawValue
+        self.id = id
+        self.kind = kind
         self.name = name
         self.host = host
         self.token = token
@@ -105,7 +107,7 @@ extension Service {
     }
 
     public func modelService(session: URLSession?) -> ModelService {
-        switch ServiceID(rawValue: id)! {
+        switch kind {
         case .anthropic:
             anthropic(session: session)
         case .deepseek:
@@ -133,7 +135,7 @@ extension Service {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
-        switch ServiceID(rawValue: id)! {
+        switch kind {
         case .anthropic:
             return anthropic(session: session)
         case .deepseek:
@@ -159,7 +161,7 @@ extension Service {
         guard preferredImageModel != nil else {
             throw ServiceError.missingService
         }
-        switch ServiceID(rawValue: id)! {
+        switch kind {
         case .fal:
             return fal(session: session)
         case .openAI:
@@ -173,7 +175,7 @@ extension Service {
         guard preferredEmbeddingModel != nil else {
             throw ServiceError.missingService
         }
-        switch ServiceID(rawValue: id)! {
+        switch kind {
         case .groq:
             return groq(session: session)
         case .grok:
@@ -193,7 +195,7 @@ extension Service {
         guard preferredTranscriptionModel != nil else {
             throw ServiceError.missingService
         }
-        switch ServiceID(rawValue: id)! {
+        switch kind {
         case .groq:
             return groq(session: session)
         case .openAI:
@@ -207,7 +209,7 @@ extension Service {
         guard preferredSpeechModel != nil else {
             throw ServiceError.missingService
         }
-        switch ServiceID(rawValue: id)! {
+        switch kind {
         case .elevenLabs:
             return elevenLabs(session: session)
         case .fal:
@@ -225,7 +227,7 @@ extension Service {
         guard preferredChatModel != nil else {
             throw ServiceError.missingService
         }
-        switch ServiceID(rawValue: id)! {
+        switch kind {
         case .anthropic:
             return anthropic(session: session)
         case .deepseek:
