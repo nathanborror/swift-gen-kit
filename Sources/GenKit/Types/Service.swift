@@ -19,7 +19,7 @@ public struct Service: Identifiable, Codable, Hashable, Sendable {
     public var preferredSpeechModel: String?
     public var preferredSummarizationModel: String?
 
-    public enum Kind: String, Codable, Hashable, Sendable {
+    public enum Kind: String, Codable, CaseIterable, Hashable, Sendable {
         case anthropic
         case deepseek
         case elevenLabs
